@@ -69,6 +69,13 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    articles: Article;
+    events: Event;
+    teachers: Teacher;
+    menu: Menu;
+    pages: Page;
+    'calendar-days': CalendarDay;
+    communications: Communication;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -78,6 +85,13 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    articles: ArticlesSelect<false> | ArticlesSelect<true>;
+    events: EventsSelect<false> | EventsSelect<true>;
+    teachers: TeachersSelect<false> | TeachersSelect<true>;
+    menu: MenuSelect<false> | MenuSelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
+    'calendar-days': CalendarDaysSelect<false> | CalendarDaysSelect<true>;
+    communications: CommunicationsSelect<false> | CommunicationsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -160,6 +174,522 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "articles".
+ */
+export interface Article {
+  id: string;
+  title: string;
+  cover?: (string | null) | Media;
+  slug: string;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  author?: (string | null) | User;
+  publishedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events".
+ */
+export interface Event {
+  id: string;
+  title: string;
+  date: string;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  location?: string | null;
+  cover?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "teachers".
+ */
+export interface Teacher {
+  id: string;
+  name: string;
+  subject?: string | null;
+  bio?: string | null;
+  photo?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Gestisci i menù stagionali della mensa
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "menu".
+ */
+export interface Menu {
+  id: string;
+  /**
+   * Nome del menù (es. "Menù Autunno 2025", "Menù Inverno 2025")
+   */
+  name: string;
+  /**
+   * Solo il menù attivo sarà visualizzato sul sito. Può esserci solo un menù attivo alla volta.
+   */
+  isActive?: boolean | null;
+  /**
+   * Data di inizio validità
+   */
+  validFrom?: string | null;
+  /**
+   * Data di fine validità
+   */
+  validTo?: string | null;
+  week1?: {
+    lunedì?: {
+      isSpecialDish?: boolean | null;
+      dishes?:
+        | {
+            dish: string;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    martedì?: {
+      isSpecialDish?: boolean | null;
+      dishes?:
+        | {
+            dish: string;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    mercoledì?: {
+      isSpecialDish?: boolean | null;
+      dishes?:
+        | {
+            dish: string;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    giovedì?: {
+      isSpecialDish?: boolean | null;
+      dishes?:
+        | {
+            dish: string;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    venerdì?: {
+      isSpecialDish?: boolean | null;
+      dishes?:
+        | {
+            dish: string;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    /**
+     * Note o variazioni specifiche per la settimana 1 (opzionale)
+     */
+    notes?: string | null;
+  };
+  week2?: {
+    lunedì?: {
+      isSpecialDish?: boolean | null;
+      dishes?:
+        | {
+            dish: string;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    martedì?: {
+      isSpecialDish?: boolean | null;
+      dishes?:
+        | {
+            dish: string;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    mercoledì?: {
+      isSpecialDish?: boolean | null;
+      dishes?:
+        | {
+            dish: string;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    giovedì?: {
+      isSpecialDish?: boolean | null;
+      dishes?:
+        | {
+            dish: string;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    venerdì?: {
+      isSpecialDish?: boolean | null;
+      dishes?:
+        | {
+            dish: string;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    /**
+     * Note o variazioni specifiche per la settimana 2 (opzionale)
+     */
+    notes?: string | null;
+  };
+  week3?: {
+    lunedì?: {
+      isSpecialDish?: boolean | null;
+      dishes?:
+        | {
+            dish: string;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    martedì?: {
+      isSpecialDish?: boolean | null;
+      dishes?:
+        | {
+            dish: string;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    mercoledì?: {
+      isSpecialDish?: boolean | null;
+      dishes?:
+        | {
+            dish: string;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    giovedì?: {
+      isSpecialDish?: boolean | null;
+      dishes?:
+        | {
+            dish: string;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    venerdì?: {
+      isSpecialDish?: boolean | null;
+      dishes?:
+        | {
+            dish: string;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    /**
+     * Note o variazioni specifiche per la settimana 3 (opzionale)
+     */
+    notes?: string | null;
+  };
+  week4?: {
+    lunedì?: {
+      isSpecialDish?: boolean | null;
+      dishes?:
+        | {
+            dish: string;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    martedì?: {
+      isSpecialDish?: boolean | null;
+      dishes?:
+        | {
+            dish: string;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    mercoledì?: {
+      isSpecialDish?: boolean | null;
+      dishes?:
+        | {
+            dish: string;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    giovedì?: {
+      isSpecialDish?: boolean | null;
+      dishes?:
+        | {
+            dish: string;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    venerdì?: {
+      isSpecialDish?: boolean | null;
+      dishes?:
+        | {
+            dish: string;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    /**
+     * Note o variazioni specifiche per la settimana 4 (opzionale)
+     */
+    notes?: string | null;
+  };
+  /**
+   * Note generali valide per tutto il menù (es. informazioni sugli allergeni)
+   */
+  generalNotes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: string;
+  title: string;
+  /**
+   * Es: chi-siamo, contatti, storia
+   */
+  slug: string;
+  /**
+   * Testo che appare sotto il titolo nell'hero
+   */
+  subtitle?: string | null;
+  /**
+   * Immagine opzionale per l'hero della pagina
+   */
+  cover?: (string | null) | Media;
+  /**
+   * Testo principale che appare dopo l'hero
+   */
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Aggiungi sezioni personalizzate come call-to-action, team cards, feature grids, ecc.
+   */
+  blocks?:
+    | (
+        | {
+            title: string;
+            subtitle?: string | null;
+            image?: (string | null) | Media;
+            buttons?:
+              | {
+                  text: string;
+                  href: string;
+                  variant?: ('default' | 'secondary' | 'outline' | 'ghost') | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'callToAction';
+          }
+        | {
+            content: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'richText';
+          }
+        | {
+            title?: string | null;
+            columns?: ('2' | '3' | '4') | null;
+            cards?:
+              | {
+                  title: string;
+                  description?: string | null;
+                  image?: (string | null) | Media;
+                  link?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cardGrid';
+          }
+        | {
+            /**
+             * Es: "Documenti Utili", "Moduli da scaricare"
+             */
+            title?: string | null;
+            description?: string | null;
+            files?:
+              | {
+                  /**
+                   * PDF, DOC, XLS, o altri documenti
+                   */
+                  file: string | Media;
+                  /**
+                   * Se vuoto, usa il nome del file
+                   */
+                  title?: string | null;
+                  description?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'fileDownload';
+          }
+      )[]
+    | null;
+  /**
+   * Se attivo, questa pagina apparirà automaticamente nel menu di navigazione
+   */
+  showInNavbar?: boolean | null;
+  /**
+   * Numero per ordinare le pagine nel menu (più basso = prima)
+   */
+  navbarOrder?: number | null;
+  seo?: {
+    /**
+     * Titolo per i motori di ricerca (se vuoto, usa il titolo della pagina)
+     */
+    metaTitle?: string | null;
+    /**
+     * Descrizione per i motori di ricerca (max 160 caratteri)
+     */
+    metaDescription?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "calendar-days".
+ */
+export interface CalendarDay {
+  id: string;
+  title: string;
+  description?: string | null;
+  type: 'holiday' | 'closure' | 'event' | 'trip';
+  /**
+   * Costo dell'evento (es. "15€" o "Gratuito")
+   */
+  cost?: string | null;
+  /**
+   * Collega un evento per maggiori dettagli
+   */
+  linkedEvent?: (string | null) | Event;
+  startDate: string;
+  /**
+   * Lasciare vuoto se è un singolo giorno
+   */
+  endDate?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Gestisci le comunicazioni di servizio che appaiono nel popup
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "communications".
+ */
+export interface Communication {
+  id: string;
+  title: string;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  priority: 'low' | 'normal' | 'high' | 'urgent';
+  /**
+   * Solo le comunicazioni attive vengono mostrate
+   */
+  isActive?: boolean | null;
+  publishedAt: string;
+  /**
+   * Dopo questa data la comunicazione non verrà più mostrata
+   */
+  expiresAt?: string | null;
+  /**
+   * Collega un articolo per maggiori dettagli (opzionale)
+   */
+  linkedArticle?: (string | null) | Article;
+  /**
+   * Collega un evento per maggiori dettagli (opzionale)
+   */
+  linkedEvent?: (string | null) | Event;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -189,6 +719,34 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: string | Media;
+      } | null)
+    | ({
+        relationTo: 'articles';
+        value: string | Article;
+      } | null)
+    | ({
+        relationTo: 'events';
+        value: string | Event;
+      } | null)
+    | ({
+        relationTo: 'teachers';
+        value: string | Teacher;
+      } | null)
+    | ({
+        relationTo: 'menu';
+        value: string | Menu;
+      } | null)
+    | ({
+        relationTo: 'pages';
+        value: string | Page;
+      } | null)
+    | ({
+        relationTo: 'calendar-days';
+        value: string | CalendarDay;
+      } | null)
+    | ({
+        relationTo: 'communications';
+        value: string | Communication;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -271,6 +829,411 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "articles_select".
+ */
+export interface ArticlesSelect<T extends boolean = true> {
+  title?: T;
+  cover?: T;
+  slug?: T;
+  content?: T;
+  author?: T;
+  publishedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events_select".
+ */
+export interface EventsSelect<T extends boolean = true> {
+  title?: T;
+  date?: T;
+  description?: T;
+  location?: T;
+  cover?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "teachers_select".
+ */
+export interface TeachersSelect<T extends boolean = true> {
+  name?: T;
+  subject?: T;
+  bio?: T;
+  photo?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "menu_select".
+ */
+export interface MenuSelect<T extends boolean = true> {
+  name?: T;
+  isActive?: T;
+  validFrom?: T;
+  validTo?: T;
+  week1?:
+    | T
+    | {
+        lunedì?:
+          | T
+          | {
+              isSpecialDish?: T;
+              dishes?:
+                | T
+                | {
+                    dish?: T;
+                    id?: T;
+                  };
+            };
+        martedì?:
+          | T
+          | {
+              isSpecialDish?: T;
+              dishes?:
+                | T
+                | {
+                    dish?: T;
+                    id?: T;
+                  };
+            };
+        mercoledì?:
+          | T
+          | {
+              isSpecialDish?: T;
+              dishes?:
+                | T
+                | {
+                    dish?: T;
+                    id?: T;
+                  };
+            };
+        giovedì?:
+          | T
+          | {
+              isSpecialDish?: T;
+              dishes?:
+                | T
+                | {
+                    dish?: T;
+                    id?: T;
+                  };
+            };
+        venerdì?:
+          | T
+          | {
+              isSpecialDish?: T;
+              dishes?:
+                | T
+                | {
+                    dish?: T;
+                    id?: T;
+                  };
+            };
+        notes?: T;
+      };
+  week2?:
+    | T
+    | {
+        lunedì?:
+          | T
+          | {
+              isSpecialDish?: T;
+              dishes?:
+                | T
+                | {
+                    dish?: T;
+                    id?: T;
+                  };
+            };
+        martedì?:
+          | T
+          | {
+              isSpecialDish?: T;
+              dishes?:
+                | T
+                | {
+                    dish?: T;
+                    id?: T;
+                  };
+            };
+        mercoledì?:
+          | T
+          | {
+              isSpecialDish?: T;
+              dishes?:
+                | T
+                | {
+                    dish?: T;
+                    id?: T;
+                  };
+            };
+        giovedì?:
+          | T
+          | {
+              isSpecialDish?: T;
+              dishes?:
+                | T
+                | {
+                    dish?: T;
+                    id?: T;
+                  };
+            };
+        venerdì?:
+          | T
+          | {
+              isSpecialDish?: T;
+              dishes?:
+                | T
+                | {
+                    dish?: T;
+                    id?: T;
+                  };
+            };
+        notes?: T;
+      };
+  week3?:
+    | T
+    | {
+        lunedì?:
+          | T
+          | {
+              isSpecialDish?: T;
+              dishes?:
+                | T
+                | {
+                    dish?: T;
+                    id?: T;
+                  };
+            };
+        martedì?:
+          | T
+          | {
+              isSpecialDish?: T;
+              dishes?:
+                | T
+                | {
+                    dish?: T;
+                    id?: T;
+                  };
+            };
+        mercoledì?:
+          | T
+          | {
+              isSpecialDish?: T;
+              dishes?:
+                | T
+                | {
+                    dish?: T;
+                    id?: T;
+                  };
+            };
+        giovedì?:
+          | T
+          | {
+              isSpecialDish?: T;
+              dishes?:
+                | T
+                | {
+                    dish?: T;
+                    id?: T;
+                  };
+            };
+        venerdì?:
+          | T
+          | {
+              isSpecialDish?: T;
+              dishes?:
+                | T
+                | {
+                    dish?: T;
+                    id?: T;
+                  };
+            };
+        notes?: T;
+      };
+  week4?:
+    | T
+    | {
+        lunedì?:
+          | T
+          | {
+              isSpecialDish?: T;
+              dishes?:
+                | T
+                | {
+                    dish?: T;
+                    id?: T;
+                  };
+            };
+        martedì?:
+          | T
+          | {
+              isSpecialDish?: T;
+              dishes?:
+                | T
+                | {
+                    dish?: T;
+                    id?: T;
+                  };
+            };
+        mercoledì?:
+          | T
+          | {
+              isSpecialDish?: T;
+              dishes?:
+                | T
+                | {
+                    dish?: T;
+                    id?: T;
+                  };
+            };
+        giovedì?:
+          | T
+          | {
+              isSpecialDish?: T;
+              dishes?:
+                | T
+                | {
+                    dish?: T;
+                    id?: T;
+                  };
+            };
+        venerdì?:
+          | T
+          | {
+              isSpecialDish?: T;
+              dishes?:
+                | T
+                | {
+                    dish?: T;
+                    id?: T;
+                  };
+            };
+        notes?: T;
+      };
+  generalNotes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  subtitle?: T;
+  cover?: T;
+  content?: T;
+  blocks?:
+    | T
+    | {
+        callToAction?:
+          | T
+          | {
+              title?: T;
+              subtitle?: T;
+              image?: T;
+              buttons?:
+                | T
+                | {
+                    text?: T;
+                    href?: T;
+                    variant?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        richText?:
+          | T
+          | {
+              content?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cardGrid?:
+          | T
+          | {
+              title?: T;
+              columns?: T;
+              cards?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                    image?: T;
+                    link?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        fileDownload?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+              files?:
+                | T
+                | {
+                    file?: T;
+                    title?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+      };
+  showInNavbar?: T;
+  navbarOrder?: T;
+  seo?:
+    | T
+    | {
+        metaTitle?: T;
+        metaDescription?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "calendar-days_select".
+ */
+export interface CalendarDaysSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  type?: T;
+  cost?: T;
+  linkedEvent?: T;
+  startDate?: T;
+  endDate?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "communications_select".
+ */
+export interface CommunicationsSelect<T extends boolean = true> {
+  title?: T;
+  content?: T;
+  priority?: T;
+  isActive?: T;
+  publishedAt?: T;
+  expiresAt?: T;
+  linkedArticle?: T;
+  linkedEvent?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
