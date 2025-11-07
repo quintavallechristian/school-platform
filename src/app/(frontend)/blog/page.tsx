@@ -4,7 +4,6 @@ import Link from 'next/link'
 import config from '@/payload.config'
 import type { Article } from '@/payload-types'
 import Hero from '@/components/Hero/Hero'
-import { Spotlight } from 'lucide-react'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 
 export default async function BlogPage() {

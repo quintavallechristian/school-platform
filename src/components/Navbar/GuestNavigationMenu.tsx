@@ -24,7 +24,7 @@ export function MobileGuestMenuButton({ menuItems }: { menuItems: MenuItem[] }) 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild className="md:hidden">
-        <Button variant="outline" size="icon">
+        <Button variant="outline" size="sm">
           <Menu className="h-6 w-6" />
           <span className="sr-only">Toggle menu</span>
         </Button>

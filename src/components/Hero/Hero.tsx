@@ -13,7 +13,11 @@ export default async function Hero({
 }: {
   title: string
   subtitle?: string
-  buttons?: { text: string; href: string; variant?: string }[]
+  buttons?: {
+    text: string
+    href: string
+    variant?: 'default' | 'destructive' | 'outline' | 'link'
+  }[]
   big?: boolean
 }) {
   return (

@@ -145,13 +145,13 @@ export function CommunicationsPopup({ communications }: CommunicationsPopupProps
               linkedArticle ? (
                 <Link href={`/blog/${linkedArticle.slug}`} onClick={handleDismiss}>
                   <Button className="flex gap-2 items-center">
-                    Leggi l'articolo <ArrowRight className="h-4 w-4" />
+                    Leggi l&apos;articolo <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
               ) : linkedEvent ? (
                 <Link href={`/eventi/${linkedEvent.id}`} onClick={handleDismiss}>
                   <Button className="flex gap-2 items-center">
-                    Vedi l'evento <ArrowRight className="h-4 w-4" />
+                    Vedi l&apos;evento <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
               ) : null
