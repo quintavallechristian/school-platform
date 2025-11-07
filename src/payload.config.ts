@@ -15,6 +15,8 @@ import { Menu } from './collections/Menu'
 import { Pages } from './collections/Pages'
 import { CalendarDays } from './collections/CalendarDays'
 import { Communications } from './collections/Communications'
+import { Gallery } from './collections/Gallery'
+import { EmailSubscribers } from './collections/EmailSubscribers'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -36,6 +38,8 @@ export default buildConfig({
     Pages,
     CalendarDays,
     Communications,
+    Gallery,
+    EmailSubscribers,
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

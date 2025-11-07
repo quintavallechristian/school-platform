@@ -6,6 +6,7 @@ import type { Event } from '@/payload-types'
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import Link from 'next/link'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
+import GalleryView from '@/components/GalleryView/GalleryView'
 
 type Props = {
   params: Promise<{
@@ -31,6 +32,7 @@ export default async function EventoPage({ params }: Props) {
 
   const eventDate = new Date(event.date)
   const isPast = eventDate < new Date()
+  const gallery = event.gallery && typeof event.gallery === 'object' ? event.gallery : null
 
   return (
     <div className="min-h-[calc(100vh-200px)]">
@@ -96,6 +98,14 @@ export default async function EventoPage({ params }: Props) {
             )}
           </div>
         </div>
+
+        {gallery && (
+          <div className="py-8 px-8">
+            <div className="max-w-4xl mx-auto">
+              <GalleryView gallery={gallery} />
+            </div>
+          </div>
+        )}
 
         <footer>
           <div className="max-w-4xl mx-auto">

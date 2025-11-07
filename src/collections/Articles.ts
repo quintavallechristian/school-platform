@@ -35,5 +35,14 @@ export const Articles: CollectionConfig = {
       type: 'date',
       admin: { position: 'sidebar' },
     },
+    {
+      name: 'gallery',
+      type: 'relationship',
+      relationTo: 'gallery',
+      label: 'Galleria',
+      admin: {
+        description: 'Collega una galleria di immagini a questo articolo (opzionale)',
+      },
+    },
   ],
 }

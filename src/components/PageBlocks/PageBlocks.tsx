@@ -4,6 +4,7 @@ import CallToActionBlock from './CallToActionBlock'
 import RichTextBlock from './RichTextBlock'
 import CardGridBlock from './CardGridBlock'
 import FileDownloadBlock from './FileDownloadBlock'
+import GalleryBlock from './GalleryBlock'
 
 type Props = {
   blocks: Page['blocks']
@@ -26,6 +27,8 @@ export default function PageBlocks({ blocks }: Props) {
             return <CardGridBlock key={index} block={block} />
           case 'fileDownload':
             return <FileDownloadBlock key={index} block={block} />
+          case 'gallery':
+            return <GalleryBlock key={index} block={block} />
           default:
             return null
         }

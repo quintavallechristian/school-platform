@@ -18,5 +18,14 @@ export const Events: CollectionConfig = {
     { name: 'description', type: 'richText', label: 'Descrizione' },
     { name: 'location', type: 'text', label: 'Luogo' },
     { name: 'cover', type: 'upload', relationTo: 'media', label: 'Copertina' },
+    {
+      name: 'gallery',
+      type: 'relationship',
+      relationTo: 'gallery',
+      label: 'Galleria',
+      admin: {
+        description: 'Collega una galleria di immagini a questo evento (opzionale)',
+      },
+    },
   ],
 }

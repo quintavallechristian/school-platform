@@ -76,6 +76,8 @@ export interface Config {
     pages: Page;
     'calendar-days': CalendarDay;
     communications: Communication;
+    gallery: Gallery;
+    'email-subscribers': EmailSubscriber;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -92,6 +94,8 @@ export interface Config {
     pages: PagesSelect<false> | PagesSelect<true>;
     'calendar-days': CalendarDaysSelect<false> | CalendarDaysSelect<true>;
     communications: CommunicationsSelect<false> | CommunicationsSelect<true>;
+    gallery: GallerySelect<false> | GallerySelect<true>;
+    'email-subscribers': EmailSubscribersSelect<false> | EmailSubscribersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -198,6 +202,207 @@ export interface Article {
   } | null;
   author?: (string | null) | User;
   publishedAt?: string | null;
+  /**
+   * Collega una galleria di immagini a questo articolo (opzionale)
+   */
+  gallery?: (string | null) | Gallery;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "gallery".
+ */
+export interface Gallery {
+  id: string;
+  /**
+   * Nome identificativo della galleria
+   */
+  title: string;
+  /**
+   * Breve descrizione della galleria (opzionale)
+   */
+  description?: string | null;
+  /**
+   * Aggiungi le immagini alla galleria
+   */
+  images?:
+    | {
+        image: string | Media;
+        /**
+         * Testo descrittivo per l'immagine (opzionale)
+         */
+        caption?: string | null;
+        /**
+         * Numero per ordinare le immagini (più basso = prima)
+         */
+        order?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Specifica a quale contenuto è collegata questa galleria (opzionale)
+   */
+  linkedTo?: {
+    type?: ('none' | 'article' | 'page' | 'event') | null;
+    article?: (string | null) | Article;
+    page?: (string | null) | Page;
+    event?: (string | null) | Event;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: string;
+  title: string;
+  /**
+   * Es: chi-siamo, contatti, storia
+   */
+  slug: string;
+  /**
+   * Testo che appare sotto il titolo nell'hero
+   */
+  subtitle?: string | null;
+  /**
+   * Immagine opzionale per l'hero della pagina
+   */
+  cover?: (string | null) | Media;
+  /**
+   * Testo principale che appare dopo l'hero
+   */
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Aggiungi sezioni personalizzate come call-to-action, team cards, feature grids, ecc.
+   */
+  blocks?:
+    | (
+        | {
+            title: string;
+            subtitle?: string | null;
+            image?: (string | null) | Media;
+            buttons?:
+              | {
+                  text: string;
+                  href: string;
+                  variant?: ('default' | 'secondary' | 'outline' | 'ghost') | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'callToAction';
+          }
+        | {
+            content: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'richText';
+          }
+        | {
+            title?: string | null;
+            columns?: ('2' | '3' | '4') | null;
+            cards?:
+              | {
+                  title: string;
+                  description?: string | null;
+                  image?: (string | null) | Media;
+                  link?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cardGrid';
+          }
+        | {
+            /**
+             * Es: "Documenti Utili", "Moduli da scaricare"
+             */
+            title?: string | null;
+            description?: string | null;
+            files?:
+              | {
+                  /**
+                   * PDF, DOC, XLS, o altri documenti
+                   */
+                  file: string | Media;
+                  /**
+                   * Se vuoto, usa il nome del file
+                   */
+                  title?: string | null;
+                  description?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'fileDownload';
+          }
+        | {
+            /**
+             * Seleziona una galleria esistente da mostrare
+             */
+            gallery: string | Gallery;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'gallery';
+          }
+      )[]
+    | null;
+  /**
+   * Se attivo, questa pagina apparirà automaticamente nel menu di navigazione
+   */
+  showInNavbar?: boolean | null;
+  /**
+   * Numero per ordinare le pagine nel menu (più basso = prima)
+   */
+  navbarOrder?: number | null;
+  /**
+   * Collega una galleria di immagini a questa pagina (opzionale)
+   */
+  gallery?: (string | null) | Gallery;
+  seo?: {
+    /**
+     * Titolo per i motori di ricerca (se vuoto, usa il titolo della pagina)
+     */
+    metaTitle?: string | null;
+    /**
+     * Descrizione per i motori di ricerca (max 160 caratteri)
+     */
+    metaDescription?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -226,6 +431,10 @@ export interface Event {
   } | null;
   location?: string | null;
   cover?: (string | null) | Media;
+  /**
+   * Collega una galleria di immagini a questo evento (opzionale)
+   */
+  gallery?: (string | null) | Gallery;
   updatedAt: string;
   createdAt: string;
 }
@@ -479,147 +688,6 @@ export interface Menu {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pages".
- */
-export interface Page {
-  id: string;
-  title: string;
-  /**
-   * Es: chi-siamo, contatti, storia
-   */
-  slug: string;
-  /**
-   * Testo che appare sotto il titolo nell'hero
-   */
-  subtitle?: string | null;
-  /**
-   * Immagine opzionale per l'hero della pagina
-   */
-  cover?: (string | null) | Media;
-  /**
-   * Testo principale che appare dopo l'hero
-   */
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * Aggiungi sezioni personalizzate come call-to-action, team cards, feature grids, ecc.
-   */
-  blocks?:
-    | (
-        | {
-            title: string;
-            subtitle?: string | null;
-            image?: (string | null) | Media;
-            buttons?:
-              | {
-                  text: string;
-                  href: string;
-                  variant?: ('default' | 'secondary' | 'outline' | 'ghost') | null;
-                  id?: string | null;
-                }[]
-              | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'callToAction';
-          }
-        | {
-            content: {
-              root: {
-                type: string;
-                children: {
-                  type: any;
-                  version: number;
-                  [k: string]: unknown;
-                }[];
-                direction: ('ltr' | 'rtl') | null;
-                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-                indent: number;
-                version: number;
-              };
-              [k: string]: unknown;
-            };
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'richText';
-          }
-        | {
-            title?: string | null;
-            columns?: ('2' | '3' | '4') | null;
-            cards?:
-              | {
-                  title: string;
-                  description?: string | null;
-                  image?: (string | null) | Media;
-                  link?: string | null;
-                  id?: string | null;
-                }[]
-              | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'cardGrid';
-          }
-        | {
-            /**
-             * Es: "Documenti Utili", "Moduli da scaricare"
-             */
-            title?: string | null;
-            description?: string | null;
-            files?:
-              | {
-                  /**
-                   * PDF, DOC, XLS, o altri documenti
-                   */
-                  file: string | Media;
-                  /**
-                   * Se vuoto, usa il nome del file
-                   */
-                  title?: string | null;
-                  description?: string | null;
-                  id?: string | null;
-                }[]
-              | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'fileDownload';
-          }
-      )[]
-    | null;
-  /**
-   * Se attivo, questa pagina apparirà automaticamente nel menu di navigazione
-   */
-  showInNavbar?: boolean | null;
-  /**
-   * Numero per ordinare le pagine nel menu (più basso = prima)
-   */
-  navbarOrder?: number | null;
-  seo?: {
-    /**
-     * Titolo per i motori di ricerca (se vuoto, usa il titolo della pagina)
-     */
-    metaTitle?: string | null;
-    /**
-     * Descrizione per i motori di ricerca (max 160 caratteri)
-     */
-    metaDescription?: string | null;
-  };
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "calendar-days".
  */
 export interface CalendarDay {
@@ -669,7 +737,7 @@ export interface Communication {
   };
   priority: 'low' | 'normal' | 'high' | 'urgent';
   /**
-   * Solo le comunicazioni attive vengono mostrate
+   * Solo le comunicazioni attive vengono mostrate e inviano notifiche
    */
   isActive?: boolean | null;
   publishedAt: string;
@@ -685,6 +753,30 @@ export interface Communication {
    * Collega un evento per maggiori dettagli (opzionale)
    */
   linkedEvent?: (string | null) | Event;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Gestisci gli iscritti alle notifiche email delle comunicazioni
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-subscribers".
+ */
+export interface EmailSubscriber {
+  id: string;
+  /**
+   * Indirizzo email per le notifiche
+   */
+  email: string;
+  /**
+   * Se disattivato, non riceverà più notifiche
+   */
+  isActive?: boolean | null;
+  subscribedAt?: string | null;
+  /**
+   * Token unico per la disiscrizione
+   */
+  unsubscribeToken?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -747,6 +839,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'communications';
         value: string | Communication;
+      } | null)
+    | ({
+        relationTo: 'gallery';
+        value: string | Gallery;
+      } | null)
+    | ({
+        relationTo: 'email-subscribers';
+        value: string | EmailSubscriber;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -841,6 +941,7 @@ export interface ArticlesSelect<T extends boolean = true> {
   content?: T;
   author?: T;
   publishedAt?: T;
+  gallery?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -854,6 +955,7 @@ export interface EventsSelect<T extends boolean = true> {
   description?: T;
   location?: T;
   cover?: T;
+  gallery?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1192,9 +1294,17 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        gallery?:
+          | T
+          | {
+              gallery?: T;
+              id?: T;
+              blockName?: T;
+            };
       };
   showInNavbar?: T;
   navbarOrder?: T;
+  gallery?: T;
   seo?:
     | T
     | {
@@ -1232,6 +1342,44 @@ export interface CommunicationsSelect<T extends boolean = true> {
   expiresAt?: T;
   linkedArticle?: T;
   linkedEvent?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "gallery_select".
+ */
+export interface GallerySelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  images?:
+    | T
+    | {
+        image?: T;
+        caption?: T;
+        order?: T;
+        id?: T;
+      };
+  linkedTo?:
+    | T
+    | {
+        type?: T;
+        article?: T;
+        page?: T;
+        event?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-subscribers_select".
+ */
+export interface EmailSubscribersSelect<T extends boolean = true> {
+  email?: T;
+  isActive?: T;
+  subscribedAt?: T;
+  unsubscribeToken?: T;
   updatedAt?: T;
   createdAt?: T;
 }

@@ -7,6 +7,7 @@ import { RichText } from '@payloadcms/richtext-lexical/react'
 import Link from 'next/link'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import ArticleHero from '@/components/Hero/ArticleHero'
+import GalleryView from '@/components/GalleryView/GalleryView'
 
 type Props = {
   params: Promise<{
@@ -49,6 +50,7 @@ export default async function ArticlePage({ params }: Props) {
 
   const article: Article = articles.docs[0]
   const author = typeof article.author === 'object' ? (article.author as User) : null
+  const gallery = article.gallery && typeof article.gallery === 'object' ? article.gallery : null
 
   return (
     <div className="min-h-[calc(100vh-200px)]">
@@ -90,6 +92,14 @@ export default async function ArticlePage({ params }: Props) {
             )}
           </div>
         </div>
+
+        {gallery && (
+          <div className="py-8 px-8">
+            <div className="max-w-4xl mx-auto">
+              <GalleryView gallery={gallery} />
+            </div>
+          </div>
+        )}
 
         <footer>
           <div className="max-w-4xl mb-8 mx-auto">

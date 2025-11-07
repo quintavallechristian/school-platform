@@ -245,6 +245,26 @@ export const Pages: CollectionConfig = {
             },
           ],
         },
+        // Blocco Galleria
+        {
+          slug: 'gallery',
+          labels: {
+            singular: 'Galleria',
+            plural: 'Gallerie',
+          },
+          fields: [
+            {
+              name: 'gallery',
+              type: 'relationship',
+              relationTo: 'gallery',
+              required: true,
+              label: 'Galleria',
+              admin: {
+                description: 'Seleziona una galleria esistente da mostrare',
+              },
+            },
+          ],
+        },
       ],
     },
     {
@@ -263,6 +283,15 @@ export const Pages: CollectionConfig = {
       admin: {
         description: 'Numero per ordinare le pagine nel menu (più basso = prima)',
         condition: (data) => data.showInNavbar === true,
+      },
+    },
+    {
+      name: 'gallery',
+      type: 'relationship',
+      relationTo: 'gallery',
+      label: 'Galleria',
+      admin: {
+        description: 'Collega una galleria di immagini a questa pagina (opzionale)',
       },
     },
     // SEO Fields
