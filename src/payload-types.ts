@@ -68,6 +68,7 @@ export interface Config {
   blocks: {};
   collections: {
     users: User;
+    schools: School;
     media: Media;
     articles: Article;
     events: Event;
@@ -86,6 +87,7 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
+    schools: SchoolsSelect<false> | SchoolsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     articles: ArticlesSelect<false> | ArticlesSelect<true>;
     events: EventsSelect<false> | EventsSelect<true>;
@@ -139,6 +141,17 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: string;
+  /**
+   * Super Admin: accesso globale | School Admin: gestisce la propria scuola | Editor: può modificare contenuti | Viewer: solo lettura
+   */
+  role?: ('super-admin' | 'school-admin' | 'editor' | 'viewer') | null;
+  /**
+   * Scuola di appartenenza
+   */
+  school?: (string | null) | School;
+  firstName?: string | null;
+  lastName?: string | null;
+  phone?: string | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -159,10 +172,85 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "schools".
+ */
+export interface School {
+  id: string;
+  /**
+   * Il nome completo della scuola
+   */
+  name: string;
+  /**
+   * Identificatore univoco per URL (es: scuola-primaria-roma)
+   */
+  slug: string;
+  /**
+   * Dominio personalizzato (es: scuola.example.com) - opzionale
+   */
+  domain?: string | null;
+  /**
+   * Logo della scuola
+   */
+  logo?: (string | null) | Media;
+  /**
+   * Colore principale del tema (formato hex: #RRGGBB)
+   */
+  primaryColor?: string | null;
+  /**
+   * Colore secondario del tema (formato hex: #RRGGBB)
+   */
+  secondaryColor?: string | null;
+  /**
+   * Se disattivata, il sito della scuola non sarà accessibile
+   */
+  isActive?: boolean | null;
+  contactInfo?: {
+    email?: string | null;
+    phone?: string | null;
+    address?: string | null;
+  };
+  settings?: {
+    /**
+     * Gli utenti possono auto-registrarsi per questa scuola
+     */
+    allowPublicRegistration?: boolean | null;
+    /**
+     * Fuso orario della scuola (es: Europe/Rome)
+     */
+    timezone?: string | null;
+    language?: ('it' | 'en' | 'fr' | 'es') | null;
+  };
+  /**
+   * Informazioni sul piano di abbonamento
+   */
+  subscription?: {
+    plan?: ('free' | 'basic' | 'premium' | 'enterprise') | null;
+    /**
+     * Data di scadenza del piano corrente
+     */
+    expiresAt?: string | null;
+    /**
+     * Numero massimo di utenti amministratori
+     */
+    maxUsers?: number | null;
+    /**
+     * Spazio di archiviazione massimo in MB
+     */
+    maxStorage?: number | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
 export interface Media {
   id: string;
+  /**
+   * Scuola a cui appartiene questo file
+   */
+  school?: (string | null) | School;
   alt: string;
   updatedAt: string;
   createdAt: string;
@@ -182,6 +270,10 @@ export interface Media {
  */
 export interface Article {
   id: string;
+  /**
+   * Scuola a cui appartiene questo articolo
+   */
+  school?: (string | null) | School;
   title: string;
   cover?: (string | null) | Media;
   slug: string;
@@ -215,6 +307,10 @@ export interface Article {
  */
 export interface Gallery {
   id: string;
+  /**
+   * Scuola a cui appartiene questa galleria
+   */
+  school?: (string | null) | School;
   /**
    * Nome identificativo della galleria
    */
@@ -258,6 +354,10 @@ export interface Gallery {
  */
 export interface Page {
   id: string;
+  /**
+   * Scuola a cui appartiene questa pagina
+   */
+  school?: (string | null) | School;
   title: string;
   /**
    * Es: chi-siamo, contatti, storia
@@ -412,6 +512,10 @@ export interface Page {
  */
 export interface Event {
   id: string;
+  /**
+   * Scuola a cui appartiene questo evento
+   */
+  school?: (string | null) | School;
   title: string;
   date: string;
   description?: {
@@ -444,8 +548,17 @@ export interface Event {
  */
 export interface Teacher {
   id: string;
+  /**
+   * Scuola a cui appartiene questo insegnante
+   */
+  school?: (string | null) | School;
   name: string;
+  /**
+   * Es: Coordinatore, Insegnante di Matematica
+   */
+  role?: string | null;
   subject?: string | null;
+  email?: string | null;
   bio?: string | null;
   photo?: (string | null) | Media;
   updatedAt: string;
@@ -459,6 +572,10 @@ export interface Teacher {
  */
 export interface Menu {
   id: string;
+  /**
+   * Scuola a cui appartiene questo menù
+   */
+  school?: (string | null) | School;
   /**
    * Nome del menù (es. "Menù Autunno 2025", "Menù Inverno 2025")
    */
@@ -692,6 +809,10 @@ export interface Menu {
  */
 export interface CalendarDay {
   id: string;
+  /**
+   * Scuola a cui appartiene questo evento del calendario
+   */
+  school?: (string | null) | School;
   title: string;
   description?: string | null;
   type: 'holiday' | 'closure' | 'event' | 'trip';
@@ -719,6 +840,10 @@ export interface CalendarDay {
  */
 export interface Communication {
   id: string;
+  /**
+   * Scuola a cui appartiene questa comunicazione
+   */
+  school?: (string | null) | School;
   title: string;
   content: {
     root: {
@@ -765,6 +890,10 @@ export interface Communication {
 export interface EmailSubscriber {
   id: string;
   /**
+   * Scuola per cui l'utente riceve notifiche
+   */
+  school?: (string | null) | School;
+  /**
    * Indirizzo email per le notifiche
    */
   email: string;
@@ -807,6 +936,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'users';
         value: string | User;
+      } | null)
+    | ({
+        relationTo: 'schools';
+        value: string | School;
       } | null)
     | ({
         relationTo: 'media';
@@ -895,6 +1028,11 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  role?: T;
+  school?: T;
+  firstName?: T;
+  lastName?: T;
+  phone?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -914,9 +1052,47 @@ export interface UsersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "schools_select".
+ */
+export interface SchoolsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  domain?: T;
+  logo?: T;
+  primaryColor?: T;
+  secondaryColor?: T;
+  isActive?: T;
+  contactInfo?:
+    | T
+    | {
+        email?: T;
+        phone?: T;
+        address?: T;
+      };
+  settings?:
+    | T
+    | {
+        allowPublicRegistration?: T;
+        timezone?: T;
+        language?: T;
+      };
+  subscription?:
+    | T
+    | {
+        plan?: T;
+        expiresAt?: T;
+        maxUsers?: T;
+        maxStorage?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
+  school?: T;
   alt?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -935,6 +1111,7 @@ export interface MediaSelect<T extends boolean = true> {
  * via the `definition` "articles_select".
  */
 export interface ArticlesSelect<T extends boolean = true> {
+  school?: T;
   title?: T;
   cover?: T;
   slug?: T;
@@ -950,6 +1127,7 @@ export interface ArticlesSelect<T extends boolean = true> {
  * via the `definition` "events_select".
  */
 export interface EventsSelect<T extends boolean = true> {
+  school?: T;
   title?: T;
   date?: T;
   description?: T;
@@ -964,8 +1142,11 @@ export interface EventsSelect<T extends boolean = true> {
  * via the `definition` "teachers_select".
  */
 export interface TeachersSelect<T extends boolean = true> {
+  school?: T;
   name?: T;
+  role?: T;
   subject?: T;
+  email?: T;
   bio?: T;
   photo?: T;
   updatedAt?: T;
@@ -976,6 +1157,7 @@ export interface TeachersSelect<T extends boolean = true> {
  * via the `definition` "menu_select".
  */
 export interface MenuSelect<T extends boolean = true> {
+  school?: T;
   name?: T;
   isActive?: T;
   validFrom?: T;
@@ -1229,6 +1411,7 @@ export interface MenuSelect<T extends boolean = true> {
  * via the `definition` "pages_select".
  */
 export interface PagesSelect<T extends boolean = true> {
+  school?: T;
   title?: T;
   slug?: T;
   subtitle?: T;
@@ -1319,6 +1502,7 @@ export interface PagesSelect<T extends boolean = true> {
  * via the `definition` "calendar-days_select".
  */
 export interface CalendarDaysSelect<T extends boolean = true> {
+  school?: T;
   title?: T;
   description?: T;
   type?: T;
@@ -1334,6 +1518,7 @@ export interface CalendarDaysSelect<T extends boolean = true> {
  * via the `definition` "communications_select".
  */
 export interface CommunicationsSelect<T extends boolean = true> {
+  school?: T;
   title?: T;
   content?: T;
   priority?: T;
@@ -1350,6 +1535,7 @@ export interface CommunicationsSelect<T extends boolean = true> {
  * via the `definition` "gallery_select".
  */
 export interface GallerySelect<T extends boolean = true> {
+  school?: T;
   title?: T;
   description?: T;
   images?:
@@ -1376,6 +1562,7 @@ export interface GallerySelect<T extends boolean = true> {
  * via the `definition` "email-subscribers_select".
  */
 export interface EmailSubscribersSelect<T extends boolean = true> {
+  school?: T;
   email?: T;
   isActive?: T;
   subscribedAt?: T;

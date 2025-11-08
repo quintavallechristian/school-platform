@@ -1,14 +1,36 @@
 import { CollectionConfig } from 'payload'
+import { tenantRead, tenantCreate, tenantUpdate, tenantDelete, assignSchoolBeforeChange } from '../lib/access'
 
 export const Articles: CollectionConfig = {
   slug: 'articles',
   admin: {
     useAsTitle: 'title',
+    defaultColumns: ['title', 'publishedAt', 'school'],
+    group: 'Contenuti',
   },
   access: {
-    read: () => true, // pubblico
+    read: tenantRead,
+    create: tenantCreate,
+    update: tenantUpdate,
+    delete: tenantDelete,
+  },
+  hooks: {
+    beforeChange: [assignSchoolBeforeChange],
   },
   fields: [
+    {
+      name: 'school',
+      type: 'relationship',
+      relationTo: 'schools',
+      required: true,
+      label: 'Scuola',
+      admin: {
+        description: 'Scuola a cui appartiene questo articolo',
+        condition: (data, siblingData, { user }) => {
+          return user?.role === 'super-admin'
+        },
+      },
+    },
     {
       name: 'title',
       type: 'text',

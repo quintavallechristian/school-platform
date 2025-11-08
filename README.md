@@ -1,67 +1,332 @@
-# Payload Blank Template
+# 🏫 School Platform - Multi-Tenant SaaS
 
-This template comes configured with the bare minimum to get started on anything you need.
+Una piattaforma completa multi-tenant per la gestione di scuole, costruita con Payload CMS 3.x e Next.js 15.
 
-## Quick start
+## ✨ Caratteristiche Principali
 
-This template can be deployed directly from our Cloud hosting and it will setup MongoDB and cloud S3 object storage for media.
+### 🎯 Multi-Tenancy
+- **Isolamento completo dei dati** - Ogni scuola ha i propri contenuti
+- **Gestione autonoma** - School admin gestiscono la propria scuola
+- **Personalizzazione** - Logo, colori e dominio per ogni scuola
+- **Scalabile** - Supporta infinite scuole sulla stessa installazione
 
-## Quick Start - local setup
+### 👥 Sistema di Ruoli
+- **Super Admin** - Gestione globale di tutte le scuole
+- **School Admin** - Amministrazione della propria scuola
+- **Editor** - Creazione e modifica contenuti
+- **Viewer** - Solo lettura
 
-To spin up this template locally, follow these steps:
+### 📚 Funzionalità per Scuola
+- Blog/Articoli
+- Eventi e calendario
+- Comunicazioni di servizio con notifiche email
+- Menù mensa settimanale
+- Gallerie fotografiche
+- Pagine personalizzabili
+- Gestione insegnanti
+- Iscrizioni newsletter
 
-### Clone
+### 🎨 Personalizzazione
+- Logo personalizzato per scuola
+- Colori del tema configurabili
+- Domini personalizzati (opzionale)
+- Multi-lingua supportata
 
-After you click the `Deploy` button above, you'll want to have standalone copy of this repo on your machine. If you've already cloned this repo, skip to [Development](#development).
+## 🚀 Quick Start
 
-### Development
+### Prerequisiti
+- Node.js 18+ 
+- pnpm 9+
+- MongoDB
 
-1. First [clone the repo](#clone) if you have not done so already
-2. `cd my-project && cp .env.example .env` to copy the example environment variables. You'll need to add the `MONGODB_URI` from your Cloud project to your `.env` if you want to use S3 storage and the MongoDB database that was created for you.
+### Installazione
 
-3. `pnpm install && pnpm dev` to install dependencies and start the dev server
-4. open `http://localhost:3000` to open the app in your browser
+1. **Clona il repository**
+   ```bash
+   git clone <repo-url>
+   cd school-blog
+   ```
 
-That's it! Changes made in `./src` will be reflected in your app. Follow the on-screen instructions to login and create your first admin user. Then check out [Production](#production) once you're ready to build and serve your app, and [Deployment](#deployment) when you're ready to go live.
+2. **Installa le dipendenze**
+   ```bash
+   pnpm install
+   ```
 
-#### Docker (Optional)
+3. **Configura le variabili d'ambiente**
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Modifica `.env` con i tuoi dati:
+   ```env
+   DATABASE_URI=mongodb://localhost:27017/school-platform
+   PAYLOAD_SECRET=your-secret-key
+   NEXT_PUBLIC_SERVER_URL=http://localhost:3000
+   RESEND_API_KEY=your-resend-api-key  # opzionale
+   ```
 
-If you prefer to use Docker for local development instead of a local MongoDB instance, the provided docker-compose.yml file can be used.
+4. **Genera i tipi TypeScript**
+   ```bash
+   npm run generate:types
+   ```
 
-To do so, follow these steps:
+5. **Avvia il server**
+   ```bash
+   pnpm dev
+   ```
 
-- Modify the `MONGODB_URI` in your `.env` file to `mongodb://127.0.0.1/<dbname>`
-- Modify the `docker-compose.yml` file's `MONGODB_URI` to match the above `<dbname>`
-- Run `docker-compose up` to start the database, optionally pass `-d` to run in the background.
+6. **Accedi all'admin**
+   
+   Apri `http://localhost:3000/admin` e crea il primo utente.
 
-## How it works
+### Setup Multi-Tenant
 
-The Payload config is tailored specifically to the needs of most websites. It is pre-configured in the following ways:
+#### Prima Installazione
 
-### Collections
+Segui la guida completa in **[MULTITENANT_QUICKSTART.md](./MULTITENANT_QUICKSTART.md)**
 
-See the [Collections](https://payloadcms.com/docs/configuration/collections) docs for details on how to extend this functionality.
+Passi principali:
+1. Crea il primo Super Admin (vedi guida)
+2. Crea la prima scuola via `/admin/collections/schools`
+3. Assegna la scuola al tuo utente
+4. Inizia a creare contenuti!
 
-- #### Users (Authentication)
+#### Migrazione da Installazione Esistente
 
-  Users are auth-enabled collections that have access to the admin panel.
+Se hai già dati nel database:
 
-  For additional help, see the official [Auth Example](https://github.com/payloadcms/payload/tree/main/examples/auth) or the [Authentication](https://payloadcms.com/docs/authentication/overview#authentication-overview) docs.
+```bash
+npm run migrate:multitenant
+```
 
-- #### Media
+Questo script:
+- Crea una scuola di default
+- Assegna tutti i contenuti esistenti a questa scuola
+- Aggiorna gli utenti con ruoli e scuola
 
-  This is the uploads enabled collection. It features pre-configured sizes, focal point and manual resizing to help you manage your pictures.
+## 📖 Documentazione
+
+### Guide Essenziali
+- **[MULTITENANT_QUICKSTART.md](./MULTITENANT_QUICKSTART.md)** - Setup rapido e primi passi
+- **[SAAS_MULTITENANT_GUIDE.md](./SAAS_MULTITENANT_GUIDE.md)** - Guida completa (24 pagine)
+- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Diagrammi architettura
+- **[CHANGELOG.md](./CHANGELOG.md)** - Changelog dettagliato
+
+### Guide Specifiche
+- [BLOCKS_GUIDE.md](./BLOCKS_GUIDE.md) - Sistema di blocchi per pagine
+- [PAGES_GUIDE.md](./PAGES_GUIDE.md) - Gestione pagine dinamiche
+- [MENU_COLLECTION_GUIDE.md](./MENU_COLLECTION_GUIDE.md) - Sistema menù mensa
+- [NAVBAR_CUSTOMIZATION_GUIDE.md](./NAVBAR_CUSTOMIZATION_GUIDE.md) - Personalizzazione navbar
+
+## 🏗️ Architettura
+
+```
+┌────────────────────────────────────────┐
+│         SUPER ADMIN (Globale)          │
+└────────────────┬───────────────────────┘
+                 │
+     ┌───────────┴───────────┐
+     │                       │
+     ▼                       ▼
+┌─────────────┐         ┌─────────────┐
+│  Scuola A   │         │  Scuola B   │
+├─────────────┤         ├─────────────┤
+│ School Admin│         │ School Admin│
+│ Editors     │         │ Editors     │
+│ Viewers     │         │ Viewers     │
+├─────────────┤         ├─────────────┤
+│ Contenuti A │         │ Contenuti B │
+│ Media A     │         │ Media B     │
+│ Utenti A    │         │ Utenti B    │
+└─────────────┘         └─────────────┘
+```
+
+Ogni scuola è completamente isolata dalle altre.
+
+## 🛠️ Tecnologie
+
+- **[Payload CMS 3.x](https://payloadcms.com)** - Headless CMS
+- **[Next.js 15](https://nextjs.org)** - React Framework
+- **[MongoDB](https://www.mongodb.com)** - Database
+- **[TypeScript](https://www.typescriptlang.org)** - Type Safety
+- **[Tailwind CSS 4](https://tailwindcss.com)** - Styling
+- **[Resend](https://resend.com)** - Email Notifications
+
+## 📂 Struttura Progetto
+
+```
+school-blog/
+├── src/
+│   ├── collections/        # Collezioni Payload
+│   │   ├── Schools.ts     # ⭐ Gestione scuole
+│   │   ├── Users.ts       # 🔄 Con ruoli e multi-tenant
+│   │   ├── Articles.ts
+│   │   ├── Events.ts
+│   │   ├── Teachers.ts
+│   │   └── ...
+│   │
+│   ├── lib/
+│   │   ├── access.ts      # ⭐ Access control multi-tenant
+│   │   ├── school.ts      # ⭐ Utility functions
+│   │   └── utils.ts
+│   │
+│   ├── app/
+│   │   ├── (frontend)/    # Frontend pubblico
+│   │   └── (payload)/     # Admin Payload
+│   │
+│   └── payload.config.ts
+│
+├── scripts/
+│   └── migrate-to-multitenant.ts  # Script migrazione
+│
+└── docs/                  # Guide e documentazione
+```
+
+## 🔧 Scripts Disponibili
+
+```bash
+# Sviluppo
+pnpm dev              # Avvia server sviluppo
+pnpm build            # Build per produzione
+pnpm start            # Avvia server produzione
+
+# Payload
+npm run generate:types     # Genera tipi TypeScript
+npm run generate:importmap # Genera import map
+
+# Migrazione
+npm run migrate:multitenant  # Migra a multi-tenant
+
+# Testing
+pnpm test           # Esegue tutti i test
+pnpm test:e2e       # Test end-to-end
+pnpm test:int       # Test integrazione
+```
+
+## 🌐 Frontend Multi-Tenant
+
+### Opzione 1: Path-based (Raccomandato per iniziare)
+
+```
+https://tuosito.it/scuola-a
+https://tuosito.it/scuola-b
+```
+
+### Opzione 2: Subdomain-based
+
+```
+https://scuola-a.tuosito.it
+https://scuola-b.tuosito.it
+```
+
+Vedi esempi in:
+- `src/app/(frontend)/[school]/layout.example.tsx`
+- `src/app/(frontend)/[school]/page.example.tsx`
+- `middleware.example.ts`
+
+## 🎯 Piani di Abbonamento
+
+Ogni scuola può avere un piano:
+
+| Piano | Utenti | Storage | Custom Domain |
+|-------|--------|---------|---------------|
+| Free | 5 | 1 GB | ❌ |
+| Basic | 10 | 5 GB | Subdomain |
+| Premium | 25 | 20 GB | ✅ |
+| Enterprise | Unlimited | Custom | ✅ Multiple |
+
+## 📊 Database Collections
+
+### Sistema
+- `schools` - Scuole (tenant)
+- `users` - Utenti con ruoli
+- `media` - File e immagini
+
+### Contenuti (per scuola)
+- `articles` - Blog/notizie
+- `events` - Eventi
+- `teachers` - Insegnanti
+- `menu` - Menù mensa
+- `pages` - Pagine personalizzate
+- `calendar-days` - Calendario
+- `communications` - Comunicazioni
+- `gallery` - Gallerie foto
+- `email-subscribers` - Iscritti newsletter
+
+## 🔒 Sicurezza
+
+### Access Control Automatico
+- ✅ Isolamento dati garantito
+- ✅ Filtri automatici su query
+- ✅ Validazione ruoli e permessi
+- ✅ Impossibile accedere a dati di altre scuole
+
+### Best Practices
+- HTTPS obbligatorio in produzione
+- Variabili d'ambiente sicure
+- Backup regolari database
+- Monitoring attivo
+
+## 🐛 Troubleshooting
+
+### Errori TypeScript
+```bash
+npm run generate:types
+```
+
+### Non vedo i contenuti nell'admin
+Verifica che il tuo utente abbia:
+- Un ruolo assegnato
+- Una scuola assegnata
+
+### "Access denied"
+Controlla:
+1. Ruolo utente
+2. Scuola assegnata
+3. Access control nelle collezioni
+
+Vedi [MULTITENANT_QUICKSTART.md](./MULTITENANT_QUICKSTART.md#troubleshooting) per altri problemi.
+
+## 🚢 Deployment
+
+### Vercel (Raccomandato)
+1. Connetti repository a Vercel
+2. Configura variabili d'ambiente
+3. Deploy!
 
 ### Docker
+```bash
+docker-compose up -d
+```
 
-Alternatively, you can use [Docker](https://www.docker.com) to spin up this template locally. To do so, follow these steps:
+Vedi `docker-compose.yml` e `Dockerfile`.
 
-1. Follow [steps 1 and 2 from above](#development), the docker-compose file will automatically use the `.env` file in your project root
-1. Next run `docker-compose up`
-1. Follow [steps 4 and 5 from above](#development) to login and create your first admin user
+## 📈 Roadmap
 
-That's it! The Docker instance will help you get up and running quickly while also standardizing the development environment across your teams.
+- [x] Multi-tenancy completo
+- [x] Sistema ruoli
+- [x] Access control
+- [x] Tematizzazione per scuola
+- [ ] Sistema billing
+- [ ] Analytics per scuola
+- [ ] Mobile app
+- [ ] API pubbliche
 
-## Questions
+## 🤝 Contributi
 
-If you have any issues or questions, reach out to us on [Discord](https://discord.com/invite/payload) or start a [GitHub discussion](https://github.com/payloadcms/payload/discussions).
+Contributi, issues e feature requests sono benvenuti!
+
+## 📝 Licenza
+
+MIT
+
+## 💬 Supporto
+
+Per domande o problemi:
+1. Consulta la [documentazione](./SAAS_MULTITENANT_GUIDE.md)
+2. Controlla il [troubleshooting](./MULTITENANT_QUICKSTART.md#troubleshooting)
+3. Apri una issue su GitHub
+
+---
+
+**Fatto con ❤️ usando Payload CMS e Next.js**

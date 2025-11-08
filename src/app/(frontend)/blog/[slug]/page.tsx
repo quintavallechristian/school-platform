@@ -8,6 +8,8 @@ import Link from 'next/link'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import ArticleHero from '@/components/Hero/ArticleHero'
 import GalleryView from '@/components/GalleryView/GalleryView'
+import { Button } from '@/components/ui/button'
+import { ArrowLeft } from 'lucide-react'
 
 type Props = {
   params: Promise<{
@@ -71,7 +73,8 @@ export default async function ArticlePage({ params }: Props) {
           <div className="max-w-4xl mx-auto">
             {article.content && (
               <SpotlightCard
-                className="prose prose-lg max-w-none
+                bgClassName="bg-card"
+                className="prose prose-lg dark:prose-invert max-w-none
                 [&_h1]:text-4xl [&_h1]:font-bold [&_h1]:mt-8 [&_h1]:mb-4 
                 [&_h2]:text-3xl [&_h2]:font-bold [&_h2]:mt-8 [&_h2]:mb-4 
                 [&_h3]:text-2xl [&_h3]:font-bold [&_h3]:mt-6 [&_h3]:mb-3 
@@ -80,12 +83,12 @@ export default async function ArticlePage({ params }: Props) {
                 [&_ul]:mb-6 [&_ul]:pl-8 [&_ul]:list-disc
                 [&_ol]:mb-6 [&_ol]:pl-8 [&_ol]:list-decimal
                 [&_li]:mb-2
-                [&_a]:text-emerald-600 [&_a]:underline hover:[&_a]:text-emerald-700
-                [&_blockquote]:border-l-4 [&_blockquote]:border-indigo-500 [&_blockquote]:pl-6 [&_blockquote]:my-8 [&_blockquote]:italic 
-                [&_code]:bg-gray-100 [&_code]:px-2 [&_code]:py-1 [&_code]:rounded [&_code]:text-sm [&_code]:font-mono
-                [&_pre]:bg-gray-100 [&_pre]:p-4 [&_pre]:rounded-lg [&_pre]:overflow-x-auto [&_pre]:my-6
+                [&_a]:text-primary [&_a]:underline hover:[&_a]:text-primary/80
+                [&_blockquote]:border-l-4 [&_blockquote]:border-primary [&_blockquote]:pl-6 [&_blockquote]:my-8 [&_blockquote]:italic 
+                [&_code]:bg-muted [&_code]:px-2 [&_code]:py-1 [&_code]:rounded [&_code]:text-sm [&_code]:font-mono
+                [&_pre]:bg-muted [&_pre]:p-4 [&_pre]:rounded-lg [&_pre]:overflow-x-auto [&_pre]:my-6
                 [&_img]:max-w-full [&_img]:h-auto [&_img]:rounded-lg [&_img]:my-8
-                [&_hr]:border-0 [&_hr]:border-t-2 [&_hr]:border-gray-200 [&_hr]:my-12"
+                [&_hr]:border-0 [&_hr]:border-t-2 [&_hr]:border-border [&_hr]:my-12"
               >
                 <RichText data={article.content} />
               </SpotlightCard>
@@ -101,13 +104,13 @@ export default async function ArticlePage({ params }: Props) {
           </div>
         )}
 
-        <footer>
-          <div className="max-w-4xl mb-8 mx-auto">
-            <Link
-              href="/blog"
-              className="inline-flex items-center gap-2 text-emerald-600 font-semibold hover:gap-4 transition-all"
-            >
-              ← Torna al Blog
+        <footer className="px-8 pb-8">
+          <div className="max-w-4xl mx-auto">
+            <Link href="/blog">
+              <Button variant="ghost">
+                <ArrowLeft className="h-4 w-4" />
+                Torna al Blog
+              </Button>
             </Link>
           </div>
         </footer>

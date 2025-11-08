@@ -1,0 +1,154 @@
+import { notFound } from 'next/navigation'
+import Image from 'next/image'
+import Link from 'next/link'
+import { getCurrentSchool, getSchoolArticleBySlug } from '@/lib/school'
+import Hero from '@/components/Hero/Hero'
+import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
+import GalleryView from '@/components/GalleryView/GalleryView'
+import type { User } from '@/payload-types'
+import { RichTextRenderer } from '@/components/RichTextRenderer/RichTextRenderer'
+import { Button } from '@/components/ui/button'
+import { ArrowLeft } from 'lucide-react'
+
+export default async function ArticlePage({
+  params,
+}: {
+  params: Promise<{ school: string; slug: string }>
+}) {
+  const { school: schoolSlug, slug } = await params
+  const school = await getCurrentSchool(schoolSlug)
+
+  if (!school) {
+    notFound()
+  }
+
+  const article = await getSchoolArticleBySlug(school.id, slug)
+
+  if (!article) {
+    notFound()
+  }
+
+  const author = typeof article.author === 'object' ? (article.author as User) : null
+  const gallery = article.gallery && typeof article.gallery === 'object' ? article.gallery : null
+
+  return (
+    <div className="min-h-[calc(100vh-200px)]">
+      <article className="max-w-full">
+        <header>
+          <Hero
+            title={article.title}
+            subtitle={
+              article.publishedAt
+                ? new Date(article.publishedAt).toLocaleDateString('it-IT', {
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                  })
+                : undefined
+            }
+            primaryColor={school.primaryColor || undefined}
+            secondaryColor={school.secondaryColor || undefined}
+          />
+        </header>
+
+        <div className="py-8 px-8">
+          <div className="max-w-4xl mx-auto">
+            {/* Breadcrumb */}
+            <nav className="mb-8 text-sm">
+              <Link href={`/${schoolSlug}`} className="text-primary hover:underline">
+                Home
+              </Link>
+              {' / '}
+              <Link href={`/${schoolSlug}/blog`} className="text-primary hover:underline">
+                Blog
+              </Link>
+              {' / '}
+              <span className="text-muted-foreground">{article.title}</span>
+            </nav>
+
+            {/* Cover Image */}
+            {article.cover && typeof article.cover === 'object' && article.cover.url && (
+              <div className="relative w-full h-96 rounded-xl overflow-hidden shadow-2xl mb-8">
+                <Image
+                  src={article.cover.url}
+                  alt={article.title}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
+            )}
+
+            {/* Author info */}
+            {author && (
+              <div className="mb-6 text-sm text-muted-foreground">
+                Scritto da <span className="font-semibold">{author.email}</span>
+              </div>
+            )}
+
+            {/* Content */}
+            {article.content && (
+              <SpotlightCard>
+                <RichTextRenderer content={article.content} />
+              </SpotlightCard>
+            )}
+          </div>
+        </div>
+
+        {gallery && (
+          <div className="py-8 px-8">
+            <div className="max-w-4xl mx-auto">
+              <GalleryView gallery={gallery} />
+            </div>
+          </div>
+        )}
+
+        <footer className="px-8 pb-8">
+          <div className="max-w-4xl mx-auto">
+            <Link href={`/${schoolSlug}/blog`}>
+              <Button variant="ghost">
+                <ArrowLeft className="h-4 w-4" />
+                Torna al Blog
+              </Button>
+            </Link>
+          </div>
+        </footer>
+      </article>
+    </div>
+  )
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ school: string; slug: string }>
+}) {
+  const { school: schoolSlug, slug } = await params
+  const school = await getCurrentSchool(schoolSlug)
+
+  if (!school) {
+    return {
+      title: 'Scuola non trovata',
+    }
+  }
+
+  const article = await getSchoolArticleBySlug(school.id, slug)
+
+  if (!article) {
+    return {
+      title: 'Articolo non trovato',
+    }
+  }
+
+  return {
+    title: `${article.title} - ${school.name}`,
+    description: article.title,
+    openGraph:
+      article.cover && typeof article.cover === 'object' && article.cover.url
+        ? {
+            images: [article.cover.url],
+          }
+        : undefined,
+  }
+}

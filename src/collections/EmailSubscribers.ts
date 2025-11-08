@@ -1,19 +1,46 @@
 import { CollectionConfig } from 'payload'
+import { tenantRead, tenantCreate, tenantUpdate, tenantDelete, assignSchoolBeforeChange } from '../lib/access'
 
 export const EmailSubscribers: CollectionConfig = {
   slug: 'email-subscribers',
   admin: {
     useAsTitle: 'email',
-    defaultColumns: ['email', 'isActive', 'subscribedAt'],
+    defaultColumns: ['email', 'isActive', 'subscribedAt', 'school'],
     description: 'Gestisci gli iscritti alle notifiche email delle comunicazioni',
+    group: 'Sistema',
   },
   access: {
-    read: () => true,
-    create: () => true,
-    update: ({ req: { user } }) => !!user,
-    delete: ({ req: { user } }) => !!user,
+    read: tenantRead,
+    create: tenantCreate, // Permettiamo creazione pubblica tramite form
+    update: tenantUpdate,
+    delete: tenantDelete,
+  },
+  hooks: {
+    beforeChange: [
+      assignSchoolBeforeChange,
+      async ({ data, operation }) => {
+        // Generate unsubscribe token on create
+        if (operation === 'create' && !data.unsubscribeToken) {
+          data.unsubscribeToken = Math.random().toString(36).substring(2) + Date.now().toString(36)
+        }
+        return data
+      },
+    ],
   },
   fields: [
+    {
+      name: 'school',
+      type: 'relationship',
+      relationTo: 'schools',
+      required: true,
+      label: 'Scuola',
+      admin: {
+        description: 'Scuola per cui l\'utente riceve notifiche',
+        condition: (data, siblingData, { user }) => {
+          return user?.role === 'super-admin'
+        },
+      },
+    },
     {
       name: 'email',
       type: 'email',
@@ -66,15 +93,4 @@ export const EmailSubscribers: CollectionConfig = {
       },
     },
   ],
-  hooks: {
-    beforeChange: [
-      async ({ data, operation }) => {
-        // Generate unsubscribe token on create
-        if (operation === 'create' && !data.unsubscribeToken) {
-          data.unsubscribeToken = Math.random().toString(36).substring(2) + Date.now().toString(36)
-        }
-        return data
-      },
-    ],
-  },
 }

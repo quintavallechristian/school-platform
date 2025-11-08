@@ -5,21 +5,24 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
 const buttonVariants = cva(
-  'inline-block px-8 py-3 rounded-full font-semibold bg-linear-to-r hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 text-white ring ring-2 ring-gray-900/5 shadow-lg shadow-gray-900/5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 disabled:opacity-50 disabled:pointer-events-none',
+  'inline-flex items-center justify-center gap-2 px-8 py-3 rounded-full font-semibold hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 ring ring-2 ring-gray-900/5 shadow-lg shadow-gray-900/5 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none',
   {
     variants: {
       variant: {
-        default: 'shadow-xs from-indigo-600 to-emerald-500  text-white',
-        destructive: 'shadow-xs from-pink-600 to-red-500  text-white',
-        outline: 'border border-gray-300 text-gray-700 dark:text-gray-300 hover:bg-slate-500/10',
-        secondary: 'bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80',
-        ghost: 'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
-        link: 'text-primary underline-offset-4 hover:underline',
+        default: 'bg-primary text-white hover:opacity-90 focus:ring-primary',
+        destructive:
+          'bg-destructive text-destructive-foreground hover:opacity-90 focus:ring-destructive',
+        outline:
+          'border-2 border-primary bg-transparent text-primary hover:bg-primary hover:text-white',
+        secondary: 'bg-secondary text-secondary-foreground hover:opacity-90 focus:ring-secondary',
+        ghost:
+          'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 shadow-none ring-0',
+        link: 'text-primary underline-offset-4 hover:underline shadow-none ring-0 px-0',
       },
       size: {
-        default: 'px-4 py-2 has-[>svg]:px-3',
-        sm: 'h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5',
-        lg: 'h-10 rounded-md px-6 has-[>svg]:px-4',
+        default: 'px-6 py-3 text-base',
+        sm: 'px-4 py-2 text-sm',
+        lg: 'px-8 py-4 text-lg',
       },
     },
     defaultVariants: {

@@ -15,24 +15,26 @@ interface CommunicationsPopupProps {
 const priorityConfig = {
   low: {
     icon: Info,
-    color: 'text-blue-600 dark:text-blue-400',
-    spotlightColor: 'rgba(59, 130, 246, 0.3)' as `rgba(${number}, ${number}, ${number}, ${number})`,
+    color: 'text-[hsl(var(--chart-1))]',
+    spotlightColor:
+      'rgba(108, 164, 223, 0.3)' as `rgba(${number}, ${number}, ${number}, ${number})`,
   },
   normal: {
     icon: Bell,
-    color: 'text-gray-600 dark:text-gray-400',
+    color: 'text-muted-foreground',
     spotlightColor:
       'rgba(107, 114, 128, 0.3)' as `rgba(${number}, ${number}, ${number}, ${number})`,
   },
   high: {
     icon: AlertTriangle,
-    color: 'text-orange-600 dark:text-orange-400',
-    spotlightColor: 'rgba(249, 115, 22, 0.3)' as `rgba(${number}, ${number}, ${number}, ${number})`,
+    color: 'text-[hsl(var(--chart-4))]',
+    spotlightColor:
+      'rgba(183, 129, 203, 0.3)' as `rgba(${number}, ${number}, ${number}, ${number})`,
   },
   urgent: {
     icon: AlertCircle,
-    color: 'text-red-600 dark:text-red-400',
-    spotlightColor: 'rgba(239, 68, 68, 0.3)' as `rgba(${number}, ${number}, ${number}, ${number})`,
+    color: 'text-[hsl(var(--destructive))]',
+    spotlightColor: 'rgba(232, 105, 82, 0.3)' as `rgba(${number}, ${number}, ${number}, ${number})`,
   },
 }
 
@@ -115,7 +117,7 @@ export function CommunicationsPopup({ communications }: CommunicationsPopupProps
             </div>
             <button
               onClick={handleDismiss}
-              className="shrink-0 rounded-lg p-1 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
+              className="shrink-0 rounded-lg p-1 hover:bg-accent transition-colors"
               aria-label="Chiudi"
             >
               <X className="h-5 w-5" />

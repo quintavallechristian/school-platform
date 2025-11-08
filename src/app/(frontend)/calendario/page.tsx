@@ -22,8 +22,8 @@ export default async function CalendarioPage() {
 
       <div className="container mx-auto px-4 py-12">
         {/* Avviso */}
-        <div className="mb-8 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 backdrop-blur-sm">
-          <p className="text-sm text-center italic text-amber-900 dark:text-amber-200">
+        <div className="mb-8 rounded-lg border border-[hsl(var(--chart-5))]/30 bg-[hsl(var(--chart-5))]/10 p-4 backdrop-blur-sm">
+          <p className="text-sm text-center italic text-[hsl(var(--chart-5))]">
             Si ricorda che durante l&apos;anno scolastico non saranno dati ulteriori avvisi per
             ricordare le festività.
           </p>

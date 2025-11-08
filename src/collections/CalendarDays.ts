@@ -1,15 +1,36 @@
 import { CollectionConfig } from 'payload'
+import { tenantRead, tenantCreate, tenantUpdate, tenantDelete, assignSchoolBeforeChange } from '../lib/access'
 
 export const CalendarDays: CollectionConfig = {
   slug: 'calendar-days',
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'type', 'startDate', 'endDate'],
+    defaultColumns: ['title', 'type', 'startDate', 'endDate', 'school'],
+    group: 'Contenuti',
   },
   access: {
-    read: () => true,
+    read: tenantRead,
+    create: tenantCreate,
+    update: tenantUpdate,
+    delete: tenantDelete,
+  },
+  hooks: {
+    beforeChange: [assignSchoolBeforeChange],
   },
   fields: [
+    {
+      name: 'school',
+      type: 'relationship',
+      relationTo: 'schools',
+      required: true,
+      label: 'Scuola',
+      admin: {
+        description: 'Scuola a cui appartiene questo evento del calendario',
+        condition: (data, siblingData, { user }) => {
+          return user?.role === 'super-admin'
+        },
+      },
+    },
     {
       name: 'title',
       type: 'text',

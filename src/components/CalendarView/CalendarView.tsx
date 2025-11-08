@@ -16,27 +16,29 @@ const typeLabels = {
   trip: 'Gita',
 }
 
-// Mappa automatica tipo -> colore
+// Mappa automatica tipo -> colore usando i colori del tema
 const typeToColor = {
-  holiday: 'red', // Festività -> Rosso
-  closure: 'blue', // Chiusura -> Blu
-  event: 'green', // Evento -> Verde
-  trip: 'yellow', // Gita -> Giallo
+  holiday: 'destructive', // Festività -> Rosso (destructive)
+  closure: 'chart1', // Chiusura -> Blu (chart-1)
+  event: 'chart2', // Evento -> Verde (chart-2)
+  trip: 'chart5', // Gita -> Arancio (chart-5)
 }
 
 const colorClasses = {
-  blue: 'bg-blue-500/10 border-blue-500/20 text-blue-700 dark:text-blue-300',
-  red: 'bg-red-500/10 border-red-500/20 text-red-700 dark:text-red-300',
-  green: 'bg-green-500/10 border-green-500/20 text-green-700 dark:text-green-300',
-  yellow: 'bg-yellow-500/10 border-yellow-500/20 text-yellow-700 dark:text-yellow-300',
+  chart1: 'bg-[hsl(var(--chart-1))]/10 border-[hsl(var(--chart-1))]/20 text-[hsl(var(--chart-1))]',
+  destructive:
+    'bg-[hsl(var(--destructive))]/10 border-[hsl(var(--destructive))]/20 text-[hsl(var(--destructive))]',
+  chart2: 'bg-[hsl(var(--chart-2))]/10 border-[hsl(var(--chart-2))]/20 text-[hsl(var(--chart-2))]',
+  chart5: 'bg-[hsl(var(--chart-5))]/10 border-[hsl(var(--chart-5))]/20 text-[hsl(var(--chart-5))]',
 }
 
-// Mappa dei colori per lo spotlight
+// Mappa dei colori per lo spotlight usando i colori del tema
+// Questi valori corrispondono approssimativamente ai chart colors in modalità chiara
 const spotlightColors = {
-  blue: 'rgba(59, 130, 246, 0.3)' as `rgba(${number}, ${number}, ${number}, ${number})`,
-  red: 'rgba(239, 68, 68, 0.3)' as `rgba(${number}, ${number}, ${number}, ${number})`,
-  green: 'rgba(34, 197, 94, 0.3)' as `rgba(${number}, ${number}, ${number}, ${number})`,
-  yellow: 'rgba(234, 179, 8, 0.3)' as `rgba(${number}, ${number}, ${number}, ${number})`,
+  chart1: 'rgba(108, 164, 223, 0.3)' as `rgba(${number}, ${number}, ${number}, ${number})`, // chart-1: blu
+  destructive: 'rgba(232, 105, 82, 0.3)' as `rgba(${number}, ${number}, ${number}, ${number})`, // destructive: rosso
+  chart2: 'rgba(129, 201, 149, 0.3)' as `rgba(${number}, ${number}, ${number}, ${number})`, // chart-2: verde
+  chart5: 'rgba(224, 151, 140, 0.3)' as `rgba(${number}, ${number}, ${number}, ${number})`, // chart-5: arancio
 }
 
 function formatDateShort(dateString: string): string {
@@ -89,7 +91,7 @@ export function CalendarView({ calendarDays }: CalendarViewProps) {
             {days.map((day) => {
               const isRange = day.endDate && day.endDate !== day.startDate
               // Usa il colore automatico basato sul tipo
-              const color = typeToColor[day.type as keyof typeof typeToColor] || 'blue'
+              const color = typeToColor[day.type as keyof typeof typeToColor] || 'chart1'
               const colorClass = colorClasses[color as keyof typeof colorClasses]
               const spotlightColor = spotlightColors[color as keyof typeof spotlightColors]
 
@@ -125,7 +127,7 @@ export function CalendarView({ calendarDays }: CalendarViewProps) {
                     </div>
 
                     {/* Separatore verticale */}
-                    <div className="h-16 w-px bg-linear-to-b from-transparent via-border to-transparent" />
+                    <div className="h-16 w-px bg-gradient-to-b from-transparent via-border to-transparent" />
 
                     {/* Contenuto principale */}
                     <div className="flex-1 min-w-0">

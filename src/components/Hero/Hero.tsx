@@ -10,6 +10,8 @@ export default async function Hero({
   subtitle,
   buttons,
   big = false,
+  primaryColor,
+  secondaryColor,
 }: {
   title: string
   subtitle?: string
@@ -19,18 +21,34 @@ export default async function Hero({
     variant?: 'default' | 'destructive' | 'outline' | 'link'
   }[]
   big?: boolean
+  primaryColor?: string
+  secondaryColor?: string
 }) {
+  // Colori di default usando i chart colors del tema
+  const defaultPrimaryColor = '#40ffaa'
+  const defaultSecondaryColor = '#4079ff'
+  const gradientStartColor = primaryColor || defaultPrimaryColor
+  const gradientEndColor = secondaryColor || defaultSecondaryColor
+
+  // Crea i colori per il GradientText alternando primary e secondary
+  const textGradientColors = [
+    gradientStartColor,
+    gradientEndColor,
+    gradientStartColor,
+    gradientEndColor,
+    gradientStartColor,
+  ]
+
   return (
     <section
-      className={`bg-linear-to-br from-slate-600 to-indigo-600 text-white py-24 px-8 text-center ${!big ? '' : 'min-h-screen'}`}
+      className={`text-white py-24 px-8 text-center ${!big ? '' : 'min-h-screen'}`}
+      style={{
+        background: `linear-gradient(to bottom right, ${gradientStartColor}, ${gradientEndColor})`,
+      }}
     >
       <div className="max-w-4xl mx-auto">
         <h1 className="text-5xl md:text-6xl font-bold mb-4 animate-fade-in-up">
-          <GradientText
-            colors={['#40ffaa', '#4079ff', '#40ffaa', '#4079ff', '#40ffaa']}
-            showBorder={false}
-            animationSpeed={30}
-          >
+          <GradientText colors={textGradientColors} showBorder={false} animationSpeed={30}>
             <div className="my-2 py-2">{title}</div>
           </GradientText>
         </h1>

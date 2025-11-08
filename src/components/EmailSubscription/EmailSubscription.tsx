@@ -3,8 +3,13 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Mail, CheckCircle, AlertCircle } from 'lucide-react'
+import SpotlightCard from '../SpotlightCard/SpotlightCard'
 
-export function EmailSubscription() {
+interface EmailSubscriptionProps {
+  schoolId: string | number
+}
+
+export function EmailSubscription({ schoolId }: EmailSubscriptionProps) {
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [message, setMessage] = useState('')
@@ -20,7 +25,7 @@ export function EmailSubscription() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, schoolId }),
       })
 
       const data = await response.json()
@@ -41,7 +46,7 @@ export function EmailSubscription() {
   }
 
   return (
-    <div className="rounded-lg border bg-card p-6 shadow-sm">
+    <SpotlightCard className="rounded-lg border  p-6 shadow-sm">
       <div className="flex items-start gap-4">
         <div className="rounded-full bg-primary/10 p-3">
           <Mail className="h-6 w-6 text-primary" />
@@ -54,9 +59,9 @@ export function EmailSubscription() {
           </p>
 
           {status === 'success' ? (
-            <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-md">
-              <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
-              <p className="text-sm text-green-700 dark:text-green-300">{message}</p>
+            <div className="flex items-center gap-2 p-3 bg-[hsl(var(--chart-2))]/10 border border-[hsl(var(--chart-2))]/20 rounded-md">
+              <CheckCircle className="h-5 w-5 text-[hsl(var(--chart-2))]" />
+              <p className="text-sm text-[hsl(var(--chart-2))]">{message}</p>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-3">
@@ -76,9 +81,9 @@ export function EmailSubscription() {
               </div>
 
               {status === 'error' && (
-                <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-md">
-                  <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
-                  <p className="text-sm text-red-700 dark:text-red-300">{message}</p>
+                <div className="flex items-center gap-2 p-3 bg-[hsl(var(--destructive))]/10 border border-[hsl(var(--destructive))]/20 rounded-md">
+                  <AlertCircle className="h-5 w-5 text-[hsl(var(--destructive))]" />
+                  <p className="text-sm text-[hsl(var(--destructive))]">{message}</p>
                 </div>
               )}
 
@@ -90,6 +95,6 @@ export function EmailSubscription() {
           )}
         </div>
       </div>
-    </div>
+    </SpotlightCard>
   )
 }

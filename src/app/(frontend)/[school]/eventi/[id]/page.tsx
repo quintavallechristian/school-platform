@@ -1,35 +1,29 @@
-import { getPayload } from 'payload'
-import React from 'react'
 import { notFound } from 'next/navigation'
-import config from '@/payload.config'
-import type { Event } from '@/payload-types'
-import { RichText } from '@payloadcms/richtext-lexical/react'
 import Link from 'next/link'
+import { getCurrentSchool, getSchoolEventById } from '@/lib/school'
+import React from 'react'
+import { RichText } from '@payloadcms/richtext-lexical/react'
 import Hero from '@/components/Hero/Hero'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import GalleryView from '@/components/GalleryView/GalleryView'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 
-type Props = {
-  params: Promise<{
-    id: string
-  }>
-}
+export default async function EventPage({
+  params,
+}: {
+  params: Promise<{ school: string; id: string }>
+}) {
+  const { school: schoolSlug, id } = await params
+  const school = await getCurrentSchool(schoolSlug)
 
-export default async function EventoPage({ params }: Props) {
-  const { id } = await params
-  const payloadConfig = await config
-  const payload = await getPayload({ config: payloadConfig })
+  if (!school) {
+    notFound()
+  }
 
-  let event: Event
+  const event = await getSchoolEventById(school.id, id)
 
-  try {
-    event = await payload.findByID({
-      collection: 'events',
-      id: id,
-    })
-  } catch (_error) {
+  if (!event) {
     notFound()
   }
 
@@ -47,6 +41,8 @@ export default async function EventoPage({ params }: Props) {
           month: 'long',
           year: 'numeric',
         })}
+        primaryColor={school.primaryColor || undefined}
+        secondaryColor={school.secondaryColor || undefined}
       />
 
       <article className="max-w-full">
@@ -113,7 +109,7 @@ export default async function EventoPage({ params }: Props) {
 
         <footer className="px-8 pb-8">
           <div className="max-w-4xl mx-auto">
-            <Link href="/eventi">
+            <Link href={`/${schoolSlug}/eventi`}>
               <Button variant="ghost">
                 <ArrowLeft className="h-4 w-4" />
                 Torna agli Eventi

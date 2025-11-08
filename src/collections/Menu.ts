@@ -1,4 +1,5 @@
 import { CollectionConfig } from 'payload'
+import { tenantRead, tenantCreate, tenantUpdate, tenantDelete, assignSchoolBeforeChange } from '../lib/access'
 
 // Helper per creare i campi di un giorno
 const createDayFields = (dayName: string, emoji: string = '🗓️') => ({
@@ -60,12 +61,32 @@ export const Menu: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     description: 'Gestisci i menù stagionali della mensa',
-    defaultColumns: ['name', 'isActive', 'validFrom', 'validTo', 'updatedAt'],
+    defaultColumns: ['name', 'isActive', 'validFrom', 'validTo', 'school', 'updatedAt'],
+    group: 'Contenuti',
   },
   access: {
-    read: () => true, // pubblico
+    read: tenantRead,
+    create: tenantCreate,
+    update: tenantUpdate,
+    delete: tenantDelete,
+  },
+  hooks: {
+    beforeChange: [assignSchoolBeforeChange],
   },
   fields: [
+    {
+      name: 'school',
+      type: 'relationship',
+      relationTo: 'schools',
+      required: true,
+      label: 'Scuola',
+      admin: {
+        description: 'Scuola a cui appartiene questo menù',
+        condition: (data, siblingData, { user }) => {
+          return user?.role === 'super-admin'
+        },
+      },
+    },
     {
       name: 'name',
       type: 'text',

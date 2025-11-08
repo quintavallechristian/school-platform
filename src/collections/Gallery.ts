@@ -1,4 +1,5 @@
 import { CollectionConfig } from 'payload'
+import { tenantRead, tenantCreate, tenantUpdate, tenantDelete, assignSchoolBeforeChange } from '../lib/access'
 
 export const Gallery: CollectionConfig = {
   slug: 'gallery',
@@ -8,12 +9,32 @@ export const Gallery: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'images', 'updatedAt'],
+    defaultColumns: ['title', 'images', 'school', 'updatedAt'],
+    group: 'Media',
   },
   access: {
-    read: () => true, // pubblico
+    read: tenantRead,
+    create: tenantCreate,
+    update: tenantUpdate,
+    delete: tenantDelete,
+  },
+  hooks: {
+    beforeChange: [assignSchoolBeforeChange],
   },
   fields: [
+    {
+      name: 'school',
+      type: 'relationship',
+      relationTo: 'schools',
+      required: true,
+      label: 'Scuola',
+      admin: {
+        description: 'Scuola a cui appartiene questa galleria',
+        condition: (data, siblingData, { user }) => {
+          return user?.role === 'super-admin'
+        },
+      },
+    },
     {
       name: 'title',
       type: 'text',

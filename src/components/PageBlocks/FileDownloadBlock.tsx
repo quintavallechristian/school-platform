@@ -14,13 +14,14 @@ type Props = {
 const getFileIcon = (mimeType?: string | null) => {
   if (!mimeType) return <FileText className="w-6 h-6" />
 
-  if (mimeType.includes('pdf')) return <FileText className="w-6 h-6 text-red-600" />
+  if (mimeType.includes('pdf'))
+    return <FileText className="w-6 h-6 text-[hsl(var(--destructive))]" />
   if (mimeType.includes('word') || mimeType.includes('document'))
-    return <FileText className="w-6 h-6 text-blue-600" />
+    return <FileText className="w-6 h-6 text-[hsl(var(--chart-1))]" />
   if (mimeType.includes('excel') || mimeType.includes('spreadsheet'))
-    return <FileText className="w-6 h-6 text-green-600" />
+    return <FileText className="w-6 h-6 text-[hsl(var(--chart-2))]" />
   if (mimeType.includes('zip') || mimeType.includes('compressed'))
-    return <FileText className="w-6 h-6 text-yellow-600" />
+    return <FileText className="w-6 h-6 text-[hsl(var(--chart-5))]" />
 
   return <FileText className="w-6 h-6" />
 }

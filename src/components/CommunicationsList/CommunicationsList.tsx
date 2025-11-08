@@ -61,15 +61,11 @@ export function CommunicationsList({ communications }: CommunicationsListProps) 
         const Icon = config.icon
 
         return (
-          <SpotlightCard
-            key={comm.id}
-            spotlightColor={config.spotlightColor}
-            bgClassName="bg-linear-to-br from-white to-slate-100 dark:from-gray-900 dark:to-gray-800"
-          >
+          <SpotlightCard key={comm.id} spotlightColor={config.spotlightColor}>
             <div className="flex gap-4">
               {/* Icona priorità */}
               <div className={`shrink-0 ${config.color}`}>
-                <Icon className="h-6 w-6" />
+                <Icon className="h-6 w-6 mt-0.5" />
               </div>
 
               {/* Contenuto */}

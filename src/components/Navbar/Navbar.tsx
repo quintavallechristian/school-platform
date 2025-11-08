@@ -7,36 +7,56 @@ import { GuestNavigationMenu, MobileGuestMenuButton } from './GuestNavigationMen
 import { getPayload } from 'payload'
 import config from '@/payload.config'
 import type { Page } from '@/payload-types'
+import Image from 'next/image'
 
-export default async function Navbar() {
+export default async function Navbar({
+  schoolName,
+  schoolLogo,
+  baseHref = '/',
+  schoolId,
+}: {
+  schoolName?: string
+  schoolLogo?: string
+  baseHref?: string
+  schoolId?: string | number
+}) {
   // Carica le pagine che devono apparire nella navbar
   const payloadConfig = await config
   const payload = await getPayload({ config: payloadConfig })
 
-  const pagesData = await payload.find({
-    collection: 'pages',
-    where: {
-      showInNavbar: {
-        equals: true,
-      },
-    },
-    sort: 'navbarOrder',
-    limit: 20,
-  })
+  const pagesData = schoolId
+    ? await payload.find({
+        collection: 'pages',
+        where: {
+          and: [{ showInNavbar: { equals: true } }, { school: { equals: schoolId } }],
+        },
+        sort: 'navbarOrder',
+        limit: 20,
+      })
+    : await payload.find({
+        collection: 'pages',
+        where: {
+          showInNavbar: {
+            equals: true,
+          },
+        },
+        sort: 'navbarOrder',
+        limit: 20,
+      })
 
   const navbarPages = pagesData.docs as Page[]
 
   // Menu items statici + pagine dinamiche
   const menuItems = [
-    { label: 'Blog', href: '/blog' },
-    { label: 'Eventi', href: '/eventi' },
-    { label: 'Calendario', href: '/calendario' },
-    { label: 'Comunicazioni', href: '/comunicazioni' },
-    { label: 'Mensa', href: '/mensa' },
+    { label: 'Blog', href: `${baseHref}/blog` },
+    { label: 'Eventi', href: `${baseHref}/eventi` },
+    { label: 'Calendario', href: `${baseHref}/calendario` },
+    { label: 'Comunicazioni', href: `${baseHref}/comunicazioni` },
+    { label: 'Mensa', href: `${baseHref}/mensa` },
     // Aggiungi le pagine dal CMS
     ...navbarPages.map((page) => ({
       label: page.title,
-      href: `/pagine/${page.slug}`,
+      href: `${baseHref}/pagine/${page.slug}`,
     })),
   ]
 
@@ -44,9 +64,15 @@ export default async function Navbar() {
     <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
       <div className="flex items-center gap-4">
         <MobileGuestMenuButton menuItems={menuItems} />
-        <Link href="/" className="flex items-center gap-2">
-          <DicesIcon className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
-          <span className="text-xl font-bold">BrunoPizzolato</span>
+        <Link href={baseHref} className="flex items-center gap-2">
+          {schoolLogo ? (
+            <div className="relative h-8 w-8">
+              <Image src={schoolLogo} alt={schoolName || 'Logo'} fill className="object-contain" />
+            </div>
+          ) : (
+            <DicesIcon className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
+          )}
+          <span className="text-xl font-bold">{schoolName || 'BrunoPizzolato'}</span>
         </Link>
       </div>
       <GuestNavigationMenu menuItems={menuItems} />
