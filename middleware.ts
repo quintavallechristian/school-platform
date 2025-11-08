@@ -13,6 +13,8 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   const hostname = request.headers.get('host') || ''
 
+  console.log(`[Middleware] Request: ${hostname}${pathname}`)
+
   // Ignora richieste all'admin panel, API e assets
   if (
     pathname.startsWith('/admin') ||
@@ -28,6 +30,33 @@ export function middleware(request: NextRequest) {
   // Gestione sottodomini (solo in produzione o con domini configurati)
   const isLocalhost = hostname.includes('localhost') || hostname.includes('127.0.0.1')
   const isVercel = hostname.includes('vercel.app')
+
+  console.log(`[Middleware] isLocalhost: ${isLocalhost}, isVercel: ${isVercel}`)
+
+  // Per Vercel, gestisci il routing basato sul primo segmento del dominio
+  if (isVercel) {
+    const parts = hostname.split('.')
+    const firstPart = parts[0]
+
+    console.log(`[Middleware] Vercel domain parts:`, parts, `firstPart: ${firstPart}`)
+
+    // Se il primo segmento non è il nome del progetto principale, consideralo come slug scuola
+    // Esempio: bruno-pizzolato.school-platform-iota.vercel.app
+    // firstPart = "bruno-pizzolato"
+    if (firstPart && firstPart !== 'school-platform-iota' && !firstPart.includes('vercel')) {
+      // Se siamo già in un path della scuola, non fare il rewrite
+      if (!pathname.startsWith(`/${firstPart}`)) {
+        const url = request.nextUrl.clone()
+        url.pathname = `/${firstPart}${pathname === '/' ? '' : pathname}`
+
+        console.log(`[Middleware] ✅ Vercel Rewrite: ${hostname}${pathname} → ${url.pathname}`)
+
+        return NextResponse.rewrite(url)
+      } else {
+        console.log(`[Middleware] ⏭️ Already in school path, skipping rewrite`)
+      }
+    }
+  }
 
   if (!isLocalhost && !isVercel) {
     // Estrai sottodominio
@@ -47,34 +76,14 @@ export function middleware(request: NextRequest) {
       const url = request.nextUrl.clone()
       url.pathname = `/${subdomain}${pathname}`
 
-      console.log(`[Middleware] Rewrite: ${hostname}${pathname} → ${url.pathname}`)
+      console.log(`[Middleware] ✅ Custom Domain Rewrite: ${hostname}${pathname} → ${url.pathname}`)
 
       return NextResponse.rewrite(url)
     }
   }
 
-  // Per Vercel, gestisci il routing basato sul primo segmento del dominio
-  if (isVercel) {
-    const parts = hostname.split('.')
-    const firstPart = parts[0]
-
-    // Se il primo segmento non è il nome del progetto principale, consideralo come slug scuola
-    // Esempio: bruno-pizzolato.school-platform-iota.vercel.app
-    // firstPart = "bruno-pizzolato"
-    if (firstPart && firstPart !== 'school-platform-iota' && !firstPart.includes('vercel')) {
-      // Se siamo già in un path della scuola, non fare il rewrite
-      if (!pathname.startsWith(`/${firstPart}`)) {
-        const url = request.nextUrl.clone()
-        url.pathname = `/${firstPart}${pathname}`
-
-        console.log(`[Middleware] Vercel Rewrite: ${hostname}${pathname} → ${url.pathname}`)
-
-        return NextResponse.rewrite(url)
-      }
-    }
-  }
-
   // In localhost o path-based routing, Next.js gestisce automaticamente /[school]
+  console.log(`[Middleware] ⏭️ No rewrite needed, passing through`)
   return NextResponse.next()
 }
 
