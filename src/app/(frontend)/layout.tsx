@@ -67,13 +67,6 @@ export default async function RootLayout({
           {children}
           <Toaster />
           <CommunicationsPopup communications={communications} />
-          <footer className="py-8 text-center mt-16">
-            <div className="max-w-7xl mx-auto px-8">
-              <p className="m-0">
-                &copy; {new Date().getFullYear()} Blog Scuola. Tutti i diritti riservati.
-              </p>
-            </div>
-          </footer>
         </ThemeProvider>
       </body>
     </html>

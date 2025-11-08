@@ -47,8 +47,6 @@ export default async function ArticlePage({
                   })
                 : undefined
             }
-            primaryColor={school.primaryColor || undefined}
-            secondaryColor={school.secondaryColor || undefined}
           />
         </header>
 

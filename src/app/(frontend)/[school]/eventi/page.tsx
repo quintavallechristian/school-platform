@@ -5,6 +5,7 @@ import Hero from '@/components/Hero/Hero'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import type { Event } from '@/payload-types'
 import Image from 'next/image'
+import { Button } from '@/components/ui/button'
 
 export default async function EventsPage({ params }: { params: Promise<{ school: string }> }) {
   const { school: schoolSlug } = await params
@@ -26,8 +27,6 @@ export default async function EventsPage({ params }: { params: Promise<{ school:
       <Hero
         title="Eventi della scuola"
         subtitle={`Scopri tutti gli eventi e le attività di ${school.name}`}
-        primaryColor={school.primaryColor || undefined}
-        secondaryColor={school.secondaryColor || undefined}
       />
 
       <section className="py-16">
@@ -37,10 +36,7 @@ export default async function EventsPage({ params }: { params: Promise<{ school:
               <h2 className="text-3xl font-bold mb-8">Prossimi Eventi</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {upcomingEvents.map((event: Event) => (
-                  <SpotlightCard
-                    key={event.id}
-                    className="block bg-white rounded-xl p-8 shadow-md hover:-translate-y-1 hover:shadow-xl transition-all duration-300 border-l-4 border-emerald-500"
-                  >
+                  <SpotlightCard key={event.id} className="px-0 py-0">
                     <Link href={`/${schoolSlug}/eventi/${event.id}`}>
                       {event.cover && typeof event.cover === 'object' && event.cover.url && (
                         <div className="relative h-48 w-full overflow-hidden">
@@ -48,7 +44,7 @@ export default async function EventsPage({ params }: { params: Promise<{ school:
                             src={event.cover.url}
                             alt={event.title}
                             fill
-                            className="object-cover hover:scale-105 transition-transform duration-300"
+                            className="object-cover hover:scale-105 transition-transform duration-300 rounded-t-2xl"
                           />
                         </div>
                       )}
@@ -63,9 +59,7 @@ export default async function EventsPage({ params }: { params: Promise<{ school:
                         </div>
                         <h3 className="text-2xl font-bold mb-4">{event.title}</h3>
                         {event.location && <p className="text-sm mb-4">📍 {event.location}</p>}
-                        <div className="leading-relaxed text-muted-foreground">
-                          Clicca per vedere i dettagli dell&apos;evento
-                        </div>
+                        <Button className="w-fit">Vedi evento</Button>
                       </div>
                     </Link>
                   </SpotlightCard>

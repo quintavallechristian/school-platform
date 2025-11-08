@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { getCurrentSchool, getSchoolArticles } from '@/lib/school'
 import Hero from '@/components/Hero/Hero'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
+import { Button } from '@/components/ui/button'
 
 export default async function BlogPage({ params }: { params: Promise<{ school: string }> }) {
   const { school: schoolSlug } = await params
@@ -20,16 +21,13 @@ export default async function BlogPage({ params }: { params: Promise<{ school: s
       <Hero
         title="Blog & Notizie"
         subtitle={`Tutte le notizie e gli aggiornamenti di ${school.name}`}
-        primaryColor={school.primaryColor || undefined}
-        secondaryColor={school.secondaryColor || undefined}
       />
 
       <div className="container mx-auto px-4 py-12">
-        {/* Articles Grid */}
         {articles.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {articles.map((article) => (
-              <SpotlightCard key={article.id}>
+              <SpotlightCard key={article.id} className="px-0 py-0">
                 <Link href={`/${schoolSlug}/blog/${article.slug}`}>
                   {article.cover && typeof article.cover === 'object' && article.cover.url && (
                     <div className="relative h-56 w-full overflow-hidden">
@@ -37,7 +35,7 @@ export default async function BlogPage({ params }: { params: Promise<{ school: s
                         src={article.cover.url}
                         alt={article.title}
                         fill
-                        className="object-cover hover:scale-105 transition-transform duration-300"
+                        className="object-cover hover:scale-105 transition-transform duration-300 rounded-t-2xl"
                       />
                     </div>
                   )}
@@ -60,9 +58,7 @@ export default async function BlogPage({ params }: { params: Promise<{ school: s
                       )}
                     </div>
 
-                    <div className="text-primary hover:underline font-medium inline-flex items-center gap-2">
-                      Leggi l&apos;articolo →
-                    </div>
+                    <Button>Leggi l&apos;articolo →</Button>
                   </div>
                 </Link>
               </SpotlightCard>

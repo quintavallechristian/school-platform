@@ -1,17 +1,17 @@
-import React from 'react'
+'use client'
+
+import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
 import BlurText from '../BlurText/BlurText'
 import GradientText from '../GradientText/GradientText'
 
-export default async function Hero({
+export default function Hero({
   title,
   subtitle,
   buttons,
   big = false,
-  primaryColor,
-  secondaryColor,
 }: {
   title: string
   subtitle?: string
@@ -21,29 +21,55 @@ export default async function Hero({
     variant?: 'default' | 'destructive' | 'outline' | 'link'
   }[]
   big?: boolean
-  primaryColor?: string
-  secondaryColor?: string
 }) {
-  // Colori di default usando i chart colors del tema
+  // Colori di default
   const defaultPrimaryColor = '#40ffaa'
   const defaultSecondaryColor = '#4079ff'
-  const gradientStartColor = primaryColor || defaultPrimaryColor
-  const gradientEndColor = secondaryColor || defaultSecondaryColor
+  const defaultBackgroundPrimaryColor = '#fa8899'
+  const defaultBackgroundSecondaryColor = '#228899'
+
+  const [textGradientStartColor, setTextGradientStartColor] = useState(defaultPrimaryColor)
+  const [textGradientEndColor, setTextGradientEndColor] = useState(defaultSecondaryColor)
+  const [bgGradientStartColor, setBgGradientStartColor] = useState(defaultBackgroundPrimaryColor)
+  const [bgGradientEndColor, setBgGradientEndColor] = useState(defaultBackgroundSecondaryColor)
+
+  useEffect(() => {
+    // Leggi i colori dalle CSS variables
+    const rootStyles = getComputedStyle(document.documentElement)
+
+    const primaryColor = rootStyles.getPropertyValue('--color-primary').trim()
+    const secondaryColor = rootStyles.getPropertyValue('--color-secondary').trim()
+    const bgPrimaryColor = rootStyles.getPropertyValue('--color-background-primary').trim()
+    const bgSecondaryColor = rootStyles.getPropertyValue('--color-background-secondary').trim()
+
+    if (primaryColor && primaryColor.startsWith('#')) {
+      setTextGradientStartColor(primaryColor)
+    }
+    if (secondaryColor && secondaryColor.startsWith('#')) {
+      setTextGradientEndColor(secondaryColor)
+    }
+    if (bgPrimaryColor && bgPrimaryColor.startsWith('#')) {
+      setBgGradientStartColor(bgPrimaryColor)
+    }
+    if (bgSecondaryColor && bgSecondaryColor.startsWith('#')) {
+      setBgGradientEndColor(bgSecondaryColor)
+    }
+  }, [])
 
   // Crea i colori per il GradientText alternando primary e secondary
   const textGradientColors = [
-    gradientStartColor,
-    gradientEndColor,
-    gradientStartColor,
-    gradientEndColor,
-    gradientStartColor,
+    textGradientStartColor,
+    textGradientEndColor,
+    textGradientStartColor,
+    textGradientEndColor,
+    textGradientStartColor,
   ]
 
   return (
     <section
-      className={`text-white py-24 px-8 text-center ${!big ? '' : 'min-h-screen'}`}
+      className={`py-24 px-8 text-center ${!big ? '' : 'min-h-screen'}`}
       style={{
-        background: `linear-gradient(to bottom right, ${gradientStartColor}, ${gradientEndColor})`,
+        background: `linear-gradient(to bottom right, ${bgGradientStartColor}, ${bgGradientEndColor})`,
       }}
     >
       <div className="max-w-4xl mx-auto">

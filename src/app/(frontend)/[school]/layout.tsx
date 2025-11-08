@@ -29,6 +29,8 @@ export default async function SchoolLayout({
           :root {
             --color-primary: ${school.primaryColor || '#3b82f6'};
             --color-secondary: ${school.secondaryColor || '#8b5cf6'};
+            --color-background-primary: ${school.backgroundPrimaryColor || '#fa8899'};
+            --color-background-secondary: ${school.backgroundSecondaryColor || '#228899'};
           }
           
           /* Override colori Tailwind */
@@ -57,7 +59,7 @@ export default async function SchoolLayout({
       <main className="min-h-screen">{children}</main>
 
       {/* Footer con info della scuola */}
-      <footer className="bg-gray-100 dark:bg-gray-900 mt-20 border-t">
+      <footer className="bg-gray-100 dark:bg-gray-900 border-t">
         <div className="container mx-auto px-4 py-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Info scuola */}

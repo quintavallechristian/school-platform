@@ -1,5 +1,5 @@
 'use client'
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 
 interface Position {
   x: number
@@ -12,16 +12,51 @@ interface SpotlightCardProps extends React.PropsWithChildren {
   spotlightColor?: `rgba(${number}, ${number}, ${number}, ${number})`
 }
 
+/**
+ * Converts a hex color to rgba format with specified opacity
+ */
+function hexToRgba(hex: string, opacity: number = 0.2): string {
+  // Remove # if present
+  const cleanHex = hex.replace('#', '')
+
+  // Parse hex values
+  const r = parseInt(cleanHex.substring(0, 2), 16)
+  const g = parseInt(cleanHex.substring(2, 4), 16)
+  const b = parseInt(cleanHex.substring(4, 6), 16)
+
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`
+}
+
 const SpotlightCard: React.FC<SpotlightCardProps> = ({
   children,
   className = '',
   bgClassName = 'bg-linear-to-br from-white to-slate-200 dark:from-gray-900 dark:to-gray-800',
-  spotlightColor = 'rgba(0, 229, 255, 0.2)',
+  spotlightColor,
 }) => {
   const divRef = useRef<HTMLDivElement>(null)
   const [isFocused, setIsFocused] = useState<boolean>(false)
   const [position, setPosition] = useState<Position>({ x: 0, y: 0 })
   const [opacity, setOpacity] = useState<number>(0)
+  const [finalSpotlightColor, setFinalSpotlightColor] = useState<string>(
+    spotlightColor || 'rgba(0, 229, 255, 0.2)',
+  )
+
+  // Get school primary color from CSS variable on mount
+  useEffect(() => {
+    if (spotlightColor) {
+      setFinalSpotlightColor(spotlightColor)
+      return
+    }
+
+    // Get the primary color from CSS variable
+    const primaryColor = getComputedStyle(document.documentElement)
+      .getPropertyValue('--color-primary')
+      .trim()
+
+    if (primaryColor && primaryColor.startsWith('#')) {
+      setFinalSpotlightColor(hexToRgba(primaryColor, 0.2))
+    }
+  }, [spotlightColor])
 
   const handleMouseMove: React.MouseEventHandler<HTMLDivElement> = (e) => {
     if (!divRef.current || isFocused) return
@@ -62,7 +97,7 @@ const SpotlightCard: React.FC<SpotlightCardProps> = ({
         className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 ease-in-out"
         style={{
           opacity,
-          background: `radial-gradient(circle at ${position.x}px ${position.y}px, ${spotlightColor}, transparent 80%)`,
+          background: `radial-gradient(circle at ${position.x}px ${position.y}px, ${finalSpotlightColor}, transparent 80%)`,
         }}
       />
       {children}

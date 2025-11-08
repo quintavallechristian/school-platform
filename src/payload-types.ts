@@ -193,13 +193,21 @@ export interface School {
    */
   logo?: (string | null) | Media;
   /**
-   * Colore principale del tema (formato hex: #RRGGBB)
+   * Colore principale del tema
    */
   primaryColor?: string | null;
   /**
-   * Colore secondario del tema (formato hex: #RRGGBB)
+   * Colore secondario del tema
    */
   secondaryColor?: string | null;
+  /**
+   * Colore di sfondo primario del tema
+   */
+  backgroundPrimaryColor?: string | null;
+  /**
+   * Colore di sfondo secondario del tema
+   */
+  backgroundSecondaryColor?: string | null;
   /**
    * Se disattivata, il sito della scuola non sarà accessibile
    */
@@ -1061,6 +1069,8 @@ export interface SchoolsSelect<T extends boolean = true> {
   logo?: T;
   primaryColor?: T;
   secondaryColor?: T;
+  backgroundPrimaryColor?: T;
+  backgroundSecondaryColor?: T;
   isActive?: T;
   contactInfo?:
     | T

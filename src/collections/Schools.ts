@@ -78,7 +78,10 @@ export const Schools: CollectionConfig = {
       label: 'Colore Primario',
       defaultValue: '#3b82f6',
       admin: {
-        description: 'Colore principale del tema (formato hex: #RRGGBB)',
+        description: 'Colore principale del tema',
+        components: {
+          Field: '@/components/ColorPicker/ColorPickerField',
+        },
       },
     },
     {
@@ -87,7 +90,34 @@ export const Schools: CollectionConfig = {
       label: 'Colore Secondario',
       defaultValue: '#8b5cf6',
       admin: {
-        description: 'Colore secondario del tema (formato hex: #RRGGBB)',
+        description: 'Colore secondario del tema',
+        components: {
+          Field: '@/components/ColorPicker/ColorPickerField',
+        },
+      },
+    },
+    {
+      name: 'backgroundPrimaryColor',
+      type: 'text',
+      label: 'Colore di Sfondo Primario',
+      defaultValue: '#fa8899',
+      admin: {
+        description: 'Colore di sfondo primario del tema',
+        components: {
+          Field: '@/components/ColorPicker/ColorPickerField',
+        },
+      },
+    },
+    {
+      name: 'backgroundSecondaryColor',
+      type: 'text',
+      label: 'Colore di Sfondo Secondario',
+      defaultValue: '#228899',
+      admin: {
+        description: 'Colore di sfondo secondario del tema',
+        components: {
+          Field: '@/components/ColorPicker/ColorPickerField',
+        },
       },
     },
     {

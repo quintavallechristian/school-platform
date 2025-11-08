@@ -8,6 +8,7 @@ import { getPayload } from 'payload'
 import config from '@/payload.config'
 import type { Page } from '@/payload-types'
 import Image from 'next/image'
+import { NavbarWrapper } from './NavbarWrapper'
 
 export default async function Navbar({
   schoolName,
@@ -61,24 +62,31 @@ export default async function Navbar({
   ]
 
   return (
-    <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-      <div className="flex items-center gap-4">
-        <MobileGuestMenuButton menuItems={menuItems} />
-        <Link href={baseHref} className="flex items-center gap-2">
-          {schoolLogo ? (
-            <div className="relative h-8 w-8">
-              <Image src={schoolLogo} alt={schoolName || 'Logo'} fill className="object-contain" />
-            </div>
-          ) : (
-            <DicesIcon className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
-          )}
-          <span className="text-xl font-bold">{schoolName || 'BrunoPizzolato'}</span>
-        </Link>
+    <NavbarWrapper>
+      <div className="flex items-center justify-between p-4">
+        <div className="flex items-center gap-4">
+          <MobileGuestMenuButton menuItems={menuItems} />
+          <Link href={baseHref} className="flex items-center gap-2">
+            {schoolLogo ? (
+              <div className="relative h-8 w-8">
+                <Image
+                  src={schoolLogo}
+                  alt={schoolName || 'Logo'}
+                  fill
+                  className="object-contain"
+                />
+              </div>
+            ) : (
+              <DicesIcon className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
+            )}
+            <span className="text-xl font-bold">{schoolName || 'BrunoPizzolato'}</span>
+          </Link>
+        </div>
+        <GuestNavigationMenu menuItems={menuItems} />
+        <div className="flex items-center gap-4">
+          <ModeToggle />
+        </div>
       </div>
-      <GuestNavigationMenu menuItems={menuItems} />
-      <div className="flex items-center gap-4">
-        <ModeToggle />
-      </div>
-    </div>
+    </NavbarWrapper>
   )
 }

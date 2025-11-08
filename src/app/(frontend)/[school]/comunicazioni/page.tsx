@@ -23,8 +23,6 @@ export default async function ComunicazioniPage({
       <Hero
         title="Comunicazioni di Servizio"
         subtitle={`Avvisi e informazioni importanti di ${school.name}`}
-        primaryColor={school.primaryColor || undefined}
-        secondaryColor={school.secondaryColor || undefined}
       />
 
       <div className="container mx-auto px-4 py-12">
@@ -33,7 +31,7 @@ export default async function ComunicazioniPage({
         </div>
 
         {communications.length > 0 ? (
-          <CommunicationsList communications={communications} />
+          <CommunicationsList communications={communications} schoolSlug={schoolSlug} />
         ) : (
           <div className="text-center py-12">
             <p className="text-muted-foreground">Nessuna comunicazione al momento.</p>

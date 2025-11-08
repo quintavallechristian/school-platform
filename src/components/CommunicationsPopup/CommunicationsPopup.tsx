@@ -10,6 +10,7 @@ import { Button } from '../ui/button'
 
 interface CommunicationsPopupProps {
   communications: Communication[]
+  schoolSlug?: string
 }
 
 const priorityConfig = {
@@ -40,7 +41,7 @@ const priorityConfig = {
 
 const STORAGE_KEY = 'dismissedCommunications'
 
-export function CommunicationsPopup({ communications }: CommunicationsPopupProps) {
+export function CommunicationsPopup({ communications, schoolSlug }: CommunicationsPopupProps) {
   const [visibleComm, setVisibleComm] = useState<Communication | null>(null)
   const [isOpen, setIsOpen] = useState(false)
 
@@ -145,13 +146,27 @@ export function CommunicationsPopup({ communications }: CommunicationsPopupProps
             {/* CTA: Se c'è un link mostra il link, altrimenti "Ho capito" */}
             {hasLink ? (
               linkedArticle ? (
-                <Link href={`/blog/${linkedArticle.slug}`} onClick={handleDismiss}>
+                <Link
+                  href={
+                    schoolSlug
+                      ? `/${schoolSlug}/blog/${linkedArticle.slug}`
+                      : `/blog/${linkedArticle.slug}`
+                  }
+                  onClick={handleDismiss}
+                >
                   <Button className="flex gap-2 items-center">
                     Leggi l&apos;articolo <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
               ) : linkedEvent ? (
-                <Link href={`/eventi/${linkedEvent.id}`} onClick={handleDismiss}>
+                <Link
+                  href={
+                    schoolSlug
+                      ? `/${schoolSlug}/eventi/${linkedEvent.id}`
+                      : `/eventi/${linkedEvent.id}`
+                  }
+                  onClick={handleDismiss}
+                >
                   <Button className="flex gap-2 items-center">
                     Vedi l&apos;evento <ArrowRight className="h-4 w-4" />
                   </Button>

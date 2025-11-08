@@ -36,11 +36,9 @@ export default async function SchoolHomePage({ params }: PageProps) {
         subtitle="Scopri le ultime notizie, eventi e storie dalla nostra comunità scolastica"
         buttons={[
           { text: 'Leggi gli Articoli', href: '#articles' },
-          { text: 'Vedi gli Eventi', href: '#events', variant: 'destructive' },
+          { text: 'Vedi gli Eventi', href: '#events', variant: 'secondary' },
         ]}
         big={true}
-        primaryColor={school.primaryColor || undefined}
-        secondaryColor={school.secondaryColor || undefined}
       />
 
       {/* Comunicazioni urgenti */}
@@ -52,7 +50,7 @@ export default async function SchoolHomePage({ params }: PageProps) {
             </h2>
 
             {communications.docs.length > 0 && (
-              <CommunicationsList communications={communications.docs} />
+              <CommunicationsList communications={communications.docs} schoolSlug={schoolSlug} />
             )}
 
             <div className="mt-6 text-center">

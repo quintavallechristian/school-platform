@@ -8,6 +8,7 @@ import Link from 'next/link'
 
 interface CommunicationsListProps {
   communications: Communication[]
+  schoolSlug?: string
 }
 
 const priorityConfig = {
@@ -53,7 +54,7 @@ function formatDate(dateString: string): string {
   }).format(date)
 }
 
-export function CommunicationsList({ communications }: CommunicationsListProps) {
+export function CommunicationsList({ communications, schoolSlug }: CommunicationsListProps) {
   return (
     <div className="space-y-4">
       {communications.map((comm) => {
@@ -88,7 +89,11 @@ export function CommunicationsList({ communications }: CommunicationsListProps) 
                   <div className="mb-3 space-x-4">
                     {comm.linkedArticle && typeof comm.linkedArticle !== 'string' && (
                       <Link
-                        href={`/blog/${comm.linkedArticle.slug}`}
+                        href={
+                          schoolSlug
+                            ? `/${schoolSlug}/blog/${comm.linkedArticle.slug}`
+                            : `/blog/${comm.linkedArticle.slug}`
+                        }
                         className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
                       >
                         📰 Leggi l&apos;articolo
@@ -97,7 +102,11 @@ export function CommunicationsList({ communications }: CommunicationsListProps) 
                     )}
                     {comm.linkedEvent && typeof comm.linkedEvent !== 'string' && (
                       <Link
-                        href={`/eventi/${comm.linkedEvent.id}`}
+                        href={
+                          schoolSlug
+                            ? `/${schoolSlug}/eventi/${comm.linkedEvent.id}`
+                            : `/eventi/${comm.linkedEvent.id}`
+                        }
                         className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
                       >
                         📅 Vedi l&apos;evento

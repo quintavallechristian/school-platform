@@ -7,6 +7,7 @@ import { ArrowRight } from 'lucide-react'
 
 interface CalendarViewProps {
   calendarDays: CalendarDay[]
+  schoolSlug?: string
 }
 
 const typeLabels = {
@@ -56,7 +57,7 @@ function getDayOfWeek(dateString: string): string {
   }).format(date)
 }
 
-export function CalendarView({ calendarDays }: CalendarViewProps) {
+export function CalendarView({ calendarDays, schoolSlug }: CalendarViewProps) {
   // Ordina i giorni per data
   const sortedDays = [...calendarDays].sort((a, b) => {
     return new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
@@ -144,7 +145,11 @@ export function CalendarView({ calendarDays }: CalendarViewProps) {
                           )}
                           {day.linkedEvent && typeof day.linkedEvent !== 'string' && (
                             <Link
-                              href={`/eventi/${day.linkedEvent.id}`}
+                              href={
+                                schoolSlug
+                                  ? `/${schoolSlug}/eventi/${day.linkedEvent.id}`
+                                  : `/eventi/${day.linkedEvent.id}`
+                              }
                               className="inline-flex items-center gap-2 mt-3 text-sm font-medium text-primary hover:underline"
                             >
                               Approfondisci
