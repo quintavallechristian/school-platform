@@ -15,7 +15,7 @@ interface SpotlightCardProps extends React.PropsWithChildren {
 const SpotlightCard: React.FC<SpotlightCardProps> = ({
   children,
   className = '',
-  bgClassName = 'bg-gradient-to-br from-white to-slate-200 dark:from-gray-900 dark:to-gray-800',
+  bgClassName = 'bg-linear-to-br from-white to-slate-200 dark:from-gray-900 dark:to-gray-800',
   spotlightColor = 'rgba(0, 229, 255, 0.2)',
 }) => {
   const divRef = useRef<HTMLDivElement>(null)

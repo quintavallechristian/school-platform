@@ -127,7 +127,7 @@ export function CalendarView({ calendarDays }: CalendarViewProps) {
                     </div>
 
                     {/* Separatore verticale */}
-                    <div className="h-16 w-px bg-gradient-to-b from-transparent via-border to-transparent" />
+                    <div className="h-16 w-px bg-linear-to-b from-transparent via-border to-transparent" />
 
                     {/* Contenuto principale */}
                     <div className="flex-1 min-w-0">

@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import './styles.css'
 import { ThemeProvider } from '@/components/theme-provider'
-import Navbar from '@/components/Navbar/Navbar'
 import { Toaster } from 'sonner'
 import { MyAurora } from '@/components/Aurora/MyAurora'
 import { CommunicationsPopup } from '@/components/CommunicationsPopup/CommunicationsPopup'

@@ -1,4 +1,4 @@
-import type { Access, AccessArgs } from 'payload'
+import type { Access, CollectionBeforeChangeHook } from 'payload'
 
 /**
  * Access control per collezioni multi-tenant
@@ -15,9 +15,7 @@ export const isSchoolAdminOrAbove: Access = ({ req: { user } }) => {
 
 export const canEdit: Access = ({ req: { user } }) => {
   return Boolean(
-    user?.role === 'super-admin' || 
-    user?.role === 'school-admin' || 
-    user?.role === 'editor'
+    user?.role === 'super-admin' || user?.role === 'school-admin' || user?.role === 'editor',
   )
 }
 
@@ -27,12 +25,12 @@ export const canEdit: Access = ({ req: { user } }) => {
  */
 export const tenantRead: Access = ({ req: { user } }) => {
   if (!user) return false
-  
+
   // Super-admin può vedere tutto
   if (user.role === 'super-admin') {
     return true
   }
-  
+
   // Altri utenti vedono solo i contenuti della loro scuola
   if (user.school) {
     return {
@@ -41,7 +39,7 @@ export const tenantRead: Access = ({ req: { user } }) => {
       },
     }
   }
-  
+
   return false
 }
 
@@ -51,9 +49,7 @@ export const tenantRead: Access = ({ req: { user } }) => {
  */
 export const tenantCreate: Access = ({ req: { user } }) => {
   return Boolean(
-    user?.role === 'super-admin' || 
-    user?.role === 'school-admin' || 
-    user?.role === 'editor'
+    user?.role === 'super-admin' || user?.role === 'school-admin' || user?.role === 'editor',
   )
 }
 
@@ -63,12 +59,12 @@ export const tenantCreate: Access = ({ req: { user } }) => {
  */
 export const tenantUpdate: Access = ({ req: { user } }) => {
   if (!user) return false
-  
+
   // Super-admin può modificare tutto
   if (user.role === 'super-admin') {
     return true
   }
-  
+
   // School-admin ed editor possono modificare solo contenuti della loro scuola
   if ((user.role === 'school-admin' || user.role === 'editor') && user.school) {
     return {
@@ -77,7 +73,7 @@ export const tenantUpdate: Access = ({ req: { user } }) => {
       },
     }
   }
-  
+
   return false
 }
 
@@ -87,12 +83,12 @@ export const tenantUpdate: Access = ({ req: { user } }) => {
  */
 export const tenantDelete: Access = ({ req: { user } }) => {
   if (!user) return false
-  
+
   // Super-admin può eliminare tutto
   if (user.role === 'super-admin') {
     return true
   }
-  
+
   // School-admin può eliminare solo contenuti della loro scuola
   if (user.role === 'school-admin' && user.school) {
     return {
@@ -101,7 +97,7 @@ export const tenantDelete: Access = ({ req: { user } }) => {
       },
     }
   }
-  
+
   return false
 }
 
@@ -109,7 +105,7 @@ export const tenantDelete: Access = ({ req: { user } }) => {
  * Hook beforeChange per assegnare automaticamente la scuola
  * ai nuovi contenuti creati
  */
-export const assignSchoolBeforeChange = ({ req, data, operation }: any) => {
+export const assignSchoolBeforeChange: CollectionBeforeChangeHook = ({ req, data, operation }) => {
   // Se è un'operazione di creazione e l'utente non è super-admin
   if (operation === 'create' && req.user) {
     // Se super-admin non assegna automaticamente (può scegliere)
@@ -117,13 +113,13 @@ export const assignSchoolBeforeChange = ({ req, data, operation }: any) => {
       // Non fare nulla, super-admin deve scegliere esplicitamente
       return data
     }
-    
+
     // Per altri utenti, assegna automaticamente la loro scuola
     if (req.user.school && !data.school) {
       data.school = req.user.school
     }
   }
-  
+
   // Previeni che utenti non super-admin modifichino la scuola
   if (operation === 'update' && req.user?.role !== 'super-admin') {
     // Rimuovi il campo school dai dati se presente
@@ -132,20 +128,20 @@ export const assignSchoolBeforeChange = ({ req, data, operation }: any) => {
       delete data.school
     }
   }
-  
+
   return data
 }
 
 /**
  * Filtra le opzioni delle select/relationship in base alla scuola
  */
-export const filterBySchool = ({ user }: any) => {
+export const filterBySchool = ({ user }: { user?: { role?: string; school?: string } }) => {
   if (!user) return false
-  
+
   if (user.role === 'super-admin') {
     return true
   }
-  
+
   if (user.school) {
     return {
       school: {
@@ -153,6 +149,6 @@ export const filterBySchool = ({ user }: any) => {
       },
     }
   }
-  
+
   return false
 }

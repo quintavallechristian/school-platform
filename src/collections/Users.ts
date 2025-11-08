@@ -13,7 +13,7 @@ export const Users: CollectionConfig = {
     read: ({ req: { user } }) => {
       if (!user) return false
       if (user.role === 'super-admin') return true
-      
+
       if (user.school) {
         return {
           school: {
@@ -30,7 +30,7 @@ export const Users: CollectionConfig = {
     update: ({ req: { user } }) => {
       if (!user) return false
       if (user.role === 'super-admin') return true
-      
+
       // School-admin può modificare solo utenti della propria scuola
       if (user.role === 'school-admin' && user.school) {
         return {
@@ -44,22 +44,17 @@ export const Users: CollectionConfig = {
     delete: ({ req: { user } }) => {
       if (!user) return false
       if (user.role === 'super-admin') return true
-      
+
       // School-admin può eliminare solo utenti della propria scuola (eccetto se stesso)
       if (user.role === 'school-admin' && user.school) {
+        const schoolId = typeof user.school === 'string' ? user.school : user.school.id
         return {
-          and: [
-            {
-              school: {
-                equals: user.school,
-              },
-            },
-            {
-              id: {
-                not_equals: user.id,
-              },
-            },
-          ],
+          school: {
+            equals: schoolId,
+          },
+          id: {
+            not_equals: user.id,
+          },
         }
       }
       return false
@@ -90,7 +85,8 @@ export const Users: CollectionConfig = {
         },
       ],
       admin: {
-        description: 'Super Admin: accesso globale | School Admin: gestisce la propria scuola | Editor: può modificare contenuti | Viewer: solo lettura',
+        description:
+          'Super Admin: accesso globale | School Admin: gestisce la propria scuola | Editor: può modificare contenuti | Viewer: solo lettura',
         condition: (data, siblingData, { user }) => {
           // Solo super-admin può assegnare il ruolo super-admin
           return user?.role === 'super-admin'
@@ -108,7 +104,7 @@ export const Users: CollectionConfig = {
       required: true,
       admin: {
         description: 'Scuola di appartenenza',
-        condition: (data, siblingData, { user }) => {
+        condition: () => {
           // Super-admin può assegnare qualsiasi scuola
           // School-admin vede solo la propria scuola
           return true
@@ -144,12 +140,12 @@ export const Users: CollectionConfig = {
         if (operation === 'create' && req.user && req.user.role !== 'super-admin') {
           data.school = req.user.school
         }
-        
+
         // Se non è super-admin, non può assegnare il ruolo super-admin
         if (req.user?.role !== 'super-admin' && data.role === 'super-admin') {
           data.role = 'editor'
         }
-        
+
         return data
       },
     ],

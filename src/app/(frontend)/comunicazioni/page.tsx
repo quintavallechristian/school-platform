@@ -1,50 +1,31 @@
-import { getPayload } from 'payload'
-import config from '@payload-config'
+import { notFound } from 'next/navigation'
+import { getCurrentSchool, getSchoolCommunications } from '@/lib/school'
 import Hero from '@/components/Hero/Hero'
 import { CommunicationsList } from '@/components/CommunicationsList/CommunicationsList'
 import { EmailSubscription } from '@/components/EmailSubscription/EmailSubscription'
 
 export default async function ComunicazioniPage() {
-  const payload = await getPayload({ config })
+  // Get school from subdomain/domain
+  const school = await getCurrentSchool()
 
-  const now = new Date()
+  if (!school) {
+    notFound()
+  }
 
-  const { docs: communications } = await payload.find({
-    collection: 'communications',
-    where: {
-      and: [
-        {
-          isActive: {
-            equals: true,
-          },
-        },
-        {
-          or: [
-            {
-              expiresAt: {
-                exists: false,
-              },
-            },
-            {
-              expiresAt: {
-                greater_than: now.toISOString(),
-              },
-            },
-          ],
-        },
-      ],
-    },
-    sort: '-publishedAt',
-    limit: 100,
-  })
+  const { docs: communications } = await getSchoolCommunications(school.id)
 
   return (
     <>
-      <Hero title="Comunicazioni di Servizio" subtitle="Avvisi e informazioni importanti" />
+      <Hero
+        title="Comunicazioni di Servizio"
+        subtitle={`Avvisi e informazioni importanti di ${school.name}`}
+        primaryColor={school.primaryColor || undefined}
+        secondaryColor={school.secondaryColor || undefined}
+      />
 
       <div className="container mx-auto px-4 py-12">
         <div className="mb-8">
-          <EmailSubscription />
+          <EmailSubscription schoolId={school.id} />
         </div>
 
         {communications.length > 0 ? (

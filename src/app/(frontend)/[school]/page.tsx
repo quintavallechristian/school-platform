@@ -11,9 +11,12 @@ import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import { Button } from '@/components/ui/button'
 import { CommunicationsList } from '@/components/CommunicationsList/CommunicationsList'
 
-export default async function SchoolHomePage({ params }: { params: { school: string } }) {
-  // Ottieni la scuola
-  const school = await getCurrentSchool(params.school)
+type PageProps = {
+  params: Promise<{ school: string }>
+}
+export default async function SchoolHomePage({ params }: PageProps) {
+  const { school: schoolSlug } = await params
+  const school = await getCurrentSchool(schoolSlug)
 
   if (!school) {
     notFound()
@@ -53,7 +56,7 @@ export default async function SchoolHomePage({ params }: { params: { school: str
             )}
 
             <div className="mt-6 text-center">
-              <Link href={`/${params.school}/comunicazioni`}>
+              <Link href={`/${schoolSlug}/comunicazioni`}>
                 <Button>Vedi tutte le comunicazioni</Button>
               </Link>
             </div>
@@ -69,7 +72,7 @@ export default async function SchoolHomePage({ params }: { params: { school: str
             {events.docs.length > 0 ? (
               events.docs.map((event) => (
                 <SpotlightCard key={event.id}>
-                  <Link href={`/${params.school}/eventi/${event.id}`}>
+                  <Link href={`/${schoolSlug}/eventi/${event.id}`}>
                     <div className="text-emerald-600 font-semibold text-sm mb-2">
                       {new Date(event.date).toLocaleDateString('it-IT', {
                         day: 'numeric',
@@ -102,7 +105,7 @@ export default async function SchoolHomePage({ params }: { params: { school: str
             {articles.docs.length > 0 ? (
               articles.docs.map((article) => (
                 <SpotlightCard key={article.id}>
-                  <Link href={`/${params.school}/blog/${article.slug}`}>
+                  <Link href={`/${schoolSlug}/blog/${article.slug}`}>
                     <div className="text-sm mb-3">
                       {article.publishedAt && (
                         <time dateTime={article.publishedAt}>
