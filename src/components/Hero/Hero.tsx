@@ -59,15 +59,15 @@ export default function Hero({
   // Crea i colori per il GradientText alternando primary e secondary
   const textGradientColors = [
     textGradientStartColor,
-    textGradientEndColor,
+    '#ffffff',
     textGradientStartColor,
-    textGradientEndColor,
+    '#ffffff',
     textGradientStartColor,
   ]
 
   return (
     <section
-      className={`py-24 px-8 text-center ${!big ? '' : 'min-h-screen'}`}
+      className={`py-24 px-8 text-center ${big ? 'min-h-screen flex items-center justify-center' : ''}`}
       style={{
         background: `linear-gradient(to bottom right, ${bgGradientStartColor}, ${bgGradientEndColor})`,
       }}

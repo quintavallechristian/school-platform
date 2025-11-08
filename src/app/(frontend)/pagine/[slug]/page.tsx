@@ -84,13 +84,26 @@ export default async function PageTemplate({ params }: Props) {
     notFound()
   }
 
+  // Mostra l'hero di default solo se showHero è esplicitamente true o undefined (per retrocompatibilità)
+  // Se è esplicitamente false, non lo mostra
+  const shouldShowDefaultHero = page.showHero === true || page.showHero === undefined
+
+  // Verifica se il contenuto è effettivamente vuoto
+  const hasContent =
+    page.content &&
+    page.content.root &&
+    page.content.root.children &&
+    page.content.root.children.length > 0
+
   return (
     <div className="min-h-[calc(100vh-200px)]">
-      <Hero title={page.title} subtitle={page.subtitle || undefined} />
+      {shouldShowDefaultHero && <Hero title={page.title} subtitle={page.subtitle || undefined} />}
 
       <section>
-        {page.content && (
-          <SpotlightCard className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-0 -mt-16">
+        {hasContent && page.content && (
+          <SpotlightCard
+            className={`max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-0 ${shouldShowDefaultHero ? '-mt-16' : 'mt-8'}`}
+          >
             <article
               className="prose prose-lg dark:prose-invert max-w-none 
                 [&_h1]:text-4xl [&_h1]:font-bold [&_h1]:mb-6 [&_h1]:mt-12

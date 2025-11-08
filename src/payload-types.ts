@@ -219,6 +219,10 @@ export interface School {
   };
   settings?: {
     /**
+     * Seleziona la pagina da usare come homepage della scuola (opzionale)
+     */
+    homepage?: (string | null) | Page;
+    /**
      * Gli utenti possono auto-registrarsi per questa scuola
      */
     allowPublicRegistration?: boolean | null;
@@ -274,90 +278,6 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "articles".
- */
-export interface Article {
-  id: string;
-  /**
-   * Scuola a cui appartiene questo articolo
-   */
-  school?: (string | null) | School;
-  title: string;
-  cover?: (string | null) | Media;
-  slug: string;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  author?: (string | null) | User;
-  publishedAt?: string | null;
-  /**
-   * Collega una galleria di immagini a questo articolo (opzionale)
-   */
-  gallery?: (string | null) | Gallery;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "gallery".
- */
-export interface Gallery {
-  id: string;
-  /**
-   * Scuola a cui appartiene questa galleria
-   */
-  school?: (string | null) | School;
-  /**
-   * Nome identificativo della galleria
-   */
-  title: string;
-  /**
-   * Breve descrizione della galleria (opzionale)
-   */
-  description?: string | null;
-  /**
-   * Aggiungi le immagini alla galleria
-   */
-  images?:
-    | {
-        image: string | Media;
-        /**
-         * Testo descrittivo per l'immagine (opzionale)
-         */
-        caption?: string | null;
-        /**
-         * Numero per ordinare le immagini (più basso = prima)
-         */
-        order?: number | null;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Specifica a quale contenuto è collegata questa galleria (opzionale)
-   */
-  linkedTo?: {
-    type?: ('none' | 'article' | 'page' | 'event') | null;
-    article?: (string | null) | Article;
-    page?: (string | null) | Page;
-    event?: (string | null) | Event;
-  };
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages".
  */
 export interface Page {
@@ -372,9 +292,17 @@ export interface Page {
    */
   slug: string;
   /**
-   * Testo che appare sotto il titolo nell'hero
+   * Testo che appare sotto il titolo nell'hero (se l'hero è abilitato)
    */
   subtitle?: string | null;
+  /**
+   * Se disabilitato, l'hero di default non verrà mostrato (utile se usi un blocco Hero personalizzato)
+   */
+  showHero?: boolean | null;
+  /**
+   * Se abilitato, l'hero di default occuperà l'intera altezza dello schermo
+   */
+  heroFullHeight?: boolean | null;
   /**
    * Immagine opzionale per l'hero della pagina
    */
@@ -402,6 +330,31 @@ export interface Page {
    */
   blocks?:
     | (
+        | {
+            /**
+             * Titolo principale con effetto gradiente animato
+             */
+            title: string;
+            /**
+             * Testo secondario con animazione blur
+             */
+            subtitle?: string | null;
+            /**
+             * Se attivo, l'hero occuperà l'intera altezza dello schermo
+             */
+            fullHeight?: boolean | null;
+            buttons?:
+              | {
+                  text: string;
+                  href: string;
+                  variant?: ('default' | 'destructive' | 'outline' | 'link') | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'hero';
+          }
         | {
             title: string;
             subtitle?: string | null;
@@ -487,6 +440,65 @@ export interface Page {
             blockName?: string | null;
             blockType: 'gallery';
           }
+        | {
+            /**
+             * Es: "Ultime Notizie", "Articoli in Evidenza"
+             */
+            title?: string | null;
+            /**
+             * Quanti articoli mostrare (max 12)
+             */
+            limit: number;
+            /**
+             * Mostra un pulsante per andare alla pagina blog completa
+             */
+            showViewAll?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'articleList';
+          }
+        | {
+            /**
+             * Es: "Prossimi Eventi", "Eventi della Scuola"
+             */
+            title?: string | null;
+            /**
+             * Quanti eventi mostrare (max 12)
+             */
+            limit: number;
+            /**
+             * Scegli quali eventi mostrare in base alla data
+             */
+            filter?: ('all' | 'upcoming' | 'past') | null;
+            /**
+             * Mostra un pulsante per andare alla pagina eventi completa
+             */
+            showViewAll?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'eventList';
+          }
+        | {
+            /**
+             * Es: "Comunicazioni Importanti", "Avvisi"
+             */
+            title?: string | null;
+            /**
+             * Quante comunicazioni mostrare (max 20)
+             */
+            limit: number;
+            /**
+             * Seleziona le priorità da mostrare (se vuoto, mostra tutte)
+             */
+            priorityFilter?: ('low' | 'normal' | 'high' | 'urgent')[] | null;
+            /**
+             * Mostra un pulsante per andare alla pagina comunicazioni completa
+             */
+            showViewAll?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'communications';
+          }
       )[]
     | null;
   /**
@@ -511,6 +523,90 @@ export interface Page {
      */
     metaDescription?: string | null;
   };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "gallery".
+ */
+export interface Gallery {
+  id: string;
+  /**
+   * Scuola a cui appartiene questa galleria
+   */
+  school?: (string | null) | School;
+  /**
+   * Nome identificativo della galleria
+   */
+  title: string;
+  /**
+   * Breve descrizione della galleria (opzionale)
+   */
+  description?: string | null;
+  /**
+   * Aggiungi le immagini alla galleria
+   */
+  images?:
+    | {
+        image: string | Media;
+        /**
+         * Testo descrittivo per l'immagine (opzionale)
+         */
+        caption?: string | null;
+        /**
+         * Numero per ordinare le immagini (più basso = prima)
+         */
+        order?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Specifica a quale contenuto è collegata questa galleria (opzionale)
+   */
+  linkedTo?: {
+    type?: ('none' | 'article' | 'page' | 'event') | null;
+    article?: (string | null) | Article;
+    page?: (string | null) | Page;
+    event?: (string | null) | Event;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "articles".
+ */
+export interface Article {
+  id: string;
+  /**
+   * Scuola a cui appartiene questo articolo
+   */
+  school?: (string | null) | School;
+  title: string;
+  cover?: (string | null) | Media;
+  slug: string;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  author?: (string | null) | User;
+  publishedAt?: string | null;
+  /**
+   * Collega una galleria di immagini a questo articolo (opzionale)
+   */
+  gallery?: (string | null) | Gallery;
   updatedAt: string;
   createdAt: string;
 }
@@ -1082,6 +1178,7 @@ export interface SchoolsSelect<T extends boolean = true> {
   settings?:
     | T
     | {
+        homepage?: T;
         allowPublicRegistration?: T;
         timezone?: T;
         language?: T;
@@ -1425,11 +1522,30 @@ export interface PagesSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   subtitle?: T;
+  showHero?: T;
+  heroFullHeight?: T;
   cover?: T;
   content?: T;
   blocks?:
     | T
     | {
+        hero?:
+          | T
+          | {
+              title?: T;
+              subtitle?: T;
+              fullHeight?: T;
+              buttons?:
+                | T
+                | {
+                    text?: T;
+                    href?: T;
+                    variant?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
         callToAction?:
           | T
           | {
@@ -1491,6 +1607,35 @@ export interface PagesSelect<T extends boolean = true> {
           | T
           | {
               gallery?: T;
+              id?: T;
+              blockName?: T;
+            };
+        articleList?:
+          | T
+          | {
+              title?: T;
+              limit?: T;
+              showViewAll?: T;
+              id?: T;
+              blockName?: T;
+            };
+        eventList?:
+          | T
+          | {
+              title?: T;
+              limit?: T;
+              filter?: T;
+              showViewAll?: T;
+              id?: T;
+              blockName?: T;
+            };
+        communications?:
+          | T
+          | {
+              title?: T;
+              limit?: T;
+              priorityFilter?: T;
+              showViewAll?: T;
               id?: T;
               blockName?: T;
             };

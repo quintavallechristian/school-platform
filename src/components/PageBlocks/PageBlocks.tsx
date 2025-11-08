@@ -1,38 +1,97 @@
 import React from 'react'
 import type { Page } from '@/payload-types'
+import HeroBlock from './HeroBlock'
 import CallToActionBlock from './CallToActionBlock'
 import RichTextBlock from './RichTextBlock'
 import CardGridBlock from './CardGridBlock'
 import FileDownloadBlock from './FileDownloadBlock'
 import GalleryBlock from './GalleryBlock'
+import ArticleListBlock from './ArticleListBlock'
+import EventListBlock from './EventListBlock'
+import CommunicationsBlock from './CommunicationsBlock'
 
 type Props = {
   blocks: Page['blocks']
+  schoolId?: string | number
+  schoolSlug?: string
 }
 
-export default function PageBlocks({ blocks }: Props) {
+export default function PageBlocks({ blocks, schoolId, schoolSlug }: Props) {
   if (!blocks || blocks.length === 0) {
     return null
   }
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto">
+    <>
       {blocks.map((block, index) => {
-        switch (block.blockType) {
-          case 'callToAction':
-            return <CallToActionBlock key={index} block={block} />
-          case 'richText':
-            return <RichTextBlock key={index} block={block} />
-          case 'cardGrid':
-            return <CardGridBlock key={index} block={block} />
-          case 'fileDownload':
-            return <FileDownloadBlock key={index} block={block} />
-          case 'gallery':
-            return <GalleryBlock key={index} block={block} />
-          default:
-            return null
+        // Hero blocks devono essere full-width, senza wrapper
+        if (block.blockType === 'hero') {
+          return <HeroBlock key={index} block={block} />
         }
+
+        // ArticleList ed EventList blocks sono full-width
+        if (block.blockType === 'articleList') {
+          if (!schoolId || !schoolSlug) {
+            console.warn('ArticleListBlock requires schoolId and schoolSlug')
+            return null
+          }
+          return (
+            <ArticleListBlock
+              key={index}
+              block={block}
+              schoolId={schoolId}
+              schoolSlug={schoolSlug}
+            />
+          )
+        }
+
+        if (block.blockType === 'eventList') {
+          if (!schoolId || !schoolSlug) {
+            console.warn('EventListBlock requires schoolId and schoolSlug')
+            return null
+          }
+          return (
+            <EventListBlock key={index} block={block} schoolId={schoolId} schoolSlug={schoolSlug} />
+          )
+        }
+
+        if (block.blockType === 'communications') {
+          if (!schoolId || !schoolSlug) {
+            console.warn('CommunicationsBlock requires schoolId and schoolSlug')
+            return null
+          }
+          return (
+            <CommunicationsBlock
+              key={index}
+              block={block}
+              schoolId={schoolId}
+              schoolSlug={schoolSlug}
+            />
+          )
+        }
+
+        // Altri blocchi con layout standard
+        return (
+          <div key={index} className="space-y-8 max-w-5xl mx-auto">
+            {(() => {
+              switch (block.blockType) {
+                case 'callToAction':
+                  return <CallToActionBlock block={block} />
+                case 'richText':
+                  return <RichTextBlock block={block} />
+                case 'cardGrid':
+                  return <CardGridBlock block={block} />
+                case 'fileDownload':
+                  return <FileDownloadBlock block={block} />
+                case 'gallery':
+                  return <GalleryBlock block={block} />
+                default:
+                  return null
+              }
+            })()}
+          </div>
+        )
       })}
-    </div>
+    </>
   )
 }

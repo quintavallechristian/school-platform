@@ -5,11 +5,15 @@ import {
   getSchoolArticles,
   getSchoolEvents,
   getSchoolCommunications,
+  getSchoolPage,
 } from '@/lib/school'
 import Hero from '@/components/Hero/Hero'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import { Button } from '@/components/ui/button'
 import { CommunicationsList } from '@/components/CommunicationsList/CommunicationsList'
+import PageBlocks from '@/components/PageBlocks/PageBlocks'
+import { RichTextRenderer } from '@/components/RichTextRenderer/RichTextRenderer'
+import type { Page as PageType } from '@/payload-types'
 
 type PageProps = {
   params: Promise<{ school: string }>
@@ -21,6 +25,85 @@ export default async function SchoolHomePage({ params }: PageProps) {
   if (!school) {
     notFound()
   }
+
+  // Controlla se c'è una homepage personalizzata
+  if (school.settings?.homepage) {
+    const homepageId =
+      typeof school.settings.homepage === 'object'
+        ? school.settings.homepage.id
+        : school.settings.homepage
+
+    console.log('Homepage ID:', homepageId, 'Type:', typeof homepageId)
+
+    // Recupera la pagina homepage
+    const homepage = await getSchoolPage(school.id, homepageId)
+
+    console.log('Homepage found:', !!homepage)
+
+    if (homepage) {
+      const typedPage = homepage as PageType
+
+      // Mostra l'hero di default solo se showHero è esplicitamente true o undefined
+      const shouldShowDefaultHero = typedPage.showHero === true || typedPage.showHero === undefined
+      const heroFullHeight = typedPage.heroFullHeight ?? false
+
+      // Verifica se il contenuto ha del testo reale
+      const hasRealContent = (content: unknown): boolean => {
+        if (!content || typeof content !== 'object' || content === null) {
+          return false
+        }
+        const lexicalContent = content as Record<string, unknown>
+        if (!lexicalContent.root || typeof lexicalContent.root !== 'object') {
+          return false
+        }
+        const root = lexicalContent.root as Record<string, unknown>
+        if (!Array.isArray(root.children)) {
+          return false
+        }
+        const hasTextInNode = (node: unknown): boolean => {
+          if (!node || typeof node !== 'object') {
+            return false
+          }
+          const lexicalNode = node as Record<string, unknown>
+          if (typeof lexicalNode.text === 'string' && lexicalNode.text.trim().length > 0) {
+            return true
+          }
+          if (Array.isArray(lexicalNode.children)) {
+            return lexicalNode.children.some((child) => hasTextInNode(child))
+          }
+          return false
+        }
+        return root.children.some((child) => hasTextInNode(child))
+      }
+
+      const hasContent = hasRealContent(typedPage.content)
+
+      return (
+        <div className="min-h-[calc(100vh-200px)]">
+          {shouldShowDefaultHero && (
+            <Hero
+              title={typedPage.title}
+              subtitle={typedPage.subtitle || undefined}
+              big={heroFullHeight}
+            />
+          )}
+
+          <section>
+            {hasContent && typedPage.content && (
+              <SpotlightCard
+                className={`max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-0 ${shouldShowDefaultHero ? '-mt-16' : 'mt-8'}`}
+              >
+                <RichTextRenderer content={typedPage.content} />
+              </SpotlightCard>
+            )}
+            <PageBlocks blocks={typedPage.blocks} schoolId={school.id} schoolSlug={schoolSlug} />
+          </section>
+        </div>
+      )
+    }
+  }
+
+  // Se non c'è homepage personalizzata, mostra la homepage di default
 
   // Ottieni i dati della scuola in parallelo
   const [articles, events, communications] = await Promise.all([
@@ -36,7 +119,7 @@ export default async function SchoolHomePage({ params }: PageProps) {
         subtitle="Scopri le ultime notizie, eventi e storie dalla nostra comunità scolastica"
         buttons={[
           { text: 'Leggi gli Articoli', href: '#articles' },
-          { text: 'Vedi gli Eventi', href: '#events', variant: 'secondary' },
+          { text: 'Vedi gli Eventi', href: '#events', variant: 'outline' },
         ]}
         big={true}
       />

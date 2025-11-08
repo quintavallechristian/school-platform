@@ -157,6 +157,16 @@ export const Schools: CollectionConfig = {
       label: 'Impostazioni',
       fields: [
         {
+          name: 'homepage',
+          type: 'relationship',
+          relationTo: 'pages',
+          label: 'Homepage',
+          admin: {
+            description: 'Seleziona la pagina da usare come homepage della scuola (opzionale)',
+            condition: (data) => !!data?.id,
+          },
+        },
+        {
           name: 'allowPublicRegistration',
           type: 'checkbox',
           label: 'Permetti Registrazione Pubblica',

@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation'
 import { getCurrentSchool, getSchoolPage } from '@/lib/school'
-import { RichText } from '@payloadcms/richtext-lexical/react'
 import PageBlocks from '@/components/PageBlocks/PageBlocks'
 import Hero from '@/components/Hero/Hero'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
@@ -25,17 +24,71 @@ export default async function CustomPage({ params }: Props) {
     notFound()
   }
 
+  // Mostra l'hero di default solo se showHero è esplicitamente true o undefined (per retrocompatibilità)
+  // Se è esplicitamente false, non lo mostra
+  const shouldShowDefaultHero = page.showHero === true || page.showHero === undefined
+
+  // Determina se l'hero deve essere full-height (default: false)
+  const heroFullHeight = (page as PageType).heroFullHeight ?? false
+
+  // Funzione per verificare se il contenuto Lexical ha del testo reale
+  const hasRealContent = (content: unknown): boolean => {
+    if (!content || typeof content !== 'object' || content === null) {
+      return false
+    }
+
+    const lexicalContent = content as Record<string, unknown>
+    if (!lexicalContent.root || typeof lexicalContent.root !== 'object') {
+      return false
+    }
+
+    const root = lexicalContent.root as Record<string, unknown>
+    if (!Array.isArray(root.children)) {
+      return false
+    }
+
+    // Funzione ricorsiva per cercare testo nei nodi
+    const hasTextInNode = (node: unknown): boolean => {
+      if (!node || typeof node !== 'object') {
+        return false
+      }
+
+      const lexicalNode = node as Record<string, unknown>
+
+      // Se il nodo ha testo non vuoto
+      if (typeof lexicalNode.text === 'string' && lexicalNode.text.trim().length > 0) {
+        return true
+      }
+
+      // Se il nodo ha figli, controlla ricorsivamente
+      if (Array.isArray(lexicalNode.children)) {
+        return lexicalNode.children.some((child) => hasTextInNode(child))
+      }
+
+      return false
+    }
+
+    // Controlla tutti i nodi root
+    return root.children.some((child) => hasTextInNode(child))
+  }
+
+  const hasContent = hasRealContent(page.content)
+
   return (
     <div className="min-h-[calc(100vh-200px)]">
-      <Hero title={page.title} subtitle={page.subtitle || undefined} />
+      {shouldShowDefaultHero && (
+        <Hero title={page.title} subtitle={page.subtitle || undefined} big={heroFullHeight} />
+      )}
 
       <section>
-        {page.content && (
-          <SpotlightCard className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-0 -mt-16">
+        {hasContent && page.content && (
+          <SpotlightCard
+            className={`max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-0 ${shouldShowDefaultHero ? '-mt-16' : 'mt-8'}`}
+          >
             <RichTextRenderer content={page.content} />
           </SpotlightCard>
         )}
-        <PageBlocks blocks={page.blocks} />
+        <PageBlocks blocks={page.blocks} schoolId={school.id} schoolSlug={schoolSlug} />
       </section>
     </div>
   )
