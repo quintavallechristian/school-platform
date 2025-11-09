@@ -379,10 +379,6 @@ export interface Page {
     invert?: boolean | null;
   };
   /**
-   * Immagine opzionale per l'hero della pagina
-   */
-  cover?: (string | null) | Media;
-  /**
    * Testo principale che appare dopo l'hero
    */
   content?: {
@@ -1694,7 +1690,6 @@ export interface PagesSelect<T extends boolean = true> {
         flip?: T;
         invert?: T;
       };
-  cover?: T;
   content?: T;
   blocks?:
     | T

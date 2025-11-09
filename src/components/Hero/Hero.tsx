@@ -69,7 +69,9 @@ export default function Hero({
     const secondaryColor = rootStyles.getPropertyValue('--color-secondary').trim()
     const bgPrimaryColor = rootStyles.getPropertyValue('--color-background-primary').trim()
     const bgSecondaryColor = rootStyles.getPropertyValue('--color-background-secondary').trim()
-    const pageBg = rootStyles.getPropertyValue('--background').trim()
+
+    // Ottieni il colore di background effettivo dal body
+    const bodyBg = getComputedStyle(document.body).backgroundColor
 
     if (primaryColor && primaryColor.startsWith('#')) {
       setTextGradientStartColor(primaryColor)
@@ -83,9 +85,8 @@ export default function Hero({
     if (bgSecondaryColor && bgSecondaryColor.startsWith('#')) {
       setBgGradientEndColor(bgSecondaryColor)
     }
-    if (pageBg) {
-      // Converti da hsl a hex se necessario, oppure usa direttamente il valore
-      setPageBackgroundColor(pageBg)
+    if (bodyBg) {
+      setPageBackgroundColor(bodyBg)
     }
   }, [])
 

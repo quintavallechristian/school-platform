@@ -227,15 +227,6 @@ export const Pages: CollectionConfig = {
       ],
     },
     {
-      name: 'cover',
-      type: 'upload',
-      relationTo: 'media',
-      label: 'Immagine di copertina',
-      admin: {
-        description: "Immagine opzionale per l'hero della pagina",
-      },
-    },
-    {
       name: 'content',
       type: 'richText',
       label: 'Contenuto principale',

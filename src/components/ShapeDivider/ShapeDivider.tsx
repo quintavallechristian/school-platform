@@ -95,7 +95,7 @@ export default function ShapeDivider({
       } ${className}`}
       style={{
         height: `${height}px`,
-        zIndex: 1,
+        zIndex: 10,
       }}
     >
       <svg
