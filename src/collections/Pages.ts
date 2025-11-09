@@ -7,6 +7,54 @@ import {
   assignSchoolBeforeChange,
 } from '../lib/access'
 
+// Configurazione riutilizzabile per i shape dividers
+const shapeDividerFields = [
+  {
+    name: 'style',
+    type: 'select' as const,
+    label: 'Stile',
+    required: true,
+    options: [
+      { label: 'Onda', value: 'wave' },
+      { label: 'Onda Pennellata', value: 'wave-brush' },
+      { label: 'Onde Multiple', value: 'waves' },
+      { label: 'Zigzag', value: 'zigzag' },
+      { label: 'Triangolo', value: 'triangle' },
+      { label: 'Triangolo Asimmetrico', value: 'triangle-asymmetric' },
+      { label: 'Curva', value: 'curve' },
+      { label: 'Curva Asimmetrica', value: 'curve-asymmetric' },
+      { label: 'Inclinato', value: 'tilt' },
+      { label: 'Freccia', value: 'arrow' },
+      { label: 'Divisione', value: 'split' },
+      { label: 'Nuvole', value: 'clouds' },
+      { label: 'Montagne', value: 'mountains' },
+    ],
+  },
+  {
+    name: 'height',
+    type: 'number' as const,
+    label: 'Altezza (px)',
+    defaultValue: 100,
+    min: 30,
+    max: 300,
+    admin: {
+      description: 'Altezza del divisore in pixel (30-300)',
+    },
+  },
+  {
+    name: 'flip',
+    type: 'checkbox' as const,
+    label: 'Specchia orizzontalmente',
+    defaultValue: false,
+  },
+  {
+    name: 'invert',
+    type: 'checkbox' as const,
+    label: 'Specchia verticalmente',
+    defaultValue: false,
+  },
+]
+
 export const Pages: CollectionConfig = {
   slug: 'pages',
   admin: {
@@ -61,25 +109,122 @@ export const Pages: CollectionConfig = {
         description: "Testo che appare sotto il titolo nell'hero (se l'hero è abilitato)",
       },
     },
+    // Configurazione Hero
     {
-      name: 'showHero',
-      type: 'checkbox',
-      label: 'Mostra Hero di default',
-      defaultValue: true,
+      name: 'heroSettings',
+      type: 'group',
+      label: 'Configurazione Hero',
       admin: {
-        description:
-          "Se disabilitato, l'hero di default non verrà mostrato (utile se usi un blocco Hero personalizzato)",
+        description: "Personalizza l'hero di default della pagina",
       },
+      fields: [
+        {
+          name: 'showHero',
+          type: 'checkbox',
+          label: 'Mostra Hero di default',
+          defaultValue: true,
+          admin: {
+            description:
+              "Se disabilitato, l'hero di default non verrà mostrato (utile se usi un blocco Hero personalizzato)",
+          },
+        },
+        {
+          name: 'fullHeight',
+          type: 'checkbox',
+          label: 'Hero a schermo intero',
+          defaultValue: false,
+          admin: {
+            description: "Se abilitato, l'hero di default occuperà l'intera altezza dello schermo",
+            condition: (data, siblingData) => siblingData?.showHero === true,
+          },
+        },
+        {
+          name: 'backgroundImage',
+          type: 'upload',
+          relationTo: 'media',
+          label: 'Immagine di sfondo',
+          admin: {
+            description: "Immagine opzionale per lo sfondo dell'hero",
+            condition: (data, siblingData) => siblingData?.showHero === true,
+          },
+        },
+        {
+          name: 'parallax',
+          type: 'checkbox',
+          label: 'Effetto Parallax',
+          defaultValue: false,
+          admin: {
+            description:
+              "Se abilitato, l'immagine di sfondo avrà un effetto parallax durante lo scroll",
+            condition: (data, siblingData) =>
+              siblingData?.showHero === true && siblingData?.backgroundImage,
+          },
+        },
+        {
+          name: 'gradientOverlay',
+          type: 'checkbox',
+          label: 'Overlay Gradiente',
+          defaultValue: false,
+          admin: {
+            description:
+              "Se abilitato, aggiunge un overlay gradiente sopra l'immagine per migliorare la leggibilità del testo",
+            condition: (data, siblingData) =>
+              siblingData?.showHero === true && siblingData?.backgroundImage,
+          },
+        },
+      ],
     },
     {
-      name: 'heroFullHeight',
-      type: 'checkbox',
-      label: 'Hero a schermo intero',
-      defaultValue: false,
+      name: 'heroTopDivider',
+      type: 'group',
+      label: 'Divisore Superiore Hero',
       admin: {
-        description: "Se abilitato, l'hero di default occuperà l'intera altezza dello schermo",
-        condition: (data) => data.showHero === true,
+        description: "Aggiungi un divisore decorativo in cima all'hero",
+        condition: (data) => data.heroSettings?.showHero === true,
       },
+      fields: [
+        {
+          name: 'enabled',
+          type: 'checkbox',
+          label: 'Abilita divisore superiore',
+          defaultValue: false,
+        },
+        ...shapeDividerFields.map((field) => ({
+          ...field,
+          admin: {
+            ...field.admin,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            condition: (data: Record<string, any>, siblingData: Record<string, any>) =>
+              siblingData?.enabled === true,
+          },
+        })),
+      ],
+    },
+    {
+      name: 'heroBottomDivider',
+      type: 'group',
+      label: 'Divisore Inferiore Hero',
+      admin: {
+        description: "Aggiungi un divisore decorativo in fondo all'hero",
+        condition: (data) => data.heroSettings?.showHero === true,
+      },
+      fields: [
+        {
+          name: 'enabled',
+          type: 'checkbox',
+          label: 'Abilita divisore inferiore',
+          defaultValue: false,
+        },
+        ...shapeDividerFields.map((field) => ({
+          ...field,
+          admin: {
+            ...field.admin,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            condition: (data: Record<string, any>, siblingData: Record<string, any>) =>
+              siblingData?.enabled === true,
+          },
+        })),
+      ],
     },
     {
       name: 'cover',
@@ -143,6 +288,35 @@ export const Pages: CollectionConfig = {
               },
             },
             {
+              name: 'backgroundImage',
+              type: 'upload',
+              relationTo: 'media',
+              label: 'Immagine di sfondo',
+              admin: {
+                description: "Immagine opzionale per lo sfondo dell'hero",
+              },
+            },
+            {
+              name: 'parallax',
+              type: 'checkbox',
+              label: 'Effetto Parallax',
+              defaultValue: false,
+              admin: {
+                description:
+                  "Se abilitato, l'immagine di sfondo avrà un effetto parallax durante lo scroll",
+              },
+            },
+            {
+              name: 'gradientOverlay',
+              type: 'checkbox',
+              label: 'Overlay Gradiente',
+              defaultValue: false,
+              admin: {
+                description:
+                  "Se abilitato, aggiunge un overlay gradiente sopra l'immagine per migliorare la leggibilità del testo",
+              },
+            },
+            {
               name: 'buttons',
               type: 'array',
               label: 'Pulsanti',
@@ -171,6 +345,146 @@ export const Pages: CollectionConfig = {
                     { label: 'Outline', value: 'outline' },
                     { label: 'Link', value: 'link' },
                   ],
+                },
+              ],
+            },
+            {
+              name: 'topDivider',
+              type: 'group',
+              label: 'Divisore Superiore',
+              admin: {
+                description: "Aggiungi un divisore decorativo in cima all'hero",
+              },
+              fields: [
+                {
+                  name: 'enabled',
+                  type: 'checkbox',
+                  label: 'Abilita divisore superiore',
+                  defaultValue: false,
+                },
+                {
+                  name: 'style',
+                  type: 'select',
+                  label: 'Stile',
+                  required: true,
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.enabled === true,
+                  },
+                  options: [
+                    { label: 'Onda', value: 'wave' },
+                    { label: 'Onda Pennellata', value: 'wave-brush' },
+                    { label: 'Onde Multiple', value: 'waves' },
+                    { label: 'Zigzag', value: 'zigzag' },
+                    { label: 'Triangolo', value: 'triangle' },
+                    { label: 'Triangolo Asimmetrico', value: 'triangle-asymmetric' },
+                    { label: 'Curva', value: 'curve' },
+                    { label: 'Curva Asimmetrica', value: 'curve-asymmetric' },
+                    { label: 'Inclinato', value: 'tilt' },
+                    { label: 'Freccia', value: 'arrow' },
+                    { label: 'Divisione', value: 'split' },
+                    { label: 'Nuvole', value: 'clouds' },
+                    { label: 'Montagne', value: 'mountains' },
+                  ],
+                },
+                {
+                  name: 'height',
+                  type: 'number',
+                  label: 'Altezza (px)',
+                  defaultValue: 100,
+                  min: 30,
+                  max: 300,
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.enabled === true,
+                    description: 'Altezza del divisore in pixel (30-300)',
+                  },
+                },
+                {
+                  name: 'flip',
+                  type: 'checkbox',
+                  label: 'Specchia orizzontalmente',
+                  defaultValue: false,
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.enabled === true,
+                  },
+                },
+                {
+                  name: 'invert',
+                  type: 'checkbox',
+                  label: 'Specchia verticalmente',
+                  defaultValue: false,
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.enabled === true,
+                  },
+                },
+              ],
+            },
+            {
+              name: 'bottomDivider',
+              type: 'group',
+              label: 'Divisore Inferiore',
+              admin: {
+                description: "Aggiungi un divisore decorativo in fondo all'hero",
+              },
+              fields: [
+                {
+                  name: 'enabled',
+                  type: 'checkbox',
+                  label: 'Abilita divisore inferiore',
+                  defaultValue: false,
+                },
+                {
+                  name: 'style',
+                  type: 'select',
+                  label: 'Stile',
+                  required: true,
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.enabled === true,
+                  },
+                  options: [
+                    { label: 'Onda', value: 'wave' },
+                    { label: 'Onda Pennellata', value: 'wave-brush' },
+                    { label: 'Onde Multiple', value: 'waves' },
+                    { label: 'Zigzag', value: 'zigzag' },
+                    { label: 'Triangolo', value: 'triangle' },
+                    { label: 'Triangolo Asimmetrico', value: 'triangle-asymmetric' },
+                    { label: 'Curva', value: 'curve' },
+                    { label: 'Curva Asimmetrica', value: 'curve-asymmetric' },
+                    { label: 'Inclinato', value: 'tilt' },
+                    { label: 'Freccia', value: 'arrow' },
+                    { label: 'Divisione', value: 'split' },
+                    { label: 'Nuvole', value: 'clouds' },
+                    { label: 'Montagne', value: 'mountains' },
+                  ],
+                },
+                {
+                  name: 'height',
+                  type: 'number',
+                  label: 'Altezza (px)',
+                  defaultValue: 100,
+                  min: 30,
+                  max: 300,
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.enabled === true,
+                    description: 'Altezza del divisore in pixel (30-300)',
+                  },
+                },
+                {
+                  name: 'flip',
+                  type: 'checkbox',
+                  label: 'Specchia orizzontalmente',
+                  defaultValue: false,
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.enabled === true,
+                  },
+                },
+                {
+                  name: 'invert',
+                  type: 'checkbox',
+                  label: 'Specchia verticalmente',
+                  defaultValue: false,
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.enabled === true,
+                  },
                 },
               ],
             },

@@ -296,13 +296,88 @@ export interface Page {
    */
   subtitle?: string | null;
   /**
-   * Se disabilitato, l'hero di default non verrà mostrato (utile se usi un blocco Hero personalizzato)
+   * Personalizza l'hero di default della pagina
    */
-  showHero?: boolean | null;
+  heroSettings?: {
+    /**
+     * Se disabilitato, l'hero di default non verrà mostrato (utile se usi un blocco Hero personalizzato)
+     */
+    showHero?: boolean | null;
+    /**
+     * Se abilitato, l'hero di default occuperà l'intera altezza dello schermo
+     */
+    fullHeight?: boolean | null;
+    /**
+     * Immagine opzionale per lo sfondo dell'hero
+     */
+    backgroundImage?: (string | null) | Media;
+    /**
+     * Se abilitato, l'immagine di sfondo avrà un effetto parallax durante lo scroll
+     */
+    parallax?: boolean | null;
+    /**
+     * Se abilitato, aggiunge un overlay gradiente sopra l'immagine per migliorare la leggibilità del testo
+     */
+    gradientOverlay?: boolean | null;
+  };
   /**
-   * Se abilitato, l'hero di default occuperà l'intera altezza dello schermo
+   * Aggiungi un divisore decorativo in cima all'hero
    */
-  heroFullHeight?: boolean | null;
+  heroTopDivider?: {
+    enabled?: boolean | null;
+    style?:
+      | (
+          | 'wave'
+          | 'wave-brush'
+          | 'waves'
+          | 'zigzag'
+          | 'triangle'
+          | 'triangle-asymmetric'
+          | 'curve'
+          | 'curve-asymmetric'
+          | 'tilt'
+          | 'arrow'
+          | 'split'
+          | 'clouds'
+          | 'mountains'
+        )
+      | null;
+    /**
+     * Altezza del divisore in pixel (30-300)
+     */
+    height?: number | null;
+    flip?: boolean | null;
+    invert?: boolean | null;
+  };
+  /**
+   * Aggiungi un divisore decorativo in fondo all'hero
+   */
+  heroBottomDivider?: {
+    enabled?: boolean | null;
+    style?:
+      | (
+          | 'wave'
+          | 'wave-brush'
+          | 'waves'
+          | 'zigzag'
+          | 'triangle'
+          | 'triangle-asymmetric'
+          | 'curve'
+          | 'curve-asymmetric'
+          | 'tilt'
+          | 'arrow'
+          | 'split'
+          | 'clouds'
+          | 'mountains'
+        )
+      | null;
+    /**
+     * Altezza del divisore in pixel (30-300)
+     */
+    height?: number | null;
+    flip?: boolean | null;
+    invert?: boolean | null;
+  };
   /**
    * Immagine opzionale per l'hero della pagina
    */
@@ -343,6 +418,18 @@ export interface Page {
              * Se attivo, l'hero occuperà l'intera altezza dello schermo
              */
             fullHeight?: boolean | null;
+            /**
+             * Immagine opzionale per lo sfondo dell'hero
+             */
+            backgroundImage?: (string | null) | Media;
+            /**
+             * Se abilitato, l'immagine di sfondo avrà un effetto parallax durante lo scroll
+             */
+            parallax?: boolean | null;
+            /**
+             * Se abilitato, aggiunge un overlay gradiente sopra l'immagine per migliorare la leggibilità del testo
+             */
+            gradientOverlay?: boolean | null;
             buttons?:
               | {
                   text: string;
@@ -351,6 +438,64 @@ export interface Page {
                   id?: string | null;
                 }[]
               | null;
+            /**
+             * Aggiungi un divisore decorativo in cima all'hero
+             */
+            topDivider?: {
+              enabled?: boolean | null;
+              style?:
+                | (
+                    | 'wave'
+                    | 'wave-brush'
+                    | 'waves'
+                    | 'zigzag'
+                    | 'triangle'
+                    | 'triangle-asymmetric'
+                    | 'curve'
+                    | 'curve-asymmetric'
+                    | 'tilt'
+                    | 'arrow'
+                    | 'split'
+                    | 'clouds'
+                    | 'mountains'
+                  )
+                | null;
+              /**
+               * Altezza del divisore in pixel (30-300)
+               */
+              height?: number | null;
+              flip?: boolean | null;
+              invert?: boolean | null;
+            };
+            /**
+             * Aggiungi un divisore decorativo in fondo all'hero
+             */
+            bottomDivider?: {
+              enabled?: boolean | null;
+              style?:
+                | (
+                    | 'wave'
+                    | 'wave-brush'
+                    | 'waves'
+                    | 'zigzag'
+                    | 'triangle'
+                    | 'triangle-asymmetric'
+                    | 'curve'
+                    | 'curve-asymmetric'
+                    | 'tilt'
+                    | 'arrow'
+                    | 'split'
+                    | 'clouds'
+                    | 'mountains'
+                  )
+                | null;
+              /**
+               * Altezza del divisore in pixel (30-300)
+               */
+              height?: number | null;
+              flip?: boolean | null;
+              invert?: boolean | null;
+            };
             id?: string | null;
             blockName?: string | null;
             blockType: 'hero';
@@ -1522,8 +1667,33 @@ export interface PagesSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   subtitle?: T;
-  showHero?: T;
-  heroFullHeight?: T;
+  heroSettings?:
+    | T
+    | {
+        showHero?: T;
+        fullHeight?: T;
+        backgroundImage?: T;
+        parallax?: T;
+        gradientOverlay?: T;
+      };
+  heroTopDivider?:
+    | T
+    | {
+        enabled?: T;
+        style?: T;
+        height?: T;
+        flip?: T;
+        invert?: T;
+      };
+  heroBottomDivider?:
+    | T
+    | {
+        enabled?: T;
+        style?: T;
+        height?: T;
+        flip?: T;
+        invert?: T;
+      };
   cover?: T;
   content?: T;
   blocks?:
@@ -1535,6 +1705,9 @@ export interface PagesSelect<T extends boolean = true> {
               title?: T;
               subtitle?: T;
               fullHeight?: T;
+              backgroundImage?: T;
+              parallax?: T;
+              gradientOverlay?: T;
               buttons?:
                 | T
                 | {
@@ -1542,6 +1715,24 @@ export interface PagesSelect<T extends boolean = true> {
                     href?: T;
                     variant?: T;
                     id?: T;
+                  };
+              topDivider?:
+                | T
+                | {
+                    enabled?: T;
+                    style?: T;
+                    height?: T;
+                    flip?: T;
+                    invert?: T;
+                  };
+              bottomDivider?:
+                | T
+                | {
+                    enabled?: T;
+                    style?: T;
+                    height?: T;
+                    flip?: T;
+                    invert?: T;
                   };
               id?: T;
               blockName?: T;

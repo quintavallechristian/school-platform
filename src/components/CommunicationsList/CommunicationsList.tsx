@@ -59,67 +59,58 @@ export function CommunicationsList({ communications, schoolSlug }: Communication
     <div className="space-y-4">
       {communications.map((comm) => {
         const config = priorityConfig[comm.priority as keyof typeof priorityConfig]
-        const Icon = config.icon
 
         return (
           <SpotlightCard key={comm.id} spotlightColor={config.spotlightColor}>
-            <div className="flex gap-4">
-              {/* Icona priorità */}
-              <div className={`shrink-0 ${config.color}`}>
-                <Icon className="h-6 w-6 mt-0.5" />
+            <div className="flex-1">
+              <div className="flex items-start justify-between gap-4 mb-2">
+                <h3 className="text-2xl font-bold">{comm.title}</h3>
+                <span
+                  className={`shrink-0 text-xs font-semibold px-2 py-1 rounded-full border ${config.bgColor} ${config.color}`}
+                >
+                  {config.label}
+                </span>
               </div>
 
-              {/* Contenuto */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-start justify-between gap-4 mb-2">
-                  <h3 className="text-xl font-semibold">{comm.title}</h3>
-                  <span
-                    className={`shrink-0 text-xs font-semibold px-2 py-1 rounded-full border ${config.bgColor} ${config.color}`}
-                  >
-                    {config.label}
-                  </span>
-                </div>
-
-                <div className="prose prose-sm dark:prose-invert max-w-none mb-3">
-                  <RichTextRenderer content={comm.content} />
-                </div>
-
-                {/* Links a articoli o eventi */}
-                {(comm.linkedArticle || comm.linkedEvent) && (
-                  <div className="mb-3 space-x-4">
-                    {comm.linkedArticle && typeof comm.linkedArticle !== 'string' && (
-                      <Link
-                        href={
-                          schoolSlug
-                            ? `/${schoolSlug}/blog/${comm.linkedArticle.slug}`
-                            : `/blog/${comm.linkedArticle.slug}`
-                        }
-                        className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
-                      >
-                        📰 Leggi l&apos;articolo
-                        <ArrowRight className="h-4 w-4" />
-                      </Link>
-                    )}
-                    {comm.linkedEvent && typeof comm.linkedEvent !== 'string' && (
-                      <Link
-                        href={
-                          schoolSlug
-                            ? `/${schoolSlug}/eventi/${comm.linkedEvent.id}`
-                            : `/eventi/${comm.linkedEvent.id}`
-                        }
-                        className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
-                      >
-                        📅 Vedi l&apos;evento
-                        <ArrowRight className="h-4 w-4" />
-                      </Link>
-                    )}
-                  </div>
-                )}
-
-                <p className="text-xs text-muted-foreground">
-                  Pubblicato il {formatDate(comm.publishedAt)}
-                </p>
+              <div className="prose prose-sm dark:prose-invert max-w-none mb-3">
+                <RichTextRenderer content={comm.content} />
               </div>
+
+              {/* Links a articoli o eventi */}
+              {(comm.linkedArticle || comm.linkedEvent) && (
+                <div className="mb-3 space-x-4">
+                  {comm.linkedArticle && typeof comm.linkedArticle !== 'string' && (
+                    <Link
+                      href={
+                        schoolSlug
+                          ? `/${schoolSlug}/blog/${comm.linkedArticle.slug}`
+                          : `/blog/${comm.linkedArticle.slug}`
+                      }
+                      className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
+                    >
+                      📰 Leggi l&apos;articolo
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  )}
+                  {comm.linkedEvent && typeof comm.linkedEvent !== 'string' && (
+                    <Link
+                      href={
+                        schoolSlug
+                          ? `/${schoolSlug}/eventi/${comm.linkedEvent.id}`
+                          : `/eventi/${comm.linkedEvent.id}`
+                      }
+                      className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
+                    >
+                      📅 Vedi l&apos;evento
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  )}
+                </div>
+              )}
+
+              <p className="text-xs text-muted-foreground">
+                Pubblicato il {formatDate(comm.publishedAt)}
+              </p>
             </div>
           </SpotlightCard>
         )

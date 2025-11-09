@@ -70,6 +70,11 @@ export default function PageBlocks({ blocks, schoolId, schoolSlug }: Props) {
           )
         }
 
+        // Gallery block è full-width
+        if (block.blockType === 'gallery') {
+          return <GalleryBlock key={index} block={block} />
+        }
+
         // Altri blocchi con layout standard
         return (
           <div key={index} className="space-y-8 max-w-5xl mx-auto">
@@ -83,8 +88,6 @@ export default function PageBlocks({ blocks, schoolId, schoolSlug }: Props) {
                   return <CardGridBlock block={block} />
                 case 'fileDownload':
                   return <FileDownloadBlock block={block} />
-                case 'gallery':
-                  return <GalleryBlock block={block} />
                 default:
                   return null
               }

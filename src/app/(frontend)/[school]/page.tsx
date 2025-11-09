@@ -14,6 +14,7 @@ import { CommunicationsList } from '@/components/CommunicationsList/Communicatio
 import PageBlocks from '@/components/PageBlocks/PageBlocks'
 import { RichTextRenderer } from '@/components/RichTextRenderer/RichTextRenderer'
 import type { Page as PageType } from '@/payload-types'
+import type { ShapeDividerStyle } from '@/components/ShapeDivider/ShapeDivider'
 
 type PageProps = {
   params: Promise<{ school: string }>
@@ -44,8 +45,9 @@ export default async function SchoolHomePage({ params }: PageProps) {
       const typedPage = homepage as PageType
 
       // Mostra l'hero di default solo se showHero è esplicitamente true o undefined
-      const shouldShowDefaultHero = typedPage.showHero === true || typedPage.showHero === undefined
-      const heroFullHeight = typedPage.heroFullHeight ?? false
+      const shouldShowDefaultHero =
+        typedPage.heroSettings?.showHero === true || typedPage.heroSettings?.showHero === undefined
+      const heroFullHeight = typedPage.heroSettings?.fullHeight ?? false
 
       // Verifica se il contenuto ha del testo reale
       const hasRealContent = (content: unknown): boolean => {
@@ -78,6 +80,28 @@ export default async function SchoolHomePage({ params }: PageProps) {
 
       const hasContent = hasRealContent(typedPage.content)
 
+      // Prepara il divisore superiore per l'hero di default
+      const topDivider =
+        typedPage.heroTopDivider?.enabled && typedPage.heroTopDivider?.style
+          ? {
+              style: typedPage.heroTopDivider.style as ShapeDividerStyle,
+              height: typedPage.heroTopDivider.height || undefined,
+              flip: typedPage.heroTopDivider.flip || undefined,
+              invert: typedPage.heroTopDivider.invert || undefined,
+            }
+          : undefined
+
+      // Prepara il divisore inferiore per l'hero di default
+      const bottomDivider =
+        typedPage.heroBottomDivider?.enabled && typedPage.heroBottomDivider?.style
+          ? {
+              style: typedPage.heroBottomDivider.style as ShapeDividerStyle,
+              height: typedPage.heroBottomDivider.height || undefined,
+              flip: typedPage.heroBottomDivider.flip || undefined,
+              invert: typedPage.heroBottomDivider.invert || undefined,
+            }
+          : undefined
+
       return (
         <div className="min-h-[calc(100vh-200px)]">
           {shouldShowDefaultHero && (
@@ -85,6 +109,11 @@ export default async function SchoolHomePage({ params }: PageProps) {
               title={typedPage.title}
               subtitle={typedPage.subtitle || undefined}
               big={heroFullHeight}
+              backgroundImage={typedPage.heroSettings?.backgroundImage || undefined}
+              parallax={typedPage.heroSettings?.parallax || false}
+              gradientOverlay={typedPage.heroSettings?.gradientOverlay || false}
+              topDivider={topDivider}
+              bottomDivider={bottomDivider}
             />
           )}
 
@@ -128,9 +157,7 @@ export default async function SchoolHomePage({ params }: PageProps) {
       {communications.docs.length > 0 && (
         <section className="py-12 bg-[hsl(var(--chart-5))]/10">
           <div className="container mx-auto px-4">
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-              🔔 Comunicazioni Importanti
-            </h2>
+            <h2 className="text-2xl font-bold mb-6">Comunicazioni Importanti</h2>
 
             {communications.docs.length > 0 && (
               <CommunicationsList communications={communications.docs} schoolSlug={schoolSlug} />

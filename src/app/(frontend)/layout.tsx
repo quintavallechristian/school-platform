@@ -61,7 +61,7 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="h-full w-full fixed top-0 left-0 -z-10 opacity-20">
+          <div className="h-full w-full fixed top-0 left-0 z-50 opacity-20 pointer-events-none">
             <MyAurora />
           </div>
           {children}

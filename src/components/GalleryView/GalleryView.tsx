@@ -49,7 +49,7 @@ export default function GalleryView({ gallery }: GalleryViewProps) {
   }
 
   return (
-    <div className="w-full">
+    <div className="max-w-7xl mx-auto px-8 py-16">
       {gallery.title && <h2 className="text-3xl font-bold mb-2">{gallery.title}</h2>}
       {gallery.description && <p className="text-muted-foreground mb-6">{gallery.description}</p>}
 

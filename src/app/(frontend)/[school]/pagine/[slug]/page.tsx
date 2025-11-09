@@ -5,6 +5,7 @@ import Hero from '@/components/Hero/Hero'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import type { Page as PageType } from '@/payload-types'
 import { RichTextRenderer } from '@/components/RichTextRenderer/RichTextRenderer'
+import type { ShapeDividerStyle } from '@/components/ShapeDivider/ShapeDivider'
 
 type Props = {
   params: Promise<{ school: string; slug: string }>
@@ -26,10 +27,12 @@ export default async function CustomPage({ params }: Props) {
 
   // Mostra l'hero di default solo se showHero è esplicitamente true o undefined (per retrocompatibilità)
   // Se è esplicitamente false, non lo mostra
-  const shouldShowDefaultHero = page.showHero === true || page.showHero === undefined
+  const shouldShowDefaultHero =
+    (page as PageType).heroSettings?.showHero === true ||
+    (page as PageType).heroSettings?.showHero === undefined
 
   // Determina se l'hero deve essere full-height (default: false)
-  const heroFullHeight = (page as PageType).heroFullHeight ?? false
+  const heroFullHeight = (page as PageType).heroSettings?.fullHeight ?? false
 
   // Funzione per verificare se il contenuto Lexical ha del testo reale
   const hasRealContent = (content: unknown): boolean => {
@@ -74,10 +77,41 @@ export default async function CustomPage({ params }: Props) {
 
   const hasContent = hasRealContent(page.content)
 
+  // Prepara il divisore superiore per l'hero di default
+  const topDivider =
+    (page as PageType).heroTopDivider?.enabled && (page as PageType).heroTopDivider?.style
+      ? {
+          style: (page as PageType).heroTopDivider!.style as ShapeDividerStyle,
+          height: (page as PageType).heroTopDivider!.height || undefined,
+          flip: (page as PageType).heroTopDivider!.flip || undefined,
+          invert: (page as PageType).heroTopDivider!.invert || undefined,
+        }
+      : undefined
+
+  // Prepara il divisore inferiore per l'hero di default
+  const bottomDivider =
+    (page as PageType).heroBottomDivider?.enabled && (page as PageType).heroBottomDivider?.style
+      ? {
+          style: (page as PageType).heroBottomDivider!.style as ShapeDividerStyle,
+          height: (page as PageType).heroBottomDivider!.height || undefined,
+          flip: (page as PageType).heroBottomDivider!.flip || undefined,
+          invert: (page as PageType).heroBottomDivider!.invert || undefined,
+        }
+      : undefined
+
   return (
     <div className="min-h-[calc(100vh-200px)]">
       {shouldShowDefaultHero && (
-        <Hero title={page.title} subtitle={page.subtitle || undefined} big={heroFullHeight} />
+        <Hero
+          title={page.title}
+          subtitle={page.subtitle || undefined}
+          big={heroFullHeight}
+          backgroundImage={(page as PageType).heroSettings?.backgroundImage || undefined}
+          parallax={(page as PageType).heroSettings?.parallax || false}
+          gradientOverlay={(page as PageType).heroSettings?.gradientOverlay || false}
+          topDivider={topDivider}
+          bottomDivider={bottomDivider}
+        />
       )}
 
       <section>
