@@ -82,8 +82,6 @@ export default async function MensaPage({ params }: { params: Promise<{ school: 
             ? `${activeMenu.name} - ${school.name}`
             : `Scopri cosa mangiamo a scuola - ${school.name}`
         }
-        primaryColor={school.primaryColor || undefined}
-        secondaryColor={school.secondaryColor || undefined}
       />
 
       <section className="py-16">

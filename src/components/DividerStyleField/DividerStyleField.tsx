@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { useField } from '@payloadcms/ui'
-import type { SelectField, FieldClientComponent } from 'payload'
+import type { SelectField } from 'payload'
 
 // Importa i path SVG dal componente ShapeDivider
 const shapePaths: Record<string, string> = {
