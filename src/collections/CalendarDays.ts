@@ -1,8 +1,19 @@
 import { CollectionConfig } from 'payload'
-import { tenantRead, tenantCreate, tenantUpdate, tenantDelete, assignSchoolBeforeChange } from '../lib/access'
+import {
+  tenantRead,
+  tenantCreate,
+  tenantUpdate,
+  tenantDelete,
+  assignSchoolBeforeChange,
+  getSchoolField,
+} from '../lib/access'
 
 export const CalendarDays: CollectionConfig = {
   slug: 'calendar-days',
+  labels: {
+    singular: 'Calendario',
+    plural: 'Calendario',
+  },
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'type', 'startDate', 'endDate', 'school'],
@@ -18,19 +29,7 @@ export const CalendarDays: CollectionConfig = {
     beforeChange: [assignSchoolBeforeChange],
   },
   fields: [
-    {
-      name: 'school',
-      type: 'relationship',
-      relationTo: 'schools',
-      required: true,
-      label: 'Scuola',
-      admin: {
-        description: 'Scuola a cui appartiene questo evento del calendario',
-        condition: (data, siblingData, { user }) => {
-          return user?.role === 'super-admin'
-        },
-      },
-    },
+    getSchoolField('Scuola a cui appartiene questo evento del calendario'),
     {
       name: 'title',
       type: 'text',

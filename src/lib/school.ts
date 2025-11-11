@@ -90,6 +90,23 @@ export async function getSchoolEvents(schoolId: string | number, limit = 10, pag
 }
 
 /**
+ * Ottiene tutti i progetti di una scuola
+ */
+export async function getSchoolProjects(schoolId: string | number, limit = 10, page = 1) {
+  const payload = await getPayload({ config: configPromise })
+
+  return await payload.find({
+    collection: 'projects',
+    where: {
+      school: { equals: schoolId },
+    },
+    sort: '-createdAt',
+    limit,
+    page,
+  })
+}
+
+/**
  * Ottiene le comunicazioni attive di una scuola
  */
 export async function getSchoolCommunications(
@@ -372,4 +389,37 @@ export async function getSchoolEvent(schoolId: string | number, eventId: string 
  */
 export async function getSchoolEventById(schoolId: string | number, eventId: string | number) {
   return getSchoolEvent(schoolId, eventId)
+}
+
+/**
+ * Ottiene un progetto specifico di una scuola per ID
+ */
+export async function getSchoolProject(schoolId: string | number, projectId: string | number) {
+  const payload = await getPayload({ config: configPromise })
+
+  try {
+    const project = await payload.findByID({
+      collection: 'projects',
+      id: projectId,
+    })
+
+    // Verifica che il progetto appartenga alla scuola
+    const projectSchoolId =
+      project.school && typeof project.school === 'object' ? project.school.id : project.school
+
+    if (project && projectSchoolId === schoolId) {
+      return project
+    }
+
+    return null
+  } catch (_error) {
+    return null
+  }
+}
+
+/**
+ * Ottiene un progetto specifico di una scuola per ID (alias per compatibilità)
+ */
+export async function getSchoolProjectById(schoolId: string | number, projectId: string | number) {
+  return getSchoolProject(schoolId, projectId)
 }

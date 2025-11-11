@@ -5,6 +5,7 @@ import {
   tenantUpdate,
   tenantDelete,
   assignSchoolBeforeChange,
+  getSchoolField,
 } from '../lib/access'
 
 // Configurazione riutilizzabile per i shape dividers
@@ -57,6 +58,10 @@ const shapeDividerFields = [
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
+  labels: {
+    singular: 'Pagina',
+    plural: 'Pagine',
+  },
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'school', 'updatedAt'],
@@ -72,19 +77,7 @@ export const Pages: CollectionConfig = {
     beforeChange: [assignSchoolBeforeChange],
   },
   fields: [
-    {
-      name: 'school',
-      type: 'relationship',
-      relationTo: 'schools',
-      required: true,
-      label: 'Scuola',
-      admin: {
-        description: 'Scuola a cui appartiene questa pagina',
-        condition: (data, siblingData, { user }) => {
-          return user?.role === 'super-admin'
-        },
-      },
-    },
+    getSchoolField('Scuola a cui appartiene questa pagina'),
     {
       name: 'title',
       type: 'text',
@@ -777,6 +770,45 @@ export const Pages: CollectionConfig = {
             },
           ],
         },
+        // Blocco Lista Progetti
+        {
+          slug: 'projectList',
+          labels: {
+            singular: 'Lista Progetti',
+            plural: 'Liste Progetti',
+          },
+          fields: [
+            {
+              name: 'title',
+              type: 'text',
+              label: 'Titolo della sezione (opzionale)',
+              admin: {
+                description: 'Es: "I Nostri Progetti", "Progetti della Scuola"',
+              },
+            },
+            {
+              name: 'limit',
+              type: 'number',
+              label: 'Numero di progetti da mostrare',
+              defaultValue: 6,
+              min: 1,
+              max: 12,
+              required: true,
+              admin: {
+                description: 'Quanti progetti mostrare (max 12)',
+              },
+            },
+            {
+              name: 'showViewAll',
+              type: 'checkbox',
+              label: 'Mostra pulsante "Vedi tutti"',
+              defaultValue: true,
+              admin: {
+                description: 'Mostra un pulsante per andare alla pagina progetti completa',
+              },
+            },
+          ],
+        },
         // Blocco Comunicazioni
         {
           slug: 'communications',
@@ -827,6 +859,24 @@ export const Pages: CollectionConfig = {
               defaultValue: true,
               admin: {
                 description: 'Mostra un pulsante per andare alla pagina comunicazioni completa',
+              },
+            },
+          ],
+        },
+        // Blocco Lista Insegnanti
+        {
+          slug: 'teacherList',
+          labels: {
+            singular: 'Lista Insegnanti',
+            plural: 'Liste Insegnanti',
+          },
+          fields: [
+            {
+              name: 'title',
+              type: 'text',
+              label: 'Titolo della sezione (opzionale)',
+              admin: {
+                description: 'Es: "Il Nostro Team", "I Nostri Insegnanti"',
               },
             },
           ],

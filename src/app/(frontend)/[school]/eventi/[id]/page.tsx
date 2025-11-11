@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation'
-import Image from 'next/image'
 import Link from 'next/link'
 import { getCurrentSchool, getSchoolEventById } from '@/lib/school'
 import React from 'react'
@@ -44,6 +43,8 @@ export default async function EventPage({
               month: 'long',
               year: 'numeric',
             })}
+            backgroundImage={event.cover}
+            gradientOverlay={event.gradientOverlay || false}
           />
         </header>
 
@@ -89,19 +90,6 @@ export default async function EventPage({
                     <p className="text-base font-semibold text-foreground">{event.location}</p>
                   </div>
                 </div>
-              </div>
-            )}
-
-            {/* Cover Image (if exists) */}
-            {event.cover && typeof event.cover === 'object' && event.cover.url && (
-              <div className="relative w-full h-96 rounded-xl overflow-hidden shadow-2xl mb-8">
-                <Image
-                  src={event.cover.url}
-                  alt={event.title}
-                  fill
-                  className="object-cover"
-                  priority
-                />
               </div>
             )}
 

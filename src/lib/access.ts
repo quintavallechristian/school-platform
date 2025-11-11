@@ -1,4 +1,4 @@
-import type { Access, CollectionBeforeChangeHook } from 'payload'
+import type { Access, CollectionBeforeChangeHook, Field } from 'payload'
 
 /**
  * Access control per collezioni multi-tenant
@@ -31,11 +31,15 @@ export const tenantRead: Access = ({ req: { user } }) => {
     return true
   }
 
-  // Altri utenti vedono solo i contenuti della loro scuola
-  if (user.school) {
+  // Altri utenti vedono solo i contenuti delle loro scuole
+  if (user.schools && user.schools.length > 0) {
+    // Estrai gli ID delle scuole (potrebbero essere oggetti o stringhe)
+    const schoolIds = user.schools.map((school) =>
+      typeof school === 'string' ? school : school.id,
+    )
     return {
       school: {
-        equals: user.school,
+        in: schoolIds,
       },
     }
   }
@@ -65,11 +69,19 @@ export const tenantUpdate: Access = ({ req: { user } }) => {
     return true
   }
 
-  // School-admin ed editor possono modificare solo contenuti della loro scuola
-  if ((user.role === 'school-admin' || user.role === 'editor') && user.school) {
+  // School-admin ed editor possono modificare solo contenuti delle loro scuole
+  if (
+    (user.role === 'school-admin' || user.role === 'editor') &&
+    user.schools &&
+    user.schools.length > 0
+  ) {
+    // Estrai gli ID delle scuole (potrebbero essere oggetti o stringhe)
+    const schoolIds = user.schools.map((school) =>
+      typeof school === 'string' ? school : school.id,
+    )
     return {
       school: {
-        equals: user.school,
+        in: schoolIds,
       },
     }
   }
@@ -89,11 +101,15 @@ export const tenantDelete: Access = ({ req: { user } }) => {
     return true
   }
 
-  // School-admin può eliminare solo contenuti della loro scuola
-  if (user.role === 'school-admin' && user.school) {
+  // School-admin può eliminare solo contenuti delle loro scuole
+  if (user.role === 'school-admin' && user.schools && user.schools.length > 0) {
+    // Estrai gli ID delle scuole (potrebbero essere oggetti o stringhe)
+    const schoolIds = user.schools.map((school) =>
+      typeof school === 'string' ? school : school.id,
+    )
     return {
       school: {
-        equals: user.school,
+        in: schoolIds,
       },
     }
   }
@@ -106,26 +122,41 @@ export const tenantDelete: Access = ({ req: { user } }) => {
  * ai nuovi contenuti creati
  */
 export const assignSchoolBeforeChange: CollectionBeforeChangeHook = ({ req, data, operation }) => {
-  // Se è un'operazione di creazione e l'utente non è super-admin
+  // Se è un'operazione di creazione
   if (operation === 'create' && req.user) {
-    // Se super-admin non assegna automaticamente (può scegliere)
-    if (req.user.role === 'super-admin' && !data.school) {
-      // Non fare nulla, super-admin deve scegliere esplicitamente
-      return data
-    }
+    // Se non è stata specificata una scuola, assegna automaticamente
+    if (!data.school) {
+      // Per super-admin, non assegnare automaticamente (deve scegliere)
+      if (req.user.role === 'super-admin') {
+        // Non fare nulla, super-admin deve scegliere esplicitamente
+        return data
+      }
 
-    // Per altri utenti, assegna automaticamente la loro scuola
-    if (req.user.school && !data.school) {
-      data.school = req.user.school
+      // Per altri utenti, assegna automaticamente la prima scuola
+      if (req.user.schools && req.user.schools.length > 0) {
+        const firstSchool = req.user.schools[0]
+        data.school = typeof firstSchool === 'string' ? firstSchool : firstSchool.id
+      }
     }
   }
 
-  // Previeni che utenti non super-admin modifichino la scuola
-  if (operation === 'update' && req.user?.role !== 'super-admin') {
-    // Rimuovi il campo school dai dati se presente
-    if (data.school !== undefined) {
-      // Mantieni il valore originale
-      delete data.school
+  // In fase di update, valida che la scuola scelta sia tra quelle permesse
+  if (operation === 'update' && req.user && data.school !== undefined) {
+    // Super-admin può cambiare a qualsiasi scuola
+    if (req.user.role === 'super-admin') {
+      return data
+    }
+
+    // Altri utenti possono cambiare solo tra le loro scuole assegnate
+    if (req.user.schools && req.user.schools.length > 0) {
+      const schoolIds = req.user.schools.map((school) =>
+        typeof school === 'string' ? school : school.id,
+      )
+
+      // Se la scuola selezionata non è tra quelle permesse, errore
+      if (!schoolIds.includes(data.school)) {
+        throw new Error('Non hai i permessi per assegnare questo contenuto a questa scuola')
+      }
     }
   }
 
@@ -135,20 +166,70 @@ export const assignSchoolBeforeChange: CollectionBeforeChangeHook = ({ req, data
 /**
  * Filtra le opzioni delle select/relationship in base alla scuola
  */
-export const filterBySchool = ({ user }: { user?: { role?: string; school?: string } }) => {
+export const filterBySchool = ({
+  user,
+}: {
+  user?: { role?: string; schools?: string[] | { id: string }[] }
+}) => {
   if (!user) return false
 
   if (user.role === 'super-admin') {
     return true
   }
 
-  if (user.school) {
+  if (user.schools && user.schools.length > 0) {
+    // Estrai gli ID delle scuole (potrebbero essere oggetti o stringhe)
+    const schoolIds = user.schools.map((school) =>
+      typeof school === 'string' ? school : school.id,
+    )
     return {
       school: {
-        equals: user.school,
+        in: schoolIds,
       },
     }
   }
 
   return false
 }
+
+/**
+ * Configurazione del campo "school" per le collezioni multi-tenant
+ * Gestisce automaticamente la visibilità e le opzioni disponibili
+ */
+export const getSchoolField = (
+  description = 'Scuola a cui appartiene questo contenuto',
+): Field => ({
+  name: 'school',
+  type: 'relationship',
+  relationTo: 'schools',
+  required: true,
+  label: 'Scuola',
+  admin: {
+    description,
+    // Mostra il campo se:
+    // - Sei super-admin (puoi scegliere qualsiasi scuola), oppure
+    // - Sei school-admin/editor con più di una scuola (puoi scegliere tra le tue scuole)
+    condition: (data, siblingData, { user }) => {
+      if (user?.role === 'super-admin') return true
+      if (user?.schools && user.schools.length > 1) return true
+      return false
+    },
+  },
+  // Filtra le opzioni per mostrare solo le scuole dell'utente
+  filterOptions: ({ user }) => {
+    if (!user) return false
+    if (user.role === 'super-admin') return true
+
+    if (user.schools && user.schools.length > 0) {
+      const schoolIds = user.schools.map((school) =>
+        typeof school === 'string' ? school : school.id,
+      )
+      return {
+        id: {
+          in: schoolIds,
+        },
+      }
+    }
+    return false
+  },
+})

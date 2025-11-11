@@ -1,8 +1,18 @@
 import { CollectionConfig } from 'payload'
-import { tenantRead, tenantCreate, tenantUpdate, tenantDelete, assignSchoolBeforeChange } from '../lib/access'
+import {
+  tenantRead,
+  tenantCreate,
+  tenantUpdate,
+  tenantDelete,
+  assignSchoolBeforeChange,
+} from '../lib/access'
 
 export const EmailSubscribers: CollectionConfig = {
   slug: 'email-subscribers',
+  labels: {
+    singular: 'Iscritto',
+    plural: 'Iscritti',
+  },
   admin: {
     useAsTitle: 'email',
     defaultColumns: ['email', 'isActive', 'subscribedAt', 'school'],
@@ -35,7 +45,7 @@ export const EmailSubscribers: CollectionConfig = {
       required: true,
       label: 'Scuola',
       admin: {
-        description: 'Scuola per cui l\'utente riceve notifiche',
+        description: "Scuola per cui l'utente riceve notifiche",
         condition: (data, siblingData, { user }) => {
           return user?.role === 'super-admin'
         },

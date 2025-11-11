@@ -1,5 +1,12 @@
 import { CollectionConfig } from 'payload'
-import { tenantRead, tenantCreate, tenantUpdate, tenantDelete, assignSchoolBeforeChange } from '../lib/access'
+import {
+  tenantRead,
+  tenantCreate,
+  tenantUpdate,
+  tenantDelete,
+  assignSchoolBeforeChange,
+  getSchoolField,
+} from '../lib/access'
 
 export const Gallery: CollectionConfig = {
   slug: 'gallery',
@@ -22,19 +29,7 @@ export const Gallery: CollectionConfig = {
     beforeChange: [assignSchoolBeforeChange],
   },
   fields: [
-    {
-      name: 'school',
-      type: 'relationship',
-      relationTo: 'schools',
-      required: true,
-      label: 'Scuola',
-      admin: {
-        description: 'Scuola a cui appartiene questa galleria',
-        condition: (data, siblingData, { user }) => {
-          return user?.role === 'super-admin'
-        },
-      },
-    },
+    getSchoolField('Scuola a cui appartiene questa galleria'),
     {
       name: 'title',
       type: 'text',

@@ -2,22 +2,26 @@ import type { CollectionConfig } from 'payload'
 
 export const Users: CollectionConfig = {
   slug: 'users',
+  labels: {
+    singular: 'Utente',
+    plural: 'Utenti',
+  },
   admin: {
     useAsTitle: 'email',
-    defaultColumns: ['email', 'role', 'school', 'createdAt'],
+    defaultColumns: ['email', 'role', 'schools', 'createdAt'],
     group: 'Sistema',
   },
   auth: true,
   access: {
-    // Super-admin vedono tutti, gli altri solo utenti della propria scuola
+    // Super-admin vedono tutti, gli altri solo utenti con almeno una scuola in comune
     read: ({ req: { user } }) => {
       if (!user) return false
       if (user.role === 'super-admin') return true
 
-      if (user.school) {
+      if (user.schools && user.schools.length > 0) {
         return {
-          school: {
-            equals: user.school,
+          schools: {
+            in: user.schools,
           },
         }
       }
@@ -31,11 +35,11 @@ export const Users: CollectionConfig = {
       if (!user) return false
       if (user.role === 'super-admin') return true
 
-      // School-admin può modificare solo utenti della propria scuola
-      if (user.role === 'school-admin' && user.school) {
+      // School-admin può modificare solo utenti con almeno una scuola in comune
+      if (user.role === 'school-admin' && user.schools && user.schools.length > 0) {
         return {
-          school: {
-            equals: user.school,
+          schools: {
+            in: user.schools,
           },
         }
       }
@@ -45,12 +49,11 @@ export const Users: CollectionConfig = {
       if (!user) return false
       if (user.role === 'super-admin') return true
 
-      // School-admin può eliminare solo utenti della propria scuola (eccetto se stesso)
-      if (user.role === 'school-admin' && user.school) {
-        const schoolId = typeof user.school === 'string' ? user.school : user.school.id
+      // School-admin può eliminare solo utenti con almeno una scuola in comune (eccetto se stesso)
+      if (user.role === 'school-admin' && user.schools && user.schools.length > 0) {
         return {
-          school: {
-            equals: schoolId,
+          schools: {
+            in: user.schools,
           },
           id: {
             not_equals: user.id,
@@ -98,12 +101,13 @@ export const Users: CollectionConfig = {
       },
     },
     {
-      name: 'school',
+      name: 'schools',
       type: 'relationship',
       relationTo: 'schools',
-      required: true,
+      hasMany: true,
+      required: false, // Temporaneamente opzionale per permettere la migrazione
       admin: {
-        description: 'Scuola di appartenenza',
+        description: 'Scuole di appartenenza',
         condition: () => {
           // Super-admin può assegnare qualsiasi scuola
           // School-admin vede solo la propria scuola
@@ -112,9 +116,20 @@ export const Users: CollectionConfig = {
       },
       access: {
         update: ({ req: { user } }) => {
-          // Solo super-admin può cambiare la scuola di un utente
+          // Solo super-admin può cambiare le scuole di un utente
           return user?.role === 'super-admin'
         },
+      },
+      validate: (value, { operation }) => {
+        // Durante l'update dell'account, permetti valori vuoti (migrazione in corso)
+        if (operation === 'update') {
+          return true
+        }
+        // Durante la creazione, richiedi almeno una scuola
+        if (operation === 'create' && (!value || value.length === 0)) {
+          return 'Almeno una scuola deve essere assegnata'
+        }
+        return true
       },
     },
     {
@@ -136,9 +151,19 @@ export const Users: CollectionConfig = {
   hooks: {
     beforeChange: [
       ({ req, data, operation }) => {
-        // Se non è super-admin e sta creando un utente, assegna automaticamente la sua scuola
+        // Migrazione automatica: converte school → schools
+        // @ts-expect-error - Il campo school potrebbe ancora esistere nel database
+        if (data.school && (!data.schools || data.schools.length === 0)) {
+          // @ts-expect-error - Conversione da vecchio campo
+          const schoolId = typeof data.school === 'string' ? data.school : data.school.id
+          data.schools = [schoolId]
+          // @ts-expect-error - Rimuovi il vecchio campo
+          delete data.school
+        }
+
+        // Se non è super-admin e sta creando un utente, assegna automaticamente le sue scuole
         if (operation === 'create' && req.user && req.user.role !== 'super-admin') {
-          data.school = req.user.school
+          data.schools = req.user.schools
         }
 
         // Se non è super-admin, non può assegnare il ruolo super-admin
@@ -147,6 +172,18 @@ export const Users: CollectionConfig = {
         }
 
         return data
+      },
+    ],
+    afterRead: [
+      ({ doc }) => {
+        // Migrazione automatica durante la lettura: converte school → schools
+        // @ts-expect-error - Il campo school potrebbe ancora esistere nel database
+        if (doc.school && (!doc.schools || doc.schools.length === 0)) {
+          // @ts-expect-error - Conversione da vecchio campo
+          const schoolId = typeof doc.school === 'string' ? doc.school : doc.school.id
+          doc.schools = [schoolId]
+        }
+        return doc
       },
     ],
   },

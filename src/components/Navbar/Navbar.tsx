@@ -51,6 +51,7 @@ export default async function Navbar({
   const menuItems = [
     { label: 'Blog', href: `${baseHref}/blog` },
     { label: 'Eventi', href: `${baseHref}/eventi` },
+    { label: 'Progetti', href: `${baseHref}/progetti` },
     { label: 'Calendario', href: `${baseHref}/calendario` },
     { label: 'Comunicazioni', href: `${baseHref}/comunicazioni` },
     { label: 'Mensa', href: `${baseHref}/mensa` },

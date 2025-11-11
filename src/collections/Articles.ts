@@ -1,8 +1,19 @@
 import { CollectionConfig } from 'payload'
-import { tenantRead, tenantCreate, tenantUpdate, tenantDelete, assignSchoolBeforeChange } from '../lib/access'
+import {
+  tenantRead,
+  tenantCreate,
+  tenantUpdate,
+  tenantDelete,
+  assignSchoolBeforeChange,
+  getSchoolField,
+} from '../lib/access'
 
 export const Articles: CollectionConfig = {
   slug: 'articles',
+  labels: {
+    singular: 'Articolo',
+    plural: 'Articoli',
+  },
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'publishedAt', 'school'],
@@ -18,19 +29,7 @@ export const Articles: CollectionConfig = {
     beforeChange: [assignSchoolBeforeChange],
   },
   fields: [
-    {
-      name: 'school',
-      type: 'relationship',
-      relationTo: 'schools',
-      required: true,
-      label: 'Scuola',
-      admin: {
-        description: 'Scuola a cui appartiene questo articolo',
-        condition: (data, siblingData, { user }) => {
-          return user?.role === 'super-admin'
-        },
-      },
-    },
+    getSchoolField('Scuola a cui appartiene questo articolo'),
     {
       name: 'title',
       type: 'text',

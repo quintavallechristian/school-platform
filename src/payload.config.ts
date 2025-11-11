@@ -1,6 +1,7 @@
 // storage-adapter-import-placeholder
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { it } from '@payloadcms/translations/languages/it'
 import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
@@ -11,6 +12,7 @@ import { Schools } from './collections/Schools'
 import { Media } from './collections/Media'
 import { Articles } from './collections/Articles'
 import { Events } from './collections/Events'
+import { Projects } from './collections/Projects'
 import { Teachers } from './collections/Teachers'
 import { Menu } from './collections/Menu'
 import { Pages } from './collections/Pages'
@@ -29,12 +31,16 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
+  i18n: {
+    supportedLanguages: { it },
+  },
   collections: [
     Users,
     Schools,
     Media,
     Articles,
     Events,
+    Projects,
     Teachers,
     Menu,
     Pages,

@@ -2,6 +2,10 @@ import type { CollectionConfig } from 'payload'
 
 export const Schools: CollectionConfig = {
   slug: 'schools',
+  labels: {
+    singular: 'Scuola',
+    plural: 'Scuole',
+  },
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'domain', 'isActive', 'createdAt'],
@@ -17,11 +21,11 @@ export const Schools: CollectionConfig = {
       if (user?.role === 'super-admin') {
         return true
       }
-      // Gli altri utenti vedono solo la loro scuola
-      if (user?.school) {
+      // Gli altri utenti vedono solo le loro scuole
+      if (user?.schools && user.schools.length > 0) {
         return {
           id: {
-            equals: user.school,
+            in: user.schools,
           },
         }
       }

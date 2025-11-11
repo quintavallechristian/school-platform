@@ -72,6 +72,7 @@ export interface Config {
     media: Media;
     articles: Article;
     events: Event;
+    projects: Project;
     teachers: Teacher;
     menu: Menu;
     pages: Page;
@@ -91,6 +92,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     articles: ArticlesSelect<false> | ArticlesSelect<true>;
     events: EventsSelect<false> | EventsSelect<true>;
+    projects: ProjectsSelect<false> | ProjectsSelect<true>;
     teachers: TeachersSelect<false> | TeachersSelect<true>;
     menu: MenuSelect<false> | MenuSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
@@ -146,9 +148,9 @@ export interface User {
    */
   role?: ('super-admin' | 'school-admin' | 'editor' | 'viewer') | null;
   /**
-   * Scuola di appartenenza
+   * Scuole di appartenenza
    */
-  school?: (string | null) | School;
+  schools?: (string | School)[] | null;
   firstName?: string | null;
   lastName?: string | null;
   phone?: string | null;
@@ -621,6 +623,23 @@ export interface Page {
           }
         | {
             /**
+             * Es: "I Nostri Progetti", "Progetti della Scuola"
+             */
+            title?: string | null;
+            /**
+             * Quanti progetti mostrare (max 12)
+             */
+            limit: number;
+            /**
+             * Mostra un pulsante per andare alla pagina progetti completa
+             */
+            showViewAll?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'projectList';
+          }
+        | {
+            /**
              * Es: "Comunicazioni Importanti", "Avvisi"
              */
             title?: string | null;
@@ -639,6 +658,15 @@ export interface Page {
             id?: string | null;
             blockName?: string | null;
             blockType: 'communications';
+          }
+        | {
+            /**
+             * Es: "Il Nostro Team", "I Nostri Insegnanti"
+             */
+            title?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'teacherList';
           }
       )[]
     | null;
@@ -781,7 +809,49 @@ export interface Event {
   location?: string | null;
   cover?: (string | null) | Media;
   /**
+   * Se abilitato, aggiunge un overlay gradiente sopra l'immagine di copertina per migliorare la leggibilità del testo nell'hero
+   */
+  gradientOverlay?: boolean | null;
+  /**
    * Collega una galleria di immagini a questo evento (opzionale)
+   */
+  gallery?: (string | null) | Gallery;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "projects".
+ */
+export interface Project {
+  id: string;
+  /**
+   * Scuola a cui appartiene questo progetto
+   */
+  school?: (string | null) | School;
+  title: string;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  cover?: (string | null) | Media;
+  /**
+   * Se abilitato, aggiunge un overlay gradiente sopra l'immagine di copertina per migliorare la leggibilità del testo nell'hero
+   */
+  gradientOverlay?: boolean | null;
+  /**
+   * Collega una galleria di immagini a questo progetto (opzionale)
    */
   gallery?: (string | null) | Gallery;
   updatedAt: string;
@@ -1199,6 +1269,10 @@ export interface PayloadLockedDocument {
         value: string | Event;
       } | null)
     | ({
+        relationTo: 'projects';
+        value: string | Project;
+      } | null)
+    | ({
         relationTo: 'teachers';
         value: string | Teacher;
       } | null)
@@ -1274,7 +1348,7 @@ export interface PayloadMigration {
  */
 export interface UsersSelect<T extends boolean = true> {
   role?: T;
-  school?: T;
+  schools?: T;
   firstName?: T;
   lastName?: T;
   phone?: T;
@@ -1381,6 +1455,21 @@ export interface EventsSelect<T extends boolean = true> {
   description?: T;
   location?: T;
   cover?: T;
+  gradientOverlay?: T;
+  gallery?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "projects_select".
+ */
+export interface ProjectsSelect<T extends boolean = true> {
+  school?: T;
+  title?: T;
+  description?: T;
+  cover?: T;
+  gradientOverlay?: T;
   gallery?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1815,6 +1904,15 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        projectList?:
+          | T
+          | {
+              title?: T;
+              limit?: T;
+              showViewAll?: T;
+              id?: T;
+              blockName?: T;
+            };
         communications?:
           | T
           | {
@@ -1822,6 +1920,13 @@ export interface PagesSelect<T extends boolean = true> {
               limit?: T;
               priorityFilter?: T;
               showViewAll?: T;
+              id?: T;
+              blockName?: T;
+            };
+        teacherList?:
+          | T
+          | {
+              title?: T;
               id?: T;
               blockName?: T;
             };

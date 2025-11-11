@@ -1,5 +1,11 @@
 import { CollectionConfig } from 'payload'
-import { tenantRead, tenantCreate, tenantUpdate, tenantDelete, assignSchoolBeforeChange } from '../lib/access'
+import {
+  tenantRead,
+  tenantCreate,
+  tenantUpdate,
+  tenantDelete,
+  assignSchoolBeforeChange,
+} from '../lib/access'
 
 // Helper per creare i campi di un giorno
 const createDayFields = (dayName: string, emoji: string = '🗓️') => ({
@@ -58,6 +64,10 @@ const createWeekFields = (weekNumber: number) => ({
 
 export const Menu: CollectionConfig = {
   slug: 'menu',
+  labels: {
+    singular: 'Menu',
+    plural: 'Menu',
+  },
   admin: {
     useAsTitle: 'name',
     description: 'Gestisci i menù stagionali della mensa',

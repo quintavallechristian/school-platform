@@ -12,6 +12,8 @@
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation next lint",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
+    "migrate:schools": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/migrate-users-to-multiple-schools.ts",
+    "fix:users-no-schools": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/fix-user-without-schools.ts",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "test": "pnpm run test:int && pnpm run test:e2e",
     "test:e2e": "cross-env NODE_OPTIONS=\"--no-deprecation --no-experimental-strip-types\" pnpm exec playwright test",

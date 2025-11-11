@@ -8,7 +8,9 @@ import FileDownloadBlock from './FileDownloadBlock'
 import GalleryBlock from './GalleryBlock'
 import ArticleListBlock from './ArticleListBlock'
 import EventListBlock from './EventListBlock'
+import ProjectListBlock from './ProjectListBlock'
 import CommunicationsBlock from './CommunicationsBlock'
+import TeacherListBlock from './TeacherListBlock'
 
 type Props = {
   blocks: Page['blocks']
@@ -55,6 +57,21 @@ export default function PageBlocks({ blocks, schoolId, schoolSlug }: Props) {
           )
         }
 
+        if (block.blockType === 'projectList') {
+          if (!schoolId || !schoolSlug) {
+            console.warn('ProjectListBlock requires schoolId and schoolSlug')
+            return null
+          }
+          return (
+            <ProjectListBlock
+              key={index}
+              block={block}
+              schoolId={schoolId}
+              schoolSlug={schoolSlug}
+            />
+          )
+        }
+
         if (block.blockType === 'communications') {
           if (!schoolId || !schoolSlug) {
             console.warn('CommunicationsBlock requires schoolId and schoolSlug')
@@ -62,6 +79,22 @@ export default function PageBlocks({ blocks, schoolId, schoolSlug }: Props) {
           }
           return (
             <CommunicationsBlock
+              key={index}
+              block={block}
+              schoolId={schoolId}
+              schoolSlug={schoolSlug}
+            />
+          )
+        }
+
+        // TeacherList block è full-width
+        if (block.blockType === 'teacherList') {
+          if (!schoolId || !schoolSlug) {
+            console.warn('TeacherListBlock requires schoolId and schoolSlug')
+            return null
+          }
+          return (
+            <TeacherListBlock
               key={index}
               block={block}
               schoolId={schoolId}

@@ -7,63 +7,123 @@ interface RichTextRendererProps {
 export function RichTextRenderer({ content }: RichTextRendererProps) {
   if (!content) return null
 
-  // Rendering semplificato del rich text - adatta in base al tuo editor
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const renderNode = (node: any): React.ReactNode => {
+  const renderNode = (node: any, index: number = 0): React.ReactNode => {
     if (!node) return null
 
-    if (typeof node === 'string') {
-      return node
-    }
+    // Text node with Lexical formatting
+    if (node.type === 'text' && typeof node.text === 'string') {
+      let text: React.ReactNode = node.text
 
-    if (Array.isArray(node)) {
-      return node.map((child, index) => (
-        <React.Fragment key={index}>{renderNode(child)}</React.Fragment>
-      ))
-    }
+      // Lexical uses bitwise format flags
+      if (typeof node.format === 'number') {
+        const format = node.format
 
-    if (node.type === 'paragraph' || node.type === 'p') {
-      return <p>{renderNode(node.children)}</p>
-    }
+        // Apply formatting in nested order (code, strikethrough, underline, italic, bold)
+        if (format & 16) {
+          // code
+          text = <code key={`code-${index}`}>{text}</code>
+        }
+        if (format & 4) {
+          // strikethrough
+          text = <s key={`strike-${index}`}>{text}</s>
+        }
+        if (format & 8) {
+          // underline
+          text = <u key={`underline-${index}`}>{text}</u>
+        }
+        if (format & 2) {
+          // italic
+          text = <em key={`italic-${index}`}>{text}</em>
+        }
+        if (format & 1) {
+          // bold
+          text = <strong key={`bold-${index}`}>{text}</strong>
+        }
+      }
 
-    if (node.type === 'heading' || node.type === 'h1') {
-      return <h1>{renderNode(node.children)}</h1>
-    }
-
-    if (node.type === 'h2') {
-      return <h2>{renderNode(node.children)}</h2>
-    }
-
-    if (node.type === 'h3') {
-      return <h3>{renderNode(node.children)}</h3>
-    }
-
-    if (node.type === 'ul') {
-      return <ul>{renderNode(node.children)}</ul>
-    }
-
-    if (node.type === 'ol') {
-      return <ol>{renderNode(node.children)}</ol>
-    }
-
-    if (node.type === 'li' || node.type === 'listitem') {
-      return <li>{renderNode(node.children)}</li>
-    }
-
-    if (node.type === 'link') {
-      return <a href={node.url}>{renderNode(node.children)}</a>
-    }
-
-    if (node.text !== undefined) {
-      let text = node.text
-      if (node.bold) text = <strong>{text}</strong>
-      if (node.italic) text = <em>{text}</em>
-      if (node.underline) text = <u>{text}</u>
       return text
     }
 
-    if (node.children) {
-      return renderNode(node.children)
+    // Handle nodes with children
+    if (Array.isArray(node.children)) {
+      const children = node.children.map((child: unknown, i: number) => renderNode(child, i))
+
+      switch (node.type) {
+        case 'paragraph':
+          return <p key={index}>{children}</p>
+
+        case 'heading':
+          const tag = node.tag || 'h1'
+          switch (tag) {
+            case 'h1':
+              return <h1 key={index}>{children}</h1>
+            case 'h2':
+              return <h2 key={index}>{children}</h2>
+            case 'h3':
+              return <h3 key={index}>{children}</h3>
+            case 'h4':
+              return <h4 key={index}>{children}</h4>
+            case 'h5':
+              return <h5 key={index}>{children}</h5>
+            case 'h6':
+              return <h6 key={index}>{children}</h6>
+            default:
+              return <h1 key={index}>{children}</h1>
+          }
+
+        case 'list':
+          if (node.listType === 'bullet') {
+            return <ul key={index}>{children}</ul>
+          } else if (node.listType === 'number') {
+            return <ol key={index}>{children}</ol>
+          }
+          return <ul key={index}>{children}</ul>
+
+        case 'listitem':
+          return <li key={index}>{children}</li>
+
+        case 'quote':
+          return <blockquote key={index}>{children}</blockquote>
+
+        case 'link':
+          const url = node.fields?.url || node.url || '#'
+          const newTab = node.fields?.newTab || node.newTab || false
+          return (
+            <a
+              key={index}
+              href={url}
+              target={newTab ? '_blank' : undefined}
+              rel={newTab ? 'noopener noreferrer' : undefined}
+            >
+              {children}
+            </a>
+          )
+
+        default:
+          return <React.Fragment key={index}>{children}</React.Fragment>
+      }
+    }
+
+    // Handle linebreak
+    if (node.type === 'linebreak') {
+      return <br key={index} />
+    }
+
+    return null
+  }
+
+  const renderContent = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const contentObj = content as any
+
+    if (contentObj?.root?.children) {
+      return contentObj.root.children.map((node: unknown, index: number) => renderNode(node, index))
+    }
+
+    // Fallback for different structures
+    if (Array.isArray(contentObj)) {
+      return contentObj.map((node, index) => renderNode(node, index))
     }
 
     return null
@@ -87,8 +147,7 @@ export function RichTextRenderer({ content }: RichTextRendererProps) {
                 [&_img]:max-w-full [&_img]:h-auto [&_img]:rounded-lg [&_img]:my-8
                 [&_hr]:border-0 [&_hr]:border-t-2 [&_hr]:border-border [&_hr]:my-12"
     >
-      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-      {renderNode((content as any).root?.children || content)}
+      {renderContent()}
     </div>
   )
 }

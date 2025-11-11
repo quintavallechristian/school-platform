@@ -8,15 +8,15 @@ import {
   getSchoolField,
 } from '../lib/access'
 
-export const Events: CollectionConfig = {
-  slug: 'events',
+export const Projects: CollectionConfig = {
+  slug: 'projects',
   labels: {
-    singular: 'Evento',
-    plural: 'Eventi',
+    singular: 'Progetto',
+    plural: 'Progetti',
   },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'date', 'location', 'school'],
+    defaultColumns: ['title', 'school'],
     group: 'Contenuti',
   },
   access: {
@@ -29,11 +29,9 @@ export const Events: CollectionConfig = {
     beforeChange: [assignSchoolBeforeChange],
   },
   fields: [
-    getSchoolField('Scuola a cui appartiene questo evento'),
+    getSchoolField('Scuola a cui appartiene questo progetto'),
     { name: 'title', type: 'text', label: 'Titolo', required: true },
-    { name: 'date', type: 'date', label: 'Data', required: true },
     { name: 'description', type: 'richText', label: 'Descrizione' },
-    { name: 'location', type: 'text', label: 'Luogo' },
     { name: 'cover', type: 'upload', relationTo: 'media', label: 'Copertina' },
     {
       name: 'gradientOverlay',
@@ -51,7 +49,7 @@ export const Events: CollectionConfig = {
       relationTo: 'gallery',
       label: 'Galleria',
       admin: {
-        description: 'Collega una galleria di immagini a questo evento (opzionale)',
+        description: 'Collega una galleria di immagini a questo progetto (opzionale)',
       },
     },
   ],

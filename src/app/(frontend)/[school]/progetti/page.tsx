@@ -1,0 +1,80 @@
+import { notFound } from 'next/navigation'
+import Link from 'next/link'
+import { getCurrentSchool, getSchoolProjects } from '@/lib/school'
+import Hero from '@/components/Hero/Hero'
+import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
+import type { Project } from '@/payload-types'
+import Image from 'next/image'
+import { Button } from '@/components/ui/button'
+
+export default async function ProjectsPage({ params }: { params: Promise<{ school: string }> }) {
+  const { school: schoolSlug } = await params
+  const school = await getCurrentSchool(schoolSlug)
+
+  if (!school) {
+    notFound()
+  }
+
+  const { docs: projects } = await getSchoolProjects(school.id, 50)
+
+  return (
+    <div className="min-h-[calc(100vh-200px)]">
+      <Hero
+        title="Progetti della scuola"
+        subtitle={`Scopri tutti i progetti e le attività di ${school.name}`}
+      />
+
+      <section className="py-16">
+        <div className="max-w-7xl mx-auto px-8">
+          {projects.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {(projects as Project[]).map((project) => (
+                <SpotlightCard key={project.id} className="px-0 py-0">
+                  <Link href={`/${schoolSlug}/progetti/${project.id}`}>
+                    {project.cover && typeof project.cover === 'object' && project.cover.url && (
+                      <div className="relative h-48 w-full overflow-hidden">
+                        <Image
+                          src={project.cover.url}
+                          alt={project.title}
+                          fill
+                          className="object-cover hover:scale-105 transition-transform duration-300 rounded-t-2xl"
+                        />
+                      </div>
+                    )}
+
+                    <div className="p-6">
+                      <h3 className="text-2xl font-bold mb-4">{project.title}</h3>
+                      <Button className="w-fit">Vedi progetto</Button>
+                    </div>
+                  </Link>
+                </SpotlightCard>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16">
+              <p className="text-muted-foreground text-lg">
+                Nessun progetto disponibile al momento.
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
+    </div>
+  )
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ school: string }> }) {
+  const { school: schoolSlug } = await params
+  const school = await getCurrentSchool(schoolSlug)
+
+  if (!school) {
+    return {
+      title: 'Scuola non trovata',
+    }
+  }
+
+  return {
+    title: `Progetti - ${school.name}`,
+    description: `Scopri tutti i progetti e le attività realizzate da ${school.name}`,
+  }
+}

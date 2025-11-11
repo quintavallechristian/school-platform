@@ -1,12 +1,23 @@
 import { CollectionConfig } from 'payload'
 import { Resend } from 'resend'
-import { tenantRead, tenantCreate, tenantUpdate, tenantDelete, assignSchoolBeforeChange } from '../lib/access'
+import {
+  tenantRead,
+  tenantCreate,
+  tenantUpdate,
+  tenantDelete,
+  assignSchoolBeforeChange,
+  getSchoolField,
+} from '../lib/access'
 
 // Inizializza Resend solo se la chiave API è presente
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
 
 export const Communications: CollectionConfig = {
   slug: 'communications',
+  labels: {
+    singular: 'Comunicazione',
+    plural: 'Comunicazioni',
+  },
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'priority', 'publishedAt', 'isActive', 'school'],
@@ -20,9 +31,7 @@ export const Communications: CollectionConfig = {
     delete: tenantDelete,
   },
   hooks: {
-    beforeChange: [
-      assignSchoolBeforeChange,
-    ],
+    beforeChange: [assignSchoolBeforeChange],
     afterChange: [
       async ({ doc, operation, req }) => {
         // Invia email solo quando viene creata una nuova comunicazione attiva
@@ -183,20 +192,7 @@ export const Communications: CollectionConfig = {
     ],
   },
   fields: [
-    {
-      name: 'school',
-      type: 'relationship',
-      relationTo: 'schools',
-      required: true,
-      label: 'Scuola',
-      admin: {
-        description: 'Scuola a cui appartiene questa comunicazione',
-        condition: (data, siblingData, { user }) => {
-          // Mostra il campo solo ai super-admin
-          return user?.role === 'super-admin'
-        },
-      },
-    },
+    getSchoolField('Scuola a cui appartiene questa comunicazione'),
     {
       name: 'title',
       type: 'text',
