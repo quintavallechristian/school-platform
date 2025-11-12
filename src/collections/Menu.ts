@@ -65,14 +65,14 @@ const createWeekFields = (weekNumber: number) => ({
 export const Menu: CollectionConfig = {
   slug: 'menu',
   labels: {
-    singular: 'Menu',
-    plural: 'Menu',
+    singular: 'Menu mensa',
+    plural: 'Menu mensa',
   },
   admin: {
     useAsTitle: 'name',
     description: 'Gestisci i menù stagionali della mensa',
     defaultColumns: ['name', 'isActive', 'validFrom', 'validTo', 'school', 'updatedAt'],
-    group: 'Contenuti',
+    group: 'Scuola',
   },
   access: {
     read: tenantRead,

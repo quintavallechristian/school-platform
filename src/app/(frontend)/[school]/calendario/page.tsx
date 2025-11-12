@@ -1,5 +1,5 @@
-import { notFound } from 'next/navigation'
-import { getCurrentSchool, getSchoolCalendarDays } from '@/lib/school'
+import { notFound, redirect } from 'next/navigation'
+import { getCurrentSchool, getSchoolCalendarDays, isFeatureEnabled } from '@/lib/school'
 import { CalendarView } from '@/components/CalendarView/CalendarView'
 import Hero from '@/components/Hero/Hero'
 
@@ -9,6 +9,11 @@ export default async function CalendarioPage({ params }: { params: Promise<{ sch
 
   if (!school) {
     notFound()
+  }
+
+  // Reindirizza alla homepage se la feature calendario è disabilitata
+  if (!isFeatureEnabled(school, 'calendar')) {
+    redirect(`/${schoolSlug}`)
   }
 
   const { docs: calendarDays } = await getSchoolCalendarDays(school.id)

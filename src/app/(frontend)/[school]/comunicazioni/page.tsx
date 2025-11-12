@@ -1,5 +1,5 @@
-import { notFound } from 'next/navigation'
-import { getCurrentSchool, getSchoolCommunications } from '@/lib/school'
+import { notFound, redirect } from 'next/navigation'
+import { getCurrentSchool, getSchoolCommunications, isFeatureEnabled } from '@/lib/school'
 import Hero from '@/components/Hero/Hero'
 import { CommunicationsList } from '@/components/CommunicationsList/CommunicationsList'
 import { EmailSubscription } from '@/components/EmailSubscription/EmailSubscription'
@@ -14,6 +14,11 @@ export default async function ComunicazioniPage({
 
   if (!school) {
     notFound()
+  }
+
+  // Reindirizza alla homepage se la feature comunicazioni è disabilitata
+  if (!isFeatureEnabled(school, 'communications')) {
+    redirect(`/${schoolSlug}`)
   }
 
   const { docs: communications } = await getSchoolCommunications(school.id)

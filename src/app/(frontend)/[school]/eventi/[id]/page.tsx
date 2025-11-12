@@ -1,6 +1,6 @@
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
-import { getCurrentSchool, getSchoolEventById } from '@/lib/school'
+import { getCurrentSchool, getSchoolEventById, isFeatureEnabled } from '@/lib/school'
 import React from 'react'
 import Hero from '@/components/Hero/Hero'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
@@ -19,6 +19,11 @@ export default async function EventPage({
 
   if (!school) {
     notFound()
+  }
+
+  // Reindirizza alla homepage se la feature eventi è disabilitata
+  if (!isFeatureEnabled(school, 'events')) {
+    redirect(`/${schoolSlug}`)
   }
 
   const event = await getSchoolEventById(school.id, id)

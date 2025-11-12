@@ -1,6 +1,6 @@
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
-import { getCurrentSchool, getSchoolProjectById } from '@/lib/school'
+import { getCurrentSchool, getSchoolProjectById, isFeatureEnabled } from '@/lib/school'
 import React from 'react'
 import Hero from '@/components/Hero/Hero'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
@@ -19,6 +19,11 @@ export default async function ProjectPage({
 
   if (!school) {
     notFound()
+  }
+
+  // Reindirizza alla homepage se la feature progetti è disabilitata
+  if (!isFeatureEnabled(school, 'projects')) {
+    redirect(`/${schoolSlug}`)
   }
 
   const project = await getSchoolProjectById(school.id, id)

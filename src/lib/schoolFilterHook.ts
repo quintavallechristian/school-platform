@@ -5,8 +5,8 @@ import type { CollectionBeforeOperationHook } from 'payload'
  * basato sulla selezione dello SchoolSwitcher
  */
 export const applySchoolFilterHook: CollectionBeforeOperationHook = async ({ args, operation }) => {
-  // Applica solo alle operazioni di lettura (find, findByID)
-  if (operation !== 'read' && operation !== 'find') {
+  // Applica solo alle operazioni di lettura (read)
+  if (operation !== 'read') {
     return args
   }
 

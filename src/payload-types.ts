@@ -69,15 +69,17 @@ export interface Config {
   collections: {
     users: User;
     schools: School;
-    media: Media;
-    articles: Article;
-    events: Event;
     projects: Project;
     teachers: Teacher;
-    menu: Menu;
-    pages: Page;
     'calendar-days': CalendarDay;
+    events: Event;
+    menu: Menu;
+    documents: Document;
     communications: Communication;
+    testimonials: Testimonial;
+    articles: Article;
+    pages: Page;
+    media: Media;
     gallery: Gallery;
     'email-subscribers': EmailSubscriber;
     'payload-kv': PayloadKv;
@@ -89,15 +91,17 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     schools: SchoolsSelect<false> | SchoolsSelect<true>;
-    media: MediaSelect<false> | MediaSelect<true>;
-    articles: ArticlesSelect<false> | ArticlesSelect<true>;
-    events: EventsSelect<false> | EventsSelect<true>;
     projects: ProjectsSelect<false> | ProjectsSelect<true>;
     teachers: TeachersSelect<false> | TeachersSelect<true>;
-    menu: MenuSelect<false> | MenuSelect<true>;
-    pages: PagesSelect<false> | PagesSelect<true>;
     'calendar-days': CalendarDaysSelect<false> | CalendarDaysSelect<true>;
+    events: EventsSelect<false> | EventsSelect<true>;
+    menu: MenuSelect<false> | MenuSelect<true>;
+    documents: DocumentsSelect<false> | DocumentsSelect<true>;
     communications: CommunicationsSelect<false> | CommunicationsSelect<true>;
+    testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
+    articles: ArticlesSelect<false> | ArticlesSelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
+    media: MediaSelect<false> | MediaSelect<true>;
     gallery: GallerySelect<false> | GallerySelect<true>;
     'email-subscribers': EmailSubscribersSelect<false> | EmailSubscribersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -108,8 +112,18 @@ export interface Config {
   db: {
     defaultIDType: string;
   };
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    homepage: Homepage;
+    ChiSiamo: ChiSiamo;
+    PrivacyPolicy: PrivacyPolicy;
+    CookiePolicy: CookiePolicy;
+  };
+  globalsSelect: {
+    homepage: HomepageSelect<false> | HomepageSelect<true>;
+    ChiSiamo: ChiSiamoSelect<false> | ChiSiamoSelect<true>;
+    PrivacyPolicy: PrivacyPolicySelect<false> | PrivacyPolicySelect<true>;
+    CookiePolicy: CookiePolicySelect<false> | CookiePolicySelect<true>;
+  };
   locale: null;
   user: User & {
     collection: 'users';
@@ -235,6 +249,39 @@ export interface School {
     language?: ('it' | 'en' | 'fr' | 'es') | null;
   };
   /**
+   * Scegli quali sezioni mostrare nel frontend della scuola
+   */
+  featureVisibility?: {
+    /**
+     * Se attivo, la sezione Blog sarà visibile nel frontend
+     */
+    showBlog?: boolean | null;
+    /**
+     * Se attivo, la sezione Eventi sarà visibile nel frontend
+     */
+    showEvents?: boolean | null;
+    /**
+     * Se attivo, la sezione Progetti sarà visibile nel frontend
+     */
+    showProjects?: boolean | null;
+    /**
+     * Se attivo, la sezione Comunicazioni sarà visibile nel frontend
+     */
+    showCommunications?: boolean | null;
+    /**
+     * Se attivo, la sezione Calendario sarà visibile nel frontend
+     */
+    showCalendar?: boolean | null;
+    /**
+     * Se attivo, la sezione Mensa sarà visibile nel frontend
+     */
+    showMenu?: boolean | null;
+    /**
+     * Se attivo, la sezione Documenti sarà visibile nel frontend
+     */
+    showDocuments?: boolean | null;
+  };
+  /**
    * Informazioni sul piano di abbonamento
    */
   subscription?: {
@@ -302,11 +349,11 @@ export interface Page {
    */
   heroSettings?: {
     /**
-     * Se disabilitato, l'hero di default non verrà mostrato (utile se usi un blocco Hero personalizzato)
+     * Se disabilitato, la copertina non verrà mostrata (utile se usi un immagini personalizzate)
      */
     showHero?: boolean | null;
     /**
-     * Se abilitato, l'hero di default occuperà l'intera altezza dello schermo
+     * Se abilitato, la copertina occuperà l'intera altezza dello schermo
      */
     fullHeight?: boolean | null;
     /**
@@ -323,36 +370,7 @@ export interface Page {
     gradientOverlay?: boolean | null;
   };
   /**
-   * Aggiungi un divisore decorativo in cima all'hero
-   */
-  heroTopDivider?: {
-    enabled?: boolean | null;
-    style?:
-      | (
-          | 'wave'
-          | 'wave-brush'
-          | 'waves'
-          | 'zigzag'
-          | 'triangle'
-          | 'triangle-asymmetric'
-          | 'curve'
-          | 'curve-asymmetric'
-          | 'tilt'
-          | 'arrow'
-          | 'split'
-          | 'clouds'
-          | 'mountains'
-        )
-      | null;
-    /**
-     * Altezza del divisore in pixel (30-300)
-     */
-    height?: number | null;
-    flip?: boolean | null;
-    invert?: boolean | null;
-  };
-  /**
-   * Aggiungi un divisore decorativo in fondo all'hero
+   * Aggiungi un divisore decorativo in fondo alla copertina
    */
   heroBottomDivider?: {
     enabled?: boolean | null;
@@ -466,7 +484,7 @@ export interface Page {
               invert?: boolean | null;
             };
             /**
-             * Aggiungi un divisore decorativo in fondo all'hero
+             * Aggiungi un divisore decorativo in fondo alla copertina
              */
             bottomDivider?: {
               enabled?: boolean | null;
@@ -880,6 +898,35 @@ export interface Teacher {
   createdAt: string;
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "calendar-days".
+ */
+export interface CalendarDay {
+  id: string;
+  /**
+   * Scuola a cui appartiene questo evento del calendario
+   */
+  school?: (string | null) | School;
+  title: string;
+  description?: string | null;
+  type: 'holiday' | 'closure' | 'event' | 'trip';
+  /**
+   * Costo dell'evento (es. "15€" o "Gratuito")
+   */
+  cost?: string | null;
+  /**
+   * Collega un evento per maggiori dettagli
+   */
+  linkedEvent?: (string | null) | Event;
+  startDate: string;
+  /**
+   * Lasciare vuoto se è un singolo giorno
+   */
+  endDate?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Gestisci i menù stagionali della mensa
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1119,31 +1166,77 @@ export interface Menu {
   createdAt: string;
 }
 /**
+ * Gestisci le sezioni di documenti scaricabili
+ *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "calendar-days".
+ * via the `definition` "documents".
  */
-export interface CalendarDay {
+export interface Document {
   id: string;
   /**
-   * Scuola a cui appartiene questo evento del calendario
+   * Scuola a cui appartiene questo documento
    */
   school?: (string | null) | School;
+  /**
+   * Titolo della sezione che raggruppa questi documenti (es: "Modulistica", "Regolamenti")
+   */
   title: string;
+  /**
+   * Breve descrizione della sezione (opzionale)
+   */
   description?: string | null;
-  type: 'holiday' | 'closure' | 'event' | 'trip';
   /**
-   * Costo dell'evento (es. "15€" o "Gratuito")
+   * Aggiungi uno o più documenti per questa sezione
    */
-  cost?: string | null;
+  files: {
+    /**
+     * PDF, DOC, XLS, o altri documenti
+     */
+    file: string | Media;
+    /**
+     * Nome descrittivo del documento
+     */
+    title: string;
+    /**
+     * Breve descrizione del contenuto (opzionale)
+     */
+    description?: string | null;
+    /**
+     * Es: "v1.2", "Anno Scolastico 2024/25"
+     */
+    version?: string | null;
+    /**
+     * Se attivo, questo documento verrà mostrato nella sezione "In evidenza"
+     */
+    featured?: boolean | null;
+    id?: string | null;
+  }[];
   /**
-   * Collega un evento per maggiori dettagli
+   * Numero per ordinare le sezioni (più basso = prima)
    */
-  linkedEvent?: (string | null) | Event;
-  startDate: string;
+  order?: number | null;
   /**
-   * Lasciare vuoto se è un singolo giorno
+   * Se attivo, solo gli utenti autenticati potranno scaricare questi file
    */
-  endDate?: string | null;
+  requiresAuth?: boolean | null;
+  /**
+   * Data in cui il documento è stato pubblicato (opzionale)
+   */
+  publishedAt?: string | null;
+  /**
+   * Data dopo la quale il documento non sarà più visibile (opzionale)
+   */
+  expiresAt?: string | null;
+  seo?: {
+    /**
+     * Titolo per i motori di ricerca (se vuoto, usa il titolo del documento)
+     */
+    metaTitle?: string | null;
+    /**
+     * Descrizione per i motori di ricerca (max 160 caratteri)
+     */
+    metaDescription?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -1193,6 +1286,48 @@ export interface Communication {
    * Collega un evento per maggiori dettagli (opzionale)
    */
   linkedEvent?: (string | null) | Event;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials".
+ */
+export interface Testimonial {
+  id: string;
+  school: string | School;
+  /**
+   * Se disattivata, la testimonianza non sarà visibile nel frontend
+   */
+  isActive?: boolean | null;
+  /**
+   * Nome completo della persona che ha rilasciato la testimonianza
+   */
+  authorName: string;
+  /**
+   * Es: Genitore, Ex Studente, Insegnante, ecc.
+   */
+  role?: string | null;
+  /**
+   * Foto dell'autore (opzionale)
+   */
+  photo?: (string | null) | Media;
+  /**
+   * Testo della testimonianza
+   */
+  content: string;
+  /**
+   * Valutazione da 1 a 5 stelle (opzionale)
+   */
+  rating?: number | null;
+  /**
+   * Se attiva, la testimonianza sarà mostrata in evidenza
+   */
+  featured?: boolean | null;
+  /**
+   * Data della testimonianza (opzionale)
+   */
+  date?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1257,18 +1392,6 @@ export interface PayloadLockedDocument {
         value: string | School;
       } | null)
     | ({
-        relationTo: 'media';
-        value: string | Media;
-      } | null)
-    | ({
-        relationTo: 'articles';
-        value: string | Article;
-      } | null)
-    | ({
-        relationTo: 'events';
-        value: string | Event;
-      } | null)
-    | ({
         relationTo: 'projects';
         value: string | Project;
       } | null)
@@ -1277,20 +1400,40 @@ export interface PayloadLockedDocument {
         value: string | Teacher;
       } | null)
     | ({
+        relationTo: 'calendar-days';
+        value: string | CalendarDay;
+      } | null)
+    | ({
+        relationTo: 'events';
+        value: string | Event;
+      } | null)
+    | ({
         relationTo: 'menu';
         value: string | Menu;
+      } | null)
+    | ({
+        relationTo: 'documents';
+        value: string | Document;
+      } | null)
+    | ({
+        relationTo: 'communications';
+        value: string | Communication;
+      } | null)
+    | ({
+        relationTo: 'testimonials';
+        value: string | Testimonial;
+      } | null)
+    | ({
+        relationTo: 'articles';
+        value: string | Article;
       } | null)
     | ({
         relationTo: 'pages';
         value: string | Page;
       } | null)
     | ({
-        relationTo: 'calendar-days';
-        value: string | CalendarDay;
-      } | null)
-    | ({
-        relationTo: 'communications';
-        value: string | Communication;
+        relationTo: 'media';
+        value: string | Media;
       } | null)
     | ({
         relationTo: 'gallery';
@@ -1398,6 +1541,17 @@ export interface SchoolsSelect<T extends boolean = true> {
         timezone?: T;
         language?: T;
       };
+  featureVisibility?:
+    | T
+    | {
+        showBlog?: T;
+        showEvents?: T;
+        showProjects?: T;
+        showCommunications?: T;
+        showCalendar?: T;
+        showMenu?: T;
+        showDocuments?: T;
+      };
   subscription?:
     | T
     | {
@@ -1406,57 +1560,6 @@ export interface SchoolsSelect<T extends boolean = true> {
         maxUsers?: T;
         maxStorage?: T;
       };
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
- */
-export interface MediaSelect<T extends boolean = true> {
-  school?: T;
-  alt?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "articles_select".
- */
-export interface ArticlesSelect<T extends boolean = true> {
-  school?: T;
-  title?: T;
-  cover?: T;
-  slug?: T;
-  content?: T;
-  author?: T;
-  publishedAt?: T;
-  gallery?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "events_select".
- */
-export interface EventsSelect<T extends boolean = true> {
-  school?: T;
-  title?: T;
-  date?: T;
-  description?: T;
-  location?: T;
-  cover?: T;
-  gradientOverlay?: T;
-  gallery?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1486,6 +1589,38 @@ export interface TeachersSelect<T extends boolean = true> {
   email?: T;
   bio?: T;
   photo?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "calendar-days_select".
+ */
+export interface CalendarDaysSelect<T extends boolean = true> {
+  school?: T;
+  title?: T;
+  description?: T;
+  type?: T;
+  cost?: T;
+  linkedEvent?: T;
+  startDate?: T;
+  endDate?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events_select".
+ */
+export interface EventsSelect<T extends boolean = true> {
+  school?: T;
+  title?: T;
+  date?: T;
+  description?: T;
+  location?: T;
+  cover?: T;
+  gradientOverlay?: T;
+  gallery?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1745,6 +1880,87 @@ export interface MenuSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "documents_select".
+ */
+export interface DocumentsSelect<T extends boolean = true> {
+  school?: T;
+  title?: T;
+  description?: T;
+  files?:
+    | T
+    | {
+        file?: T;
+        title?: T;
+        description?: T;
+        version?: T;
+        featured?: T;
+        id?: T;
+      };
+  order?: T;
+  requiresAuth?: T;
+  publishedAt?: T;
+  expiresAt?: T;
+  seo?:
+    | T
+    | {
+        metaTitle?: T;
+        metaDescription?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "communications_select".
+ */
+export interface CommunicationsSelect<T extends boolean = true> {
+  school?: T;
+  title?: T;
+  content?: T;
+  priority?: T;
+  isActive?: T;
+  publishedAt?: T;
+  expiresAt?: T;
+  linkedArticle?: T;
+  linkedEvent?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials_select".
+ */
+export interface TestimonialsSelect<T extends boolean = true> {
+  school?: T;
+  isActive?: T;
+  authorName?: T;
+  role?: T;
+  photo?: T;
+  content?: T;
+  rating?: T;
+  featured?: T;
+  date?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "articles_select".
+ */
+export interface ArticlesSelect<T extends boolean = true> {
+  school?: T;
+  title?: T;
+  cover?: T;
+  slug?: T;
+  content?: T;
+  author?: T;
+  publishedAt?: T;
+  gallery?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages_select".
  */
 export interface PagesSelect<T extends boolean = true> {
@@ -1760,15 +1976,6 @@ export interface PagesSelect<T extends boolean = true> {
         backgroundImage?: T;
         parallax?: T;
         gradientOverlay?: T;
-      };
-  heroTopDivider?:
-    | T
-    | {
-        enabled?: T;
-        style?: T;
-        height?: T;
-        flip?: T;
-        invert?: T;
       };
   heroBottomDivider?:
     | T
@@ -1945,36 +2152,22 @@ export interface PagesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "calendar-days_select".
+ * via the `definition` "media_select".
  */
-export interface CalendarDaysSelect<T extends boolean = true> {
+export interface MediaSelect<T extends boolean = true> {
   school?: T;
-  title?: T;
-  description?: T;
-  type?: T;
-  cost?: T;
-  linkedEvent?: T;
-  startDate?: T;
-  endDate?: T;
+  alt?: T;
   updatedAt?: T;
   createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "communications_select".
- */
-export interface CommunicationsSelect<T extends boolean = true> {
-  school?: T;
-  title?: T;
-  content?: T;
-  priority?: T;
-  isActive?: T;
-  publishedAt?: T;
-  expiresAt?: T;
-  linkedArticle?: T;
-  linkedEvent?: T;
-  updatedAt?: T;
-  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2055,6 +2248,837 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * Configura i contenuti della home page
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "homepage".
+ */
+export interface Homepage {
+  id: string;
+  /**
+   * Scuola a cui appartiene questa configurazione
+   */
+  school?: (string | null) | School;
+  /**
+   * Se disabilitato, verrà mostrata la homepage di default con articoli ed eventi. Se abilitato, puoi personalizzare completamente la homepage.
+   */
+  customizeHomepage?: boolean | null;
+  /**
+   * Personalizza l'hero di default della pagina
+   */
+  heroSettings?: {
+    /**
+     * Se disabilitato, la copertina non verrà mostrata (utile se usi un immagini personalizzate)
+     */
+    showHero?: boolean | null;
+    /**
+     * Titolo che appare nella copertina
+     */
+    title?: string | null;
+    /**
+     * Testo che appare sotto il titolo nell'hero
+     */
+    subtitle?: string | null;
+    /**
+     * Se abilitato, la copertina occuperà l'intera altezza dello schermo
+     */
+    fullHeight?: boolean | null;
+    /**
+     * Immagine opzionale per lo sfondo dell'hero
+     */
+    backgroundImage?: (string | null) | Media;
+    /**
+     * Se abilitato, l'immagine di sfondo avrà un effetto parallax durante lo scroll
+     */
+    parallax?: boolean | null;
+    /**
+     * Se abilitato, aggiunge un overlay gradiente sopra l'immagine per migliorare la leggibilità del testo
+     */
+    gradientOverlay?: boolean | null;
+    /**
+     * Aggiungi un divisore decorativo in fondo alla copertina
+     */
+    bottomDivider?: {
+      enabled?: boolean | null;
+      style?:
+        | (
+            | 'wave'
+            | 'wave-brush'
+            | 'waves'
+            | 'zigzag'
+            | 'triangle'
+            | 'triangle-asymmetric'
+            | 'curve'
+            | 'curve-asymmetric'
+            | 'tilt'
+            | 'arrow'
+            | 'split'
+            | 'clouds'
+            | 'mountains'
+          )
+        | null;
+      /**
+       * Altezza del divisore in pixel (30-300)
+       */
+      height?: number | null;
+      flip?: boolean | null;
+      invert?: boolean | null;
+    };
+  };
+  /**
+   * Aggiungi sezioni personalizzate come call-to-action, team cards, feature grids, ecc.
+   */
+  blocks?:
+    | (
+        | {
+            backgroundColor?: string | null;
+            /**
+             * Titolo principale con effetto gradiente animato
+             */
+            title: string;
+            /**
+             * Testo secondario con animazione blur
+             */
+            subtitle?: string | null;
+            /**
+             * Se attivo, l'hero occuperà l'intera altezza dello schermo
+             */
+            fullHeight?: boolean | null;
+            /**
+             * Immagine opzionale per lo sfondo dell'hero
+             */
+            backgroundImage?: (string | null) | Media;
+            /**
+             * Se abilitato, l'immagine di sfondo avrà un effetto parallax durante lo scroll
+             */
+            parallax?: boolean | null;
+            /**
+             * Se abilitato, aggiunge un overlay gradiente sopra l'immagine per migliorare la leggibilità del testo
+             */
+            gradientOverlay?: boolean | null;
+            buttons?:
+              | {
+                  text: string;
+                  href: string;
+                  variant?: ('default' | 'destructive' | 'outline' | 'link') | null;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Aggiungi un divisore decorativo in cima all'hero
+             */
+            topDivider?: {
+              enabled?: boolean | null;
+              style?:
+                | (
+                    | 'wave'
+                    | 'wave-brush'
+                    | 'waves'
+                    | 'zigzag'
+                    | 'triangle'
+                    | 'triangle-asymmetric'
+                    | 'curve'
+                    | 'curve-asymmetric'
+                    | 'tilt'
+                    | 'arrow'
+                    | 'split'
+                    | 'clouds'
+                    | 'mountains'
+                  )
+                | null;
+              /**
+               * Altezza del divisore in pixel (30-300)
+               */
+              height?: number | null;
+              flip?: boolean | null;
+              invert?: boolean | null;
+            };
+            /**
+             * Aggiungi un divisore decorativo in fondo all'hero
+             */
+            bottomDivider?: {
+              enabled?: boolean | null;
+              style?:
+                | (
+                    | 'wave'
+                    | 'wave-brush'
+                    | 'waves'
+                    | 'zigzag'
+                    | 'triangle'
+                    | 'triangle-asymmetric'
+                    | 'curve'
+                    | 'curve-asymmetric'
+                    | 'tilt'
+                    | 'arrow'
+                    | 'split'
+                    | 'clouds'
+                    | 'mountains'
+                  )
+                | null;
+              /**
+               * Altezza del divisore in pixel (30-300)
+               */
+              height?: number | null;
+              flip?: boolean | null;
+              invert?: boolean | null;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'hero';
+          }
+        | {
+            backgroundColor?: string | null;
+            title?: string | null;
+            limit: number;
+            showViewAll?: boolean | null;
+            featuredOnly?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'testimonials';
+          }
+        | {
+            backgroundColor?: string | null;
+            title: string;
+            subtitle?: string | null;
+            image?: (string | null) | Media;
+            buttons?:
+              | {
+                  text: string;
+                  href: string;
+                  variant?: ('default' | 'secondary' | 'outline' | 'ghost') | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'callToAction';
+          }
+        | {
+            backgroundColor?: string | null;
+            content: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'richText';
+          }
+        | {
+            backgroundColor?: string | null;
+            title?: string | null;
+            columns?: ('2' | '3' | '4') | null;
+            cards?:
+              | {
+                  title: string;
+                  description?: string | null;
+                  image?: (string | null) | Media;
+                  link?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cardGrid';
+          }
+        | {
+            backgroundColor?: string | null;
+            /**
+             * Es: "Documenti Utili", "Moduli da scaricare"
+             */
+            title?: string | null;
+            description?: string | null;
+            files?:
+              | {
+                  /**
+                   * PDF, DOC, XLS, o altri documenti
+                   */
+                  file: string | Media;
+                  /**
+                   * Se vuoto, usa il nome del file
+                   */
+                  title?: string | null;
+                  description?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'fileDownload';
+          }
+        | {
+            backgroundColor?: string | null;
+            /**
+             * Seleziona una galleria esistente da mostrare
+             */
+            gallery: string | Gallery;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'gallery';
+          }
+        | {
+            backgroundColor?: string | null;
+            /**
+             * Es: "Ultime Notizie", "Articoli in Evidenza"
+             */
+            title?: string | null;
+            /**
+             * Quanti articoli mostrare (max 12)
+             */
+            limit: number;
+            /**
+             * Mostra un pulsante per andare alla pagina blog completa
+             */
+            showViewAll?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'articleList';
+          }
+        | {
+            backgroundColor?: string | null;
+            /**
+             * Es: "Prossimi Eventi", "Eventi della Scuola"
+             */
+            title?: string | null;
+            /**
+             * Quanti eventi mostrare (max 12)
+             */
+            limit: number;
+            /**
+             * Scegli quali eventi mostrare in base alla data
+             */
+            filter?: ('all' | 'upcoming' | 'past') | null;
+            /**
+             * Mostra un pulsante per andare alla pagina eventi completa
+             */
+            showViewAll?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'eventList';
+          }
+        | {
+            backgroundColor?: string | null;
+            /**
+             * Es: "I Nostri Progetti", "Progetti della Scuola"
+             */
+            title?: string | null;
+            /**
+             * Quanti progetti mostrare (max 12)
+             */
+            limit: number;
+            /**
+             * Mostra un pulsante per andare alla pagina progetti completa
+             */
+            showViewAll?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'projectList';
+          }
+        | {
+            backgroundColor?: string | null;
+            /**
+             * Es: "Comunicazioni Importanti", "Avvisi"
+             */
+            title?: string | null;
+            /**
+             * Quante comunicazioni mostrare (max 20)
+             */
+            limit: number;
+            /**
+             * Seleziona le priorità da mostrare (se vuoto, mostra tutte)
+             */
+            priorityFilter?: ('low' | 'normal' | 'high' | 'urgent')[] | null;
+            /**
+             * Mostra un pulsante per andare alla pagina comunicazioni completa
+             */
+            showViewAll?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'communications';
+          }
+        | {
+            backgroundColor?: string | null;
+            /**
+             * Es: "Il Nostro Team", "I Nostri Insegnanti"
+             */
+            title?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'teacherList';
+          }
+      )[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Configura i contenuti della pagina Chi Siamo
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ChiSiamo".
+ */
+export interface ChiSiamo {
+  id: string;
+  /**
+   * Scuola a cui appartiene questa configurazione
+   */
+  school?: (string | null) | School;
+  /**
+   * Se disabilitato, verrà mostrata la pagina di default con hero "Chi Siamo" e la lista degli insegnanti. Se abilitato, puoi personalizzare completamente la pagina.
+   */
+  customizeChiSiamo?: boolean | null;
+  /**
+   * Personalizza l'hero di default della pagina
+   */
+  heroSettings?: {
+    /**
+     * Se disabilitato, la copertina non verrà mostrata (utile se usi un immagini personalizzate)
+     */
+    showHero?: boolean | null;
+    /**
+     * Titolo che appare nella copertina
+     */
+    title?: string | null;
+    /**
+     * Testo che appare sotto il titolo nell'hero
+     */
+    subtitle?: string | null;
+    /**
+     * Se abilitato, la copertina occuperà l'intera altezza dello schermo
+     */
+    fullHeight?: boolean | null;
+    /**
+     * Immagine opzionale per lo sfondo dell'hero
+     */
+    backgroundImage?: (string | null) | Media;
+    /**
+     * Se abilitato, l'immagine di sfondo avrà un effetto parallax durante lo scroll
+     */
+    parallax?: boolean | null;
+    /**
+     * Se abilitato, aggiunge un overlay gradiente sopra l'immagine per migliorare la leggibilità del testo
+     */
+    gradientOverlay?: boolean | null;
+    /**
+     * Aggiungi un divisore decorativo in fondo alla copertina
+     */
+    bottomDivider?: {
+      enabled?: boolean | null;
+      style?:
+        | (
+            | 'wave'
+            | 'wave-brush'
+            | 'waves'
+            | 'zigzag'
+            | 'triangle'
+            | 'triangle-asymmetric'
+            | 'curve'
+            | 'curve-asymmetric'
+            | 'tilt'
+            | 'arrow'
+            | 'split'
+            | 'clouds'
+            | 'mountains'
+          )
+        | null;
+      /**
+       * Altezza del divisore in pixel (30-300)
+       */
+      height?: number | null;
+      flip?: boolean | null;
+      invert?: boolean | null;
+    };
+  };
+  /**
+   * Testo principale che appare dopo l'hero
+   */
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Configura la sezione con la lista degli insegnanti
+   */
+  teachersSection?: {
+    /**
+     * Se abilitato, verrà mostrata la lista degli insegnanti della scuola
+     */
+    enabled?: boolean | null;
+    /**
+     * Titolo della sezione insegnanti
+     */
+    title?: string | null;
+    /**
+     * Sottotitolo opzionale per la sezione insegnanti
+     */
+    subtitle?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Configura i contenuti della pagina Privacy Policy
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PrivacyPolicy".
+ */
+export interface PrivacyPolicy {
+  id: string;
+  /**
+   * Scuola a cui appartiene questa configurazione
+   */
+  school?: (string | null) | School;
+  /**
+   * Se disabilitato, verrà mostrata la pagina di default "Privacy Policy". Se abilitato, puoi personalizzare in contenuto. Suggeriamo di abilitare questa opzione e personalizzare la Privacy Policy con i dati della tua scuola.
+   */
+  customizePrivacyPolicy?: boolean | null;
+  /**
+   * Testo principale
+   */
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Configura i contenuti della pagina Cookie Policy
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CookiePolicy".
+ */
+export interface CookiePolicy {
+  id: string;
+  /**
+   * Scuola a cui appartiene questa configurazione
+   */
+  school?: (string | null) | School;
+  /**
+   * Se disabilitato, verrà mostrata la pagina di default "Cookie Policy". Se abilitato, puoi personalizzare in contenuto. Suggeriamo di abilitare questa opzione e personalizzare la Cookie Policy con i dati della tua scuola.
+   */
+  customizeCookiePolicy?: boolean | null;
+  /**
+   * Testo principale
+   */
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "homepage_select".
+ */
+export interface HomepageSelect<T extends boolean = true> {
+  school?: T;
+  customizeHomepage?: T;
+  heroSettings?:
+    | T
+    | {
+        showHero?: T;
+        title?: T;
+        subtitle?: T;
+        fullHeight?: T;
+        backgroundImage?: T;
+        parallax?: T;
+        gradientOverlay?: T;
+        bottomDivider?:
+          | T
+          | {
+              enabled?: T;
+              style?: T;
+              height?: T;
+              flip?: T;
+              invert?: T;
+            };
+      };
+  blocks?:
+    | T
+    | {
+        hero?:
+          | T
+          | {
+              backgroundColor?: T;
+              title?: T;
+              subtitle?: T;
+              fullHeight?: T;
+              backgroundImage?: T;
+              parallax?: T;
+              gradientOverlay?: T;
+              buttons?:
+                | T
+                | {
+                    text?: T;
+                    href?: T;
+                    variant?: T;
+                    id?: T;
+                  };
+              topDivider?:
+                | T
+                | {
+                    enabled?: T;
+                    style?: T;
+                    height?: T;
+                    flip?: T;
+                    invert?: T;
+                  };
+              bottomDivider?:
+                | T
+                | {
+                    enabled?: T;
+                    style?: T;
+                    height?: T;
+                    flip?: T;
+                    invert?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        testimonials?:
+          | T
+          | {
+              backgroundColor?: T;
+              title?: T;
+              limit?: T;
+              showViewAll?: T;
+              featuredOnly?: T;
+              id?: T;
+              blockName?: T;
+            };
+        callToAction?:
+          | T
+          | {
+              backgroundColor?: T;
+              title?: T;
+              subtitle?: T;
+              image?: T;
+              buttons?:
+                | T
+                | {
+                    text?: T;
+                    href?: T;
+                    variant?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        richText?:
+          | T
+          | {
+              backgroundColor?: T;
+              content?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cardGrid?:
+          | T
+          | {
+              backgroundColor?: T;
+              title?: T;
+              columns?: T;
+              cards?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                    image?: T;
+                    link?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        fileDownload?:
+          | T
+          | {
+              backgroundColor?: T;
+              title?: T;
+              description?: T;
+              files?:
+                | T
+                | {
+                    file?: T;
+                    title?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        gallery?:
+          | T
+          | {
+              backgroundColor?: T;
+              gallery?: T;
+              id?: T;
+              blockName?: T;
+            };
+        articleList?:
+          | T
+          | {
+              backgroundColor?: T;
+              title?: T;
+              limit?: T;
+              showViewAll?: T;
+              id?: T;
+              blockName?: T;
+            };
+        eventList?:
+          | T
+          | {
+              backgroundColor?: T;
+              title?: T;
+              limit?: T;
+              filter?: T;
+              showViewAll?: T;
+              id?: T;
+              blockName?: T;
+            };
+        projectList?:
+          | T
+          | {
+              backgroundColor?: T;
+              title?: T;
+              limit?: T;
+              showViewAll?: T;
+              id?: T;
+              blockName?: T;
+            };
+        communications?:
+          | T
+          | {
+              backgroundColor?: T;
+              title?: T;
+              limit?: T;
+              priorityFilter?: T;
+              showViewAll?: T;
+              id?: T;
+              blockName?: T;
+            };
+        teacherList?:
+          | T
+          | {
+              backgroundColor?: T;
+              title?: T;
+              id?: T;
+              blockName?: T;
+            };
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ChiSiamo_select".
+ */
+export interface ChiSiamoSelect<T extends boolean = true> {
+  school?: T;
+  customizeChiSiamo?: T;
+  heroSettings?:
+    | T
+    | {
+        showHero?: T;
+        title?: T;
+        subtitle?: T;
+        fullHeight?: T;
+        backgroundImage?: T;
+        parallax?: T;
+        gradientOverlay?: T;
+        bottomDivider?:
+          | T
+          | {
+              enabled?: T;
+              style?: T;
+              height?: T;
+              flip?: T;
+              invert?: T;
+            };
+      };
+  content?: T;
+  teachersSection?:
+    | T
+    | {
+        enabled?: T;
+        title?: T;
+        subtitle?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PrivacyPolicy_select".
+ */
+export interface PrivacyPolicySelect<T extends boolean = true> {
+  school?: T;
+  customizePrivacyPolicy?: T;
+  content?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CookiePolicy_select".
+ */
+export interface CookiePolicySelect<T extends boolean = true> {
+  school?: T;
+  customizeCookiePolicy?: T;
+  content?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

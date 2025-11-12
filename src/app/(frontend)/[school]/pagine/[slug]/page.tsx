@@ -77,17 +77,6 @@ export default async function CustomPage({ params }: Props) {
 
   const hasContent = hasRealContent(page.content)
 
-  // Prepara il divisore superiore per l'hero di default
-  const topDivider =
-    (page as PageType).heroTopDivider?.enabled && (page as PageType).heroTopDivider?.style
-      ? {
-          style: (page as PageType).heroTopDivider!.style as ShapeDividerStyle,
-          height: (page as PageType).heroTopDivider!.height || undefined,
-          flip: (page as PageType).heroTopDivider!.flip || undefined,
-          invert: (page as PageType).heroTopDivider!.invert || undefined,
-        }
-      : undefined
-
   // Prepara il divisore inferiore per l'hero di default
   const bottomDivider =
     (page as PageType).heroBottomDivider?.enabled && (page as PageType).heroBottomDivider?.style
@@ -109,7 +98,6 @@ export default async function CustomPage({ params }: Props) {
           backgroundImage={(page as PageType).heroSettings?.backgroundImage || undefined}
           parallax={(page as PageType).heroSettings?.parallax || false}
           gradientOverlay={(page as PageType).heroSettings?.gradientOverlay || false}
-          topDivider={topDivider}
           bottomDivider={bottomDivider}
         />
       )}

@@ -183,7 +183,7 @@ export default function Hero({
               delay={150}
               animateBy="words"
               direction="top"
-              className="text-2xl mb-8"
+              className="text-2xl mb-8 text-center"
             />
           </div>
         )}

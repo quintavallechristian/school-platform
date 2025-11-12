@@ -16,10 +16,16 @@ import { Projects } from './collections/Projects'
 import { Teachers } from './collections/Teachers'
 import { Menu } from './collections/Menu'
 import { Pages } from './collections/Pages'
-import { CalendarDays } from './collections/CalendarDays'
 import { Communications } from './collections/Communications'
 import { Gallery } from './collections/Gallery'
 import { EmailSubscribers } from './collections/EmailSubscribers'
+import { Documents } from './collections/Documents'
+import { Testimonials } from './collections/Testimonials'
+import { Homepage } from './globals/Homepage'
+import { ChiSiamo } from './globals/ChiSiamo'
+import { CalendarDays } from './collections/CalendarDays'
+import { PrivacyPolicy } from './globals/PrivacyPolicy'
+import { CookiePolicy } from './globals/CookiePolicy'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -34,19 +40,27 @@ export default buildConfig({
   i18n: {
     supportedLanguages: { it },
   },
+  globals: [Homepage, ChiSiamo, PrivacyPolicy, CookiePolicy],
   collections: [
     Users,
     Schools,
-    Media,
-    Articles,
-    Events,
+    // Contenuti
     Projects,
     Teachers,
-    Menu,
-    Pages,
     CalendarDays,
+    Events,
+    Menu,
+    //Scuola e genitori
+    Documents,
     Communications,
+    Testimonials,
+    // Blog
+    Articles,
+    Pages,
+    // Media
+    Media,
     Gallery,
+    // Newsletter
     EmailSubscribers,
   ],
   editor: lexicalEditor(),

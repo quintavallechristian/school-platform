@@ -10,14 +10,14 @@ import {
 export const EmailSubscribers: CollectionConfig = {
   slug: 'email-subscribers',
   labels: {
-    singular: 'Iscritto',
+    singular: 'Iscritti',
     plural: 'Iscritti',
   },
   admin: {
     useAsTitle: 'email',
     defaultColumns: ['email', 'isActive', 'subscribedAt', 'school'],
     description: 'Gestisci gli iscritti alle notifiche email delle comunicazioni',
-    group: 'Sistema',
+    group: 'Newsletter',
   },
   access: {
     read: tenantRead,

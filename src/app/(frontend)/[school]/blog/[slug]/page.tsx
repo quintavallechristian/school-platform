@@ -1,7 +1,7 @@
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { getCurrentSchool, getSchoolArticleBySlug } from '@/lib/school'
+import { getCurrentSchool, getSchoolArticleBySlug, isFeatureEnabled } from '@/lib/school'
 import Hero from '@/components/Hero/Hero'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import GalleryView from '@/components/GalleryView/GalleryView'
@@ -20,6 +20,11 @@ export default async function ArticlePage({
 
   if (!school) {
     notFound()
+  }
+
+  // Reindirizza alla homepage se la feature blog è disabilitata
+  if (!isFeatureEnabled(school, 'blog')) {
+    redirect(`/${schoolSlug}`)
   }
 
   const article = await getSchoolArticleBySlug(school.id, slug)

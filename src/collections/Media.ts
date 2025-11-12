@@ -1,5 +1,11 @@
 import type { CollectionConfig } from 'payload'
-import { tenantRead, tenantCreate, tenantUpdate, tenantDelete, assignSchoolBeforeChange } from '../lib/access'
+import {
+  publicRead,
+  tenantCreate,
+  tenantUpdate,
+  tenantDelete,
+  assignSchoolBeforeChange,
+} from '../lib/access'
 
 export const Media: CollectionConfig = {
   slug: 'media',
@@ -7,7 +13,7 @@ export const Media: CollectionConfig = {
     group: 'Media',
   },
   access: {
-    read: tenantRead,
+    read: publicRead,
     create: tenantCreate,
     update: tenantUpdate,
     delete: tenantDelete,

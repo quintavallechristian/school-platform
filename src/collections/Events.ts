@@ -17,7 +17,7 @@ export const Events: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'date', 'location', 'school'],
-    group: 'Contenuti',
+    group: 'Scuola',
   },
   access: {
     read: tenantRead,

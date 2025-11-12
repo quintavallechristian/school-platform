@@ -65,7 +65,7 @@ export const Pages: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'school', 'updatedAt'],
-    group: 'Contenuti',
+    group: 'Blog',
   },
   access: {
     read: tenantRead,
@@ -102,11 +102,11 @@ export const Pages: CollectionConfig = {
         description: "Testo che appare sotto il titolo nell'hero (se l'hero è abilitato)",
       },
     },
-    // Configurazione Hero
+    // Configurazione copertina
     {
       name: 'heroSettings',
       type: 'group',
-      label: 'Configurazione Hero',
+      label: 'Configurazione copertina',
       admin: {
         description: "Personalizza l'hero di default della pagina",
       },
@@ -114,20 +114,20 @@ export const Pages: CollectionConfig = {
         {
           name: 'showHero',
           type: 'checkbox',
-          label: 'Mostra Hero di default',
+          label: 'Mostra copertina',
           defaultValue: true,
           admin: {
             description:
-              "Se disabilitato, l'hero di default non verrà mostrato (utile se usi un blocco Hero personalizzato)",
+              'Se disabilitato, la copertina non verrà mostrata (utile se usi un immagini personalizzate)',
           },
         },
         {
           name: 'fullHeight',
           type: 'checkbox',
-          label: 'Hero a schermo intero',
+          label: 'Copertina a schermo intero',
           defaultValue: false,
           admin: {
-            description: "Se abilitato, l'hero di default occuperà l'intera altezza dello schermo",
+            description: "Se abilitato, la copertina occuperà l'intera altezza dello schermo",
             condition: (data, siblingData) => siblingData?.showHero === true,
           },
         },
@@ -168,37 +168,11 @@ export const Pages: CollectionConfig = {
       ],
     },
     {
-      name: 'heroTopDivider',
-      type: 'group',
-      label: 'Divisore Superiore Hero',
-      admin: {
-        description: "Aggiungi un divisore decorativo in cima all'hero",
-        condition: (data) => data.heroSettings?.showHero === true,
-      },
-      fields: [
-        {
-          name: 'enabled',
-          type: 'checkbox',
-          label: 'Abilita divisore superiore',
-          defaultValue: false,
-        },
-        ...shapeDividerFields.map((field) => ({
-          ...field,
-          admin: {
-            ...field.admin,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            condition: (data: Record<string, any>, siblingData: Record<string, any>) =>
-              siblingData?.enabled === true,
-          },
-        })),
-      ],
-    },
-    {
       name: 'heroBottomDivider',
       type: 'group',
-      label: 'Divisore Inferiore Hero',
+      label: 'Divisore Inferiore Copertina',
       admin: {
-        description: "Aggiungi un divisore decorativo in fondo all'hero",
+        description: 'Aggiungi un divisore decorativo in fondo alla copertina',
         condition: (data) => data.heroSettings?.showHero === true,
       },
       fields: [
@@ -407,7 +381,7 @@ export const Pages: CollectionConfig = {
               type: 'group',
               label: 'Divisore Inferiore',
               admin: {
-                description: "Aggiungi un divisore decorativo in fondo all'hero",
+                description: 'Aggiungi un divisore decorativo in fondo alla copertina',
               },
               fields: [
                 {

@@ -4,8 +4,12 @@ import { useField } from '@payloadcms/ui'
 import React from 'react'
 import type { TextFieldClientComponent } from 'payload'
 
-const ColorPickerField: TextFieldClientComponent = ({ field }) => {
-  const { value, setValue } = useField<string>({ path: field.name })
+const ColorPickerField: TextFieldClientComponent = ({ field, path }) => {
+  const { value, setValue } = useField<string>({ path: path || field.name })
+
+  const handleChange = (newValue: string) => {
+    setValue(newValue)
+  }
 
   const labelText = typeof field.label === 'string' ? field.label : field.name
   const descriptionText =
@@ -24,7 +28,7 @@ const ColorPickerField: TextFieldClientComponent = ({ field }) => {
           type="color"
           id={field.name}
           value={value || '#000000'}
-          onChange={(e) => setValue(e.target.value)}
+          onChange={(e) => handleChange(e.target.value)}
           style={{
             width: '60px',
             height: '40px',
@@ -36,7 +40,7 @@ const ColorPickerField: TextFieldClientComponent = ({ field }) => {
         <input
           type="text"
           value={value || '#000000'}
-          onChange={(e) => setValue(e.target.value)}
+          onChange={(e) => handleChange(e.target.value)}
           placeholder="#000000"
           pattern="^#[0-9A-Fa-f]{6}$"
           style={{

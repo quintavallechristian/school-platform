@@ -152,13 +152,12 @@ export const Users: CollectionConfig = {
     beforeChange: [
       ({ req, data, operation }) => {
         // Migrazione automatica: converte school → schools
-        // @ts-expect-error - Il campo school potrebbe ancora esistere nel database
-        if (data.school && (!data.schools || data.schools.length === 0)) {
-          // @ts-expect-error - Conversione da vecchio campo
-          const schoolId = typeof data.school === 'string' ? data.school : data.school.id
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const oldData = data as any
+        if (oldData.school && (!data.schools || data.schools.length === 0)) {
+          const schoolId = typeof oldData.school === 'string' ? oldData.school : oldData.school.id
           data.schools = [schoolId]
-          // @ts-expect-error - Rimuovi il vecchio campo
-          delete data.school
+          delete oldData.school
         }
 
         // Se non è super-admin e sta creando un utente, assegna automaticamente le sue scuole
@@ -177,10 +176,10 @@ export const Users: CollectionConfig = {
     afterRead: [
       ({ doc }) => {
         // Migrazione automatica durante la lettura: converte school → schools
-        // @ts-expect-error - Il campo school potrebbe ancora esistere nel database
-        if (doc.school && (!doc.schools || doc.schools.length === 0)) {
-          // @ts-expect-error - Conversione da vecchio campo
-          const schoolId = typeof doc.school === 'string' ? doc.school : doc.school.id
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const oldDoc = doc as any
+        if (oldDoc.school && (!doc.schools || doc.schools.length === 0)) {
+          const schoolId = typeof oldDoc.school === 'string' ? oldDoc.school : oldDoc.school.id
           doc.schools = [schoolId]
         }
         return doc

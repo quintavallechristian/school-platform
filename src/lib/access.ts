@@ -48,6 +48,14 @@ export const tenantRead: Access = ({ req: { user } }) => {
 }
 
 /**
+ * Permette lettura pubblica di tutti i contenuti
+ * Utile per Media e Documents che devono essere accessibili dal frontend
+ */
+export const publicRead: Access = () => {
+  return true
+}
+
+/**
  * Permette creazione solo se l'utente ha i permessi
  * School-admin ed editor possono creare contenuti
  */

@@ -51,7 +51,7 @@ export default async function CommunicationsBlock({ block, schoolId, schoolSlug 
   if (communications.length === 0) {
     return (
       <div className="max-w-7xl mx-auto px-8 py-16">
-        {block.title && <h2 className="text-3xl font-bold mb-8">{block.title}</h2>}
+        {block.title && <h2 className="text-3xl font-bold mb-8 text-primary">{block.title}</h2>}
         <div className="text-center py-12 text-muted-foreground">
           <p className="text-xl">📭 Nessuna comunicazione disponibile</p>
         </div>
@@ -61,7 +61,7 @@ export default async function CommunicationsBlock({ block, schoolId, schoolSlug 
 
   return (
     <div className="max-w-7xl mx-auto px-8 py-16">
-      {block.title && <h2 className="text-3xl font-bold mb-8">{block.title}</h2>}
+      {block.title && <h2 className="text-3xl font-bold mb-8 text-primary">{block.title}</h2>}
 
       <CommunicationsList
         communications={communications as Communication[]}

@@ -1,5 +1,5 @@
-import { notFound } from 'next/navigation'
-import { getCurrentSchool, getSchoolActiveMenu } from '@/lib/school'
+import { notFound, redirect } from 'next/navigation'
+import { getCurrentSchool, getSchoolActiveMenu, isFeatureEnabled } from '@/lib/school'
 import Hero from '@/components/Hero/Hero'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import type { Menu } from '@/payload-types'
@@ -27,6 +27,11 @@ export default async function MensaPage({ params }: { params: Promise<{ school: 
 
   if (!school) {
     notFound()
+  }
+
+  // Reindirizza alla homepage se la feature mensa è disabilitata
+  if (!isFeatureEnabled(school, 'menu')) {
+    redirect(`/${schoolSlug}`)
   }
 
   const activeMenu = (await getSchoolActiveMenu(school.id)) as Menu | null

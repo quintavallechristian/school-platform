@@ -38,7 +38,7 @@ const formatFileSize = (bytes?: number | null) => {
 export default function FileDownloadBlock({ block }: Props) {
   return (
     <div className="my-12">
-      {block.title && <h2 className="text-3xl font-bold mb-4">{block.title}</h2>}
+      {block.title && <h2 className="text-3xl font-bold mb-4 text-primary">{block.title}</h2>}
       {block.description && <p className="text-muted-foreground mb-6">{block.description}</p>}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -57,7 +57,7 @@ export default function FileDownloadBlock({ block }: Props) {
                 <div className="shrink-0 mt-1">{getFileIcon(mimeType)}</div>
 
                 <div className="grow min-w-0">
-                  <h3 className="text-lg font-semibold mb-1 truncate">{fileName}</h3>
+                  <h3 className="text-lg font-semibold mb-1 truncate text-primary">{fileName}</h3>
 
                   {fileItem.description && (
                     <p className="text-sm text-muted-foreground mb-2">{fileItem.description}</p>

@@ -19,7 +19,9 @@ export default function CardGridBlock({ block }: Props) {
 
   return (
     <div className="my-12">
-      {block.title && <h2 className="text-3xl font-bold mb-8 text-center">{block.title}</h2>}
+      {block.title && (
+        <h2 className="text-3xl font-bold mb-8 text-center text-primary">{block.title}</h2>
+      )}
       <div className={`grid grid-cols-1 ${columnsClass} gap-6`}>
         {block.cards?.map((card, index) => {
           const imageUrl =
@@ -38,7 +40,7 @@ export default function CardGridBlock({ block }: Props) {
                   />
                 </div>
               )}
-              <h3 className="text-xl font-semibold mb-2">{card.title}</h3>
+              <h3 className="text-xl font-semibold mb-2 text-primary">{card.title}</h3>
               {card.description && (
                 <p className="text-muted-foreground grow whitespace-pre-line">{card.description}</p>
               )}

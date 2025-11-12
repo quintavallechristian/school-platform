@@ -1,6 +1,6 @@
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
-import { getCurrentSchool, getSchoolEvents } from '@/lib/school'
+import { getCurrentSchool, getSchoolEvents, isFeatureEnabled } from '@/lib/school'
 import Hero from '@/components/Hero/Hero'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import type { Event } from '@/payload-types'
@@ -13,6 +13,11 @@ export default async function EventsPage({ params }: { params: Promise<{ school:
 
   if (!school) {
     notFound()
+  }
+
+  // Reindirizza alla homepage se la feature eventi è disabilitata
+  if (!isFeatureEnabled(school, 'events')) {
+    redirect(`/${schoolSlug}`)
   }
 
   const { docs: events } = await getSchoolEvents(school.id, 50)
@@ -33,7 +38,7 @@ export default async function EventsPage({ params }: { params: Promise<{ school:
         <div className="max-w-7xl mx-auto px-8">
           {upcomingEvents.length > 0 && (
             <div className="mb-16">
-              <h2 className="text-3xl font-bold mb-8">Prossimi Eventi</h2>
+              <h2 className="text-3xl font-bold mb-8 text-primary">Prossimi Eventi</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {upcomingEvents.map((event: Event) => (
                   <SpotlightCard key={event.id} className="px-0 py-0">
@@ -70,7 +75,7 @@ export default async function EventsPage({ params }: { params: Promise<{ school:
 
           {pastEvents.length > 0 && (
             <div className="opacity-85">
-              <h2 className="text-3xl font-bold mb-8 text-muted-foreground">Eventi Passati</h2>
+              <h2 className="text-3xl font-bold mb-8 text-primary">Eventi Passati</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {pastEvents.reverse().map((event: Event) => (
                   <SpotlightCard

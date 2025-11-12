@@ -5,15 +5,15 @@ import {
   getSchoolArticles,
   getSchoolEvents,
   getSchoolCommunications,
-  getSchoolPage,
+  getSchoolHomepage,
+  isFeatureEnabled,
 } from '@/lib/school'
 import Hero from '@/components/Hero/Hero'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import { Button } from '@/components/ui/button'
 import { CommunicationsList } from '@/components/CommunicationsList/CommunicationsList'
 import PageBlocks from '@/components/PageBlocks/PageBlocks'
-import { RichTextRenderer } from '@/components/RichTextRenderer/RichTextRenderer'
-import type { Page as PageType } from '@/payload-types'
+import type { Homepage as HomepageType } from '@/payload-types'
 import type { ShapeDividerStyle } from '@/components/ShapeDivider/ShapeDivider'
 
 type PageProps = {
@@ -27,118 +27,98 @@ export default async function SchoolHomePage({ params }: PageProps) {
     notFound()
   }
 
-  // Controlla se c'è una homepage personalizzata
-  if (school.settings?.homepage) {
-    const homepageId =
-      typeof school.settings.homepage === 'object'
-        ? school.settings.homepage.id
-        : school.settings.homepage
+  // Controlla se c'è una homepage configurata nella Global
+  const homepage = await getSchoolHomepage(school.id)
 
-    console.log('Homepage ID:', homepageId, 'Type:', typeof homepageId)
+  if (homepage && homepage.customizeHomepage) {
+    const typedPage = homepage as HomepageType
 
-    // Recupera la pagina homepage
-    const homepage = await getSchoolPage(school.id, homepageId)
+    // Mostra l'hero di default solo se showHero è esplicitamente true o undefined
+    const shouldShowDefaultHero =
+      typedPage.heroSettings?.showHero === true || typedPage.heroSettings?.showHero === undefined
+    const heroFullHeight = typedPage.heroSettings?.fullHeight ?? false
 
-    console.log('Homepage found:', !!homepage)
-
-    if (homepage) {
-      const typedPage = homepage as PageType
-
-      // Mostra l'hero di default solo se showHero è esplicitamente true o undefined
-      const shouldShowDefaultHero =
-        typedPage.heroSettings?.showHero === true || typedPage.heroSettings?.showHero === undefined
-      const heroFullHeight = typedPage.heroSettings?.fullHeight ?? false
-
-      // Verifica se il contenuto ha del testo reale
-      const hasRealContent = (content: unknown): boolean => {
-        if (!content || typeof content !== 'object' || content === null) {
-          return false
-        }
-        const lexicalContent = content as Record<string, unknown>
-        if (!lexicalContent.root || typeof lexicalContent.root !== 'object') {
-          return false
-        }
-        const root = lexicalContent.root as Record<string, unknown>
-        if (!Array.isArray(root.children)) {
-          return false
-        }
-        const hasTextInNode = (node: unknown): boolean => {
-          if (!node || typeof node !== 'object') {
-            return false
+    // Prepara il divisore inferiore per l'hero di default
+    const bottomDivider =
+      typedPage.heroSettings?.bottomDivider?.enabled && typedPage.heroSettings?.bottomDivider?.style
+        ? {
+            style: typedPage.heroSettings.bottomDivider.style as ShapeDividerStyle,
+            height: typedPage.heroSettings.bottomDivider.height || undefined,
+            flip: typedPage.heroSettings.bottomDivider.flip || undefined,
+            invert: typedPage.heroSettings.bottomDivider.invert || undefined,
           }
-          const lexicalNode = node as Record<string, unknown>
-          if (typeof lexicalNode.text === 'string' && lexicalNode.text.trim().length > 0) {
-            return true
-          }
-          if (Array.isArray(lexicalNode.children)) {
-            return lexicalNode.children.some((child) => hasTextInNode(child))
-          }
-          return false
-        }
-        return root.children.some((child) => hasTextInNode(child))
-      }
+        : undefined
 
-      const hasContent = hasRealContent(typedPage.content)
-
-      // Prepara il divisore superiore per l'hero di default
-      const topDivider =
-        typedPage.heroTopDivider?.enabled && typedPage.heroTopDivider?.style
-          ? {
-              style: typedPage.heroTopDivider.style as ShapeDividerStyle,
-              height: typedPage.heroTopDivider.height || undefined,
-              flip: typedPage.heroTopDivider.flip || undefined,
-              invert: typedPage.heroTopDivider.invert || undefined,
-            }
-          : undefined
-
-      // Prepara il divisore inferiore per l'hero di default
-      const bottomDivider =
-        typedPage.heroBottomDivider?.enabled && typedPage.heroBottomDivider?.style
-          ? {
-              style: typedPage.heroBottomDivider.style as ShapeDividerStyle,
-              height: typedPage.heroBottomDivider.height || undefined,
-              flip: typedPage.heroBottomDivider.flip || undefined,
-              invert: typedPage.heroBottomDivider.invert || undefined,
-            }
-          : undefined
-
-      return (
-        <div className="min-h-[calc(100vh-200px)]">
-          {shouldShowDefaultHero && (
-            <Hero
-              title={typedPage.title}
-              subtitle={typedPage.subtitle || undefined}
-              big={heroFullHeight}
-              backgroundImage={typedPage.heroSettings?.backgroundImage || undefined}
-              parallax={typedPage.heroSettings?.parallax || false}
-              gradientOverlay={typedPage.heroSettings?.gradientOverlay || false}
-              topDivider={topDivider}
-              bottomDivider={bottomDivider}
-            />
-          )}
-
-          <section>
-            {hasContent && typedPage.content && (
-              <SpotlightCard
-                className={`max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-0 ${shouldShowDefaultHero ? '-mt-16' : 'mt-8'}`}
-              >
-                <RichTextRenderer content={typedPage.content} />
-              </SpotlightCard>
-            )}
-            <PageBlocks blocks={typedPage.blocks} schoolId={school.id} schoolSlug={schoolSlug} />
-          </section>
-        </div>
-      )
-    }
+    return (
+      <div className="min-h-[calc(100vh-200px)]">
+        {shouldShowDefaultHero && (
+          <Hero
+            title={typedPage.heroSettings?.title || 'Home Page'}
+            subtitle={typedPage.heroSettings?.subtitle || undefined}
+            big={heroFullHeight}
+            backgroundImage={typedPage.heroSettings?.backgroundImage || undefined}
+            parallax={typedPage.heroSettings?.parallax || false}
+            gradientOverlay={typedPage.heroSettings?.gradientOverlay || false}
+            bottomDivider={bottomDivider}
+          />
+        )}{' '}
+        <section>
+          <PageBlocks blocks={typedPage.blocks} schoolId={school.id} schoolSlug={schoolSlug} />
+        </section>
+      </div>
+    )
   }
 
-  // Se non c'è homepage personalizzata, mostra la homepage di default
+  // Se non c'è homepage configurata, mostra la homepage di default
 
-  // Ottieni i dati della scuola in parallelo
+  // Ottieni i dati della scuola in parallelo, solo per le features abilitate
+  const showEvents = isFeatureEnabled(school, 'events')
+  const showArticles = isFeatureEnabled(school, 'blog')
+  const showCommunications = isFeatureEnabled(school, 'communications')
+
   const [articles, events, communications] = await Promise.all([
-    getSchoolArticles(school.id, 3),
-    getSchoolEvents(school.id, 3),
-    getSchoolCommunications(school.id, ['high', 'urgent']),
+    showArticles
+      ? getSchoolArticles(school.id, 3)
+      : Promise.resolve({
+          docs: [],
+          totalDocs: 0,
+          limit: 0,
+          totalPages: 0,
+          page: 1,
+          pagingCounter: 1,
+          hasPrevPage: false,
+          hasNextPage: false,
+          prevPage: null,
+          nextPage: null,
+        }),
+    showEvents
+      ? getSchoolEvents(school.id, 3)
+      : Promise.resolve({
+          docs: [],
+          totalDocs: 0,
+          limit: 0,
+          totalPages: 0,
+          page: 1,
+          pagingCounter: 1,
+          hasPrevPage: false,
+          hasNextPage: false,
+          prevPage: null,
+          nextPage: null,
+        }),
+    showCommunications
+      ? getSchoolCommunications(school.id, ['high', 'urgent'])
+      : Promise.resolve({
+          docs: [],
+          totalDocs: 0,
+          limit: 0,
+          totalPages: 0,
+          page: 1,
+          pagingCounter: 1,
+          hasPrevPage: false,
+          hasNextPage: false,
+          prevPage: null,
+          nextPage: null,
+        }),
   ])
 
   return (
@@ -154,7 +134,7 @@ export default async function SchoolHomePage({ params }: PageProps) {
       />
 
       {/* Comunicazioni urgenti */}
-      {communications.docs.length > 0 && (
+      {showCommunications && communications.docs.length > 0 && (
         <section className="py-12 bg-[hsl(var(--chart-5))]/10">
           <div className="container mx-auto px-4">
             <h2 className="text-2xl font-bold mb-6">Comunicazioni Importanti</h2>
@@ -173,76 +153,80 @@ export default async function SchoolHomePage({ params }: PageProps) {
       )}
 
       {/* Events Section */}
-      <section id="events" className="py-16">
-        <div className="max-w-7xl mx-auto px-8">
-          <h2 className="text-4xl font-bold text-center mb-12">Prossimi Eventi</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {events.docs.length > 0 ? (
-              events.docs.map((event) => (
-                <SpotlightCard key={event.id}>
-                  <Link href={`/${schoolSlug}/eventi/${event.id}`}>
-                    <div className="text-emerald-600 font-semibold text-sm mb-2">
-                      {new Date(event.date).toLocaleDateString('it-IT', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric',
-                      })}
-                    </div>
-                    <h3 className="text-2xl font-bold mb-4">{event.title}</h3>
-                    {event.location && <p className="text-sm mb-4">📍 {event.location}</p>}
-                    <div className="leading-relaxed">
-                      Clicca per vedere i dettagli dell&apos;evento
-                    </div>
-                  </Link>
-                </SpotlightCard>
-              ))
-            ) : (
-              <p className="text-center col-span-full py-8">
-                Nessun evento in programma al momento.
-              </p>
-            )}
+      {showEvents && (
+        <section id="events" className="py-16">
+          <div className="max-w-7xl mx-auto px-8">
+            <h2 className="text-4xl font-bold text-center mb-12 text-primary">Prossimi Eventi</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {events.docs.length > 0 ? (
+                events.docs.map((event) => (
+                  <SpotlightCard key={event.id}>
+                    <Link href={`/${schoolSlug}/eventi/${event.id}`}>
+                      <div className="text-emerald-600 font-semibold text-sm mb-2">
+                        {new Date(event.date).toLocaleDateString('it-IT', {
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric',
+                        })}
+                      </div>
+                      <h3 className="text-2xl font-bold mb-4">{event.title}</h3>
+                      {event.location && <p className="text-sm mb-4">📍 {event.location}</p>}
+                      <div className="leading-relaxed">
+                        Clicca per vedere i dettagli dell&apos;evento
+                      </div>
+                    </Link>
+                  </SpotlightCard>
+                ))
+              ) : (
+                <p className="text-center col-span-full py-8">
+                  Nessun evento in programma al momento.
+                </p>
+              )}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Articles Section */}
-      <section id="articles" className="py-16">
-        <div className="max-w-7xl mx-auto px-8">
-          <h2 className="text-4xl font-bold text-center mb-12">Ultimi Articoli</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {articles.docs.length > 0 ? (
-              articles.docs.map((article) => (
-                <SpotlightCard key={article.id}>
-                  <Link href={`/${schoolSlug}/blog/${article.slug}`}>
-                    <div className="text-sm mb-3">
-                      {article.publishedAt && (
-                        <time dateTime={article.publishedAt}>
-                          {new Date(article.publishedAt).toLocaleDateString('it-IT', {
-                            day: 'numeric',
-                            month: 'long',
-                            year: 'numeric',
-                          })}
-                        </time>
-                      )}
-                    </div>
-                    <h3 className="text-2xl font-bold mb-4">{article.title}</h3>
-                    <div className="leading-relaxed mb-4">
-                      Leggi l&apos;articolo completo per scoprire di più...
-                    </div>
-                    <span className="text-emerald-600 font-semibold inline-flex items-center gap-2 group-hover:gap-4 transition-all">
-                      Leggi di più →
-                    </span>
-                  </Link>
-                </SpotlightCard>
-              ))
-            ) : (
-              <p className="text-center col-span-full py-8">
-                Nessun articolo disponibile al momento.
-              </p>
-            )}
+      {showArticles && (
+        <section id="articles" className="py-16">
+          <div className="max-w-7xl mx-auto px-8">
+            <h2 className="text-4xl font-bold text-center mb-12">Ultimi Articoli</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {articles.docs.length > 0 ? (
+                articles.docs.map((article) => (
+                  <SpotlightCard key={article.id}>
+                    <Link href={`/${schoolSlug}/blog/${article.slug}`}>
+                      <div className="text-sm mb-3">
+                        {article.publishedAt && (
+                          <time dateTime={article.publishedAt}>
+                            {new Date(article.publishedAt).toLocaleDateString('it-IT', {
+                              day: 'numeric',
+                              month: 'long',
+                              year: 'numeric',
+                            })}
+                          </time>
+                        )}
+                      </div>
+                      <h3 className="text-2xl font-bold mb-4">{article.title}</h3>
+                      <div className="leading-relaxed mb-4">
+                        Leggi l&apos;articolo completo per scoprire di più...
+                      </div>
+                      <span className="text-emerald-600 font-semibold inline-flex items-center gap-2 group-hover:gap-4 transition-all">
+                        Leggi di più →
+                      </span>
+                    </Link>
+                  </SpotlightCard>
+                ))
+              ) : (
+                <p className="text-center col-span-full py-8">
+                  Nessun articolo disponibile al momento.
+                </p>
+              )}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   )
 }

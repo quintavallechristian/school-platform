@@ -1,5 +1,6 @@
 import { getPayload } from 'payload'
 import config from '../src/payload.config'
+import type { School } from '../src/payload-types'
 
 async function checkSchoolAdminUsers() {
   console.log('🔍 Controllo utenti school-admin...\n')
@@ -77,9 +78,9 @@ async function checkSchoolAdminUsers() {
         limit: 100,
       })
       const schoolIds = new Set(
-        allArticles.docs.map((a) =>
-          typeof a.school === 'object' ? (a.school as Record<string, unknown>).id : a.school,
-        ),
+        allArticles.docs
+          .filter((a) => a.school)
+          .map((a) => (typeof a.school === 'object' ? a.school!.id : a.school)),
       )
       console.log('  School IDs:', Array.from(schoolIds))
     }

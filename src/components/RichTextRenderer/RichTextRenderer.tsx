@@ -15,6 +15,38 @@ export function RichTextRenderer({ content }: RichTextRendererProps) {
     if (node.type === 'text' && typeof node.text === 'string') {
       let text: React.ReactNode = node.text
 
+      // Prepare inline styles for color and background
+      const inlineStyle: React.CSSProperties = {}
+
+      if (node.style) {
+        // Parse style string if it's a string
+        if (typeof node.style === 'string') {
+          const styleObj = node.style
+            .split(';')
+            .reduce((acc: Record<string, string>, rule: string) => {
+              const [key, value] = rule.split(':').map((s) => s.trim())
+              if (key && value) {
+                // Convert CSS property names to camelCase
+                const camelKey = key.replace(/-([a-z])/g, (g) => g[1].toUpperCase())
+                acc[camelKey] = value
+              }
+              return acc
+            }, {})
+          Object.assign(inlineStyle, styleObj)
+        } else {
+          // If it's already an object
+          Object.assign(inlineStyle, node.style)
+        }
+      }
+
+      // Support direct color and background properties
+      if (node.color) {
+        inlineStyle.color = node.color
+      }
+      if (node.backgroundColor) {
+        inlineStyle.backgroundColor = node.backgroundColor
+      }
+
       // Lexical uses bitwise format flags
       if (typeof node.format === 'number') {
         const format = node.format
@@ -42,6 +74,15 @@ export function RichTextRenderer({ content }: RichTextRendererProps) {
         }
       }
 
+      // Wrap in span with inline styles if any color/background is set
+      if (Object.keys(inlineStyle).length > 0) {
+        text = (
+          <span key={`styled-${index}`} style={inlineStyle}>
+            {text}
+          </span>
+        )
+      }
+
       return text
     }
 
@@ -49,27 +90,82 @@ export function RichTextRenderer({ content }: RichTextRendererProps) {
     if (Array.isArray(node.children)) {
       const children = node.children.map((child: unknown, i: number) => renderNode(child, i))
 
+      // Extract inline styles for block elements
+      const blockStyle: React.CSSProperties = {}
+      if (node.style) {
+        if (typeof node.style === 'string') {
+          const styleObj = node.style
+            .split(';')
+            .reduce((acc: Record<string, string>, rule: string) => {
+              const [key, value] = rule.split(':').map((s: string) => s.trim())
+              if (key && value) {
+                const camelKey = key.replace(/-([a-z])/g, (g: string) => g[1].toUpperCase())
+                acc[camelKey] = value
+              }
+              return acc
+            }, {})
+          Object.assign(blockStyle, styleObj)
+        } else {
+          Object.assign(blockStyle, node.style)
+        }
+      }
+
+      const hasBlockStyle = Object.keys(blockStyle).length > 0
+
       switch (node.type) {
         case 'paragraph':
-          return <p key={index}>{children}</p>
+          return (
+            <p key={index} style={hasBlockStyle ? blockStyle : undefined}>
+              {children}
+            </p>
+          )
 
         case 'heading':
           const tag = node.tag || 'h1'
+          const styleProps = hasBlockStyle ? { style: blockStyle } : {}
           switch (tag) {
             case 'h1':
-              return <h1 key={index}>{children}</h1>
+              return (
+                <h1 key={index} {...styleProps}>
+                  {children}
+                </h1>
+              )
             case 'h2':
-              return <h2 key={index}>{children}</h2>
+              return (
+                <h2 key={index} {...styleProps}>
+                  {children}
+                </h2>
+              )
             case 'h3':
-              return <h3 key={index}>{children}</h3>
+              return (
+                <h3 key={index} {...styleProps}>
+                  {children}
+                </h3>
+              )
             case 'h4':
-              return <h4 key={index}>{children}</h4>
+              return (
+                <h4 key={index} {...styleProps}>
+                  {children}
+                </h4>
+              )
             case 'h5':
-              return <h5 key={index}>{children}</h5>
+              return (
+                <h5 key={index} {...styleProps}>
+                  {children}
+                </h5>
+              )
             case 'h6':
-              return <h6 key={index}>{children}</h6>
+              return (
+                <h6 key={index} {...styleProps}>
+                  {children}
+                </h6>
+              )
             default:
-              return <h1 key={index}>{children}</h1>
+              return (
+                <h1 key={index} {...styleProps}>
+                  {children}
+                </h1>
+              )
           }
 
         case 'list':

@@ -203,6 +203,79 @@ export const Schools: CollectionConfig = {
       ],
     },
     {
+      name: 'featureVisibility',
+      type: 'group',
+      label: 'Visibilità Sezioni Frontend',
+      admin: {
+        description: 'Scegli quali sezioni mostrare nel frontend della scuola',
+      },
+      fields: [
+        {
+          name: 'showBlog',
+          type: 'checkbox',
+          label: 'Mostra Blog',
+          defaultValue: true,
+          admin: {
+            description: 'Se attivo, la sezione Blog sarà visibile nel frontend',
+          },
+        },
+        {
+          name: 'showEvents',
+          type: 'checkbox',
+          label: 'Mostra Eventi',
+          defaultValue: true,
+          admin: {
+            description: 'Se attivo, la sezione Eventi sarà visibile nel frontend',
+          },
+        },
+        {
+          name: 'showProjects',
+          type: 'checkbox',
+          label: 'Mostra Progetti',
+          defaultValue: true,
+          admin: {
+            description: 'Se attivo, la sezione Progetti sarà visibile nel frontend',
+          },
+        },
+        {
+          name: 'showCommunications',
+          type: 'checkbox',
+          label: 'Mostra Comunicazioni',
+          defaultValue: true,
+          admin: {
+            description: 'Se attivo, la sezione Comunicazioni sarà visibile nel frontend',
+          },
+        },
+        {
+          name: 'showCalendar',
+          type: 'checkbox',
+          label: 'Mostra Calendario',
+          defaultValue: true,
+          admin: {
+            description: 'Se attivo, la sezione Calendario sarà visibile nel frontend',
+          },
+        },
+        {
+          name: 'showMenu',
+          type: 'checkbox',
+          label: 'Mostra Mensa',
+          defaultValue: true,
+          admin: {
+            description: 'Se attivo, la sezione Mensa sarà visibile nel frontend',
+          },
+        },
+        {
+          name: 'showDocuments',
+          type: 'checkbox',
+          label: 'Mostra Documenti',
+          defaultValue: true,
+          admin: {
+            description: 'Se attivo, la sezione Documenti sarà visibile nel frontend',
+          },
+        },
+      ],
+    },
+    {
       name: 'subscription',
       type: 'group',
       label: 'Abbonamento',

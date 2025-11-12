@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
-import { getCurrentSchool } from '@/lib/school'
+import { getCurrentSchool, isFeatureEnabled } from '@/lib/school'
 import Navbar from '@/components/Navbar/Navbar'
+import Link from 'next/link'
 
 export default async function SchoolLayout({
   children,
@@ -53,6 +54,7 @@ export default async function SchoolLayout({
         }
         baseHref={`/${schoolSlug}`}
         schoolId={school.id}
+        school={school}
       />
 
       {/* Contenuto della pagina */}
@@ -87,35 +89,45 @@ export default async function SchoolLayout({
               <h3 className="font-bold text-lg mb-4">Link Rapidi</h3>
               <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                 <li>
-                  <a href={`/${schoolSlug}`} className="hover:text-primary">
+                  <Link href={`/${schoolSlug}`} className="hover:text-primary">
                     Home
-                  </a>
+                  </Link>
                 </li>
-                <li>
-                  <a href={`/${schoolSlug}/blog`} className="hover:text-primary">
-                    Blog
-                  </a>
-                </li>
-                <li>
-                  <a href={`/${schoolSlug}/eventi`} className="hover:text-primary">
-                    Eventi
-                  </a>
-                </li>
-                <li>
-                  <a href={`/${schoolSlug}/calendario`} className="hover:text-primary">
-                    Calendario
-                  </a>
-                </li>
-                <li>
-                  <a href={`/${schoolSlug}/comunicazioni`} className="hover:text-primary">
-                    Comunicazioni
-                  </a>
-                </li>
-                <li>
-                  <a href={`/${schoolSlug}/mensa`} className="hover:text-primary">
-                    Menù Mensa
-                  </a>
-                </li>
+                {isFeatureEnabled(school, 'blog') && (
+                  <li>
+                    <Link href={`/${schoolSlug}/blog`} className="hover:text-primary">
+                      Blog
+                    </Link>
+                  </li>
+                )}
+                {isFeatureEnabled(school, 'events') && (
+                  <li>
+                    <Link href={`/${schoolSlug}/eventi`} className="hover:text-primary">
+                      Eventi
+                    </Link>
+                  </li>
+                )}
+                {isFeatureEnabled(school, 'calendar') && (
+                  <li>
+                    <Link href={`/${schoolSlug}/calendario`} className="hover:text-primary">
+                      Calendario
+                    </Link>
+                  </li>
+                )}
+                {isFeatureEnabled(school, 'communications') && (
+                  <li>
+                    <Link href={`/${schoolSlug}/comunicazioni`} className="hover:text-primary">
+                      Comunicazioni
+                    </Link>
+                  </li>
+                )}
+                {isFeatureEnabled(school, 'menu') && (
+                  <li>
+                    <Link href={`/${schoolSlug}/mensa`} className="hover:text-primary">
+                      Menù Mensa
+                    </Link>
+                  </li>
+                )}
               </ul>
             </div>
 
@@ -126,6 +138,18 @@ export default async function SchoolLayout({
                 <br />
                 Tutti i diritti riservati
               </p>
+              <ul className="space-y-2 mt-4 text-sm text-gray-600 dark:text-gray-400">
+                <li>
+                  <Link href={`/${schoolSlug}/privacy-policy`} className="hover:text-primary">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link href={`/${schoolSlug}/cookie-policy`} className="hover:text-primary">
+                    Cookie Policy
+                  </Link>
+                </li>
+              </ul>
             </div>
           </div>
         </div>

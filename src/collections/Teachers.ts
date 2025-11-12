@@ -1,5 +1,11 @@
 import { CollectionConfig } from 'payload'
-import { tenantRead, tenantCreate, tenantUpdate, tenantDelete, assignSchoolBeforeChange } from '../lib/access'
+import {
+  tenantRead,
+  tenantCreate,
+  tenantUpdate,
+  tenantDelete,
+  assignSchoolBeforeChange,
+} from '../lib/access'
 
 export const Teachers: CollectionConfig = {
   slug: 'teachers',
@@ -10,7 +16,7 @@ export const Teachers: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'subject', 'school'],
-    group: 'Contenuti',
+    group: 'Scuola',
   },
   access: {
     read: tenantRead,
@@ -36,7 +42,12 @@ export const Teachers: CollectionConfig = {
       },
     },
     { name: 'name', type: 'text', label: 'Nome', required: true },
-    { name: 'role', type: 'text', label: 'Ruolo', admin: { description: 'Es: Coordinatore, Insegnante di Matematica' } },
+    {
+      name: 'role',
+      type: 'text',
+      label: 'Ruolo',
+      admin: { description: 'Es: Coordinatore, Insegnante di Matematica' },
+    },
     { name: 'subject', type: 'text', label: 'Materia' },
     { name: 'email', type: 'email', label: 'Email' },
     { name: 'bio', type: 'textarea', label: 'Biografia' },

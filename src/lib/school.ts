@@ -186,6 +186,25 @@ export async function getSchoolTeachers(schoolId: string | number) {
 }
 
 /**
+ * Ottiene i testimonials di una scuola
+ */
+export async function getSchoolTestimonials(schoolId: string | number, limit = 50, page = 1) {
+  const payload = await getPayload({ config: configPromise })
+
+  console.log('getSchoolTestimonials called with:', { schoolId, limit, page })
+  return await payload.find({
+    collection: 'testimonials',
+    where: {
+      isActive: { equals: true },
+      school: { equals: schoolId },
+    },
+    sort: '-date',
+    limit,
+    page,
+  })
+}
+
+/**
  * Ottiene i giorni speciali del calendario di una scuola
  */
 export async function getSchoolCalendarDays(
@@ -261,6 +280,114 @@ export async function isSchoolActive(schoolId: string | number): Promise<boolean
     return school?.isActive || false
   } catch (_error) {
     return false
+  }
+}
+
+/**
+ * Ottiene la Global Homepage per una scuola
+ */
+export async function getSchoolHomepage(schoolId: string | number) {
+  const payload = await getPayload({ config: configPromise })
+
+  try {
+    const homepage = await payload.findGlobal({
+      slug: 'homepage',
+      depth: 3,
+    })
+
+    // Verifica che la homepage appartenga alla scuola
+    const homepageSchoolId =
+      homepage.school && typeof homepage.school === 'object' ? homepage.school.id : homepage.school
+
+    if (homepage && String(homepageSchoolId) === String(schoolId)) {
+      return homepage
+    }
+
+    return null
+  } catch (error) {
+    console.log('Error finding homepage:', error)
+    return null
+  }
+}
+
+/**
+ * Ottiene la Global ChiSiamo per una scuola
+ */
+export async function getSchoolChiSiamo(schoolId: string | number) {
+  const payload = await getPayload({ config: configPromise })
+
+  try {
+    const chiSiamo = await payload.findGlobal({
+      slug: 'ChiSiamo',
+      depth: 2,
+    })
+
+    console.log(chiSiamo)
+    // Verifica che la pagina appartenga alla scuola
+    const chiSiamoSchoolId =
+      chiSiamo.school && typeof chiSiamo.school === 'object' ? chiSiamo.school.id : chiSiamo.school
+
+    if (chiSiamo && String(chiSiamoSchoolId) === String(schoolId)) {
+      return chiSiamo
+    }
+
+    return null
+  } catch (error) {
+    console.log('Error finding ChiSiamo:', error)
+    return null
+  }
+}
+
+/**
+ * Ottiene la Global PrivacyPolicy per una scuola
+ */
+export async function getSchoolPrivacyPolicy(schoolId: string | number) {
+  const payload = await getPayload({ config: configPromise })
+  try {
+    const privacyPolicy = await payload.findGlobal({
+      slug: 'PrivacyPolicy',
+      depth: 2,
+    })
+
+    const privacyPolicySchoolId =
+      privacyPolicy.school && typeof privacyPolicy.school === 'object'
+        ? privacyPolicy.school.id
+        : privacyPolicy.school
+    console.log(privacyPolicy.school)
+    if (privacyPolicy && String(privacyPolicySchoolId) === String(schoolId)) {
+      return privacyPolicy
+    }
+
+    return null
+  } catch (error) {
+    console.log('Error finding PrivacyPolicy:', error)
+    return null
+  }
+}
+/**
+ * Ottiene la Global CookiePolicy per una scuola
+ */
+export async function getSchoolCookiePolicy(schoolId: string | number) {
+  const payload = await getPayload({ config: configPromise })
+  try {
+    const cookiePolicy = await payload.findGlobal({
+      slug: 'CookiePolicy',
+      depth: 2,
+    })
+
+    const cookiePolicySchoolId =
+      cookiePolicy.school && typeof cookiePolicy.school === 'object'
+        ? cookiePolicy.school.id
+        : cookiePolicy.school
+    console.log(cookiePolicy.school)
+    if (cookiePolicy && String(cookiePolicySchoolId) === String(schoolId)) {
+      return cookiePolicy
+    }
+
+    return null
+  } catch (error) {
+    console.log('Error finding CookiePolicy:', error)
+    return null
   }
 }
 
@@ -422,4 +549,46 @@ export async function getSchoolProject(schoolId: string | number, projectId: str
  */
 export async function getSchoolProjectById(schoolId: string | number, projectId: string | number) {
   return getSchoolProject(schoolId, projectId)
+}
+
+/**
+ * Verifica se una feature è abilitata per una scuola
+ */
+export function isFeatureEnabled(
+  school: School,
+  feature: 'blog' | 'events' | 'projects' | 'communications' | 'calendar' | 'menu' | 'documents',
+): boolean {
+  // Se featureVisibility non è definito, mostra tutte le features per retrocompatibilità
+  if (!school.featureVisibility) {
+    return true
+  }
+
+  const featureMap = {
+    blog: school.featureVisibility.showBlog,
+    events: school.featureVisibility.showEvents,
+    projects: school.featureVisibility.showProjects,
+    communications: school.featureVisibility.showCommunications,
+    calendar: school.featureVisibility.showCalendar,
+    menu: school.featureVisibility.showMenu,
+    documents: school.featureVisibility.showDocuments,
+  }
+
+  // Se il valore non è esplicitamente definito, mostra la feature per retrocompatibilità
+  return featureMap[feature] ?? true
+}
+
+/**
+ * Ottiene le features abilitate per una scuola
+ */
+export function getEnabledFeatures(school: School): string[] {
+  const features = [
+    'blog',
+    'events',
+    'projects',
+    'communications',
+    'calendar',
+    'menu',
+    'documents',
+  ] as const
+  return features.filter((feature) => isFeatureEnabled(school, feature))
 }

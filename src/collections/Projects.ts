@@ -17,7 +17,7 @@ export const Projects: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'school'],
-    group: 'Contenuti',
+    group: 'Scuola',
   },
   access: {
     read: tenantRead,

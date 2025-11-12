@@ -17,7 +17,7 @@ export const CalendarDays: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'type', 'startDate', 'endDate', 'school'],
-    group: 'Contenuti',
+    group: 'Scuola',
   },
   access: {
     read: tenantRead,
