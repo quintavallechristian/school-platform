@@ -38,11 +38,11 @@ const features = [
     title: 'Menu Settimanale',
     description: 'Pubblica il menu della mensa con informazioni nutrizionali e allergeni.',
   },
-  {
-    icon: Image,
-    title: 'Gallerie Fotografiche',
-    description: 'Crea album fotografici per documentare le attività e i momenti speciali.',
-  },
+  // {
+  //   icon: Image,
+  //   title: 'Gallerie Fotografiche',
+  //   description: 'Crea album fotografici per documentare le attività e i momenti speciali.',
+  // },
   {
     icon: Users,
     title: 'Gestione Multi-Scuola',
@@ -53,16 +53,16 @@ const features = [
     title: 'Personalizzazione Completa',
     description: 'Brand identity personalizzabile con colori, logo e layout su misura.',
   },
-  {
-    icon: BarChart3,
-    title: 'Dashboard Analitica',
-    description: 'Monitora le statistiche di utilizzo e coinvolgimento delle famiglie.',
-  },
-  {
-    icon: Shield,
-    title: 'Sicurezza e Privacy',
-    description: 'Conformità GDPR, backup automatici e protezione dei dati sensibili.',
-  },
+  // {
+  //   icon: BarChart3,
+  //   title: 'Dashboard Analitica',
+  //   description: 'Monitora le statistiche di utilizzo e coinvolgimento delle famiglie.',
+  // },
+  // {
+  //   icon: Shield,
+  //   title: 'Sicurezza e Privacy',
+  //   description: 'Conformità GDPR, backup automatici e protezione dei dati sensibili.',
+  // },
 ]
 
 export function FeaturesSection() {

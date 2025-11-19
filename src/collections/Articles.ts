@@ -37,6 +37,16 @@ export const Articles: CollectionConfig = {
     },
     { name: 'cover', type: 'upload', relationTo: 'media', label: 'Copertina' },
     {
+      name: 'gradientOverlay',
+      type: 'checkbox',
+      label: 'Overlay Gradiente sulla Copertina',
+      defaultValue: false,
+      admin: {
+        description:
+          "Se abilitato, aggiunge un overlay gradiente sopra l'immagine di copertina per migliorare la leggibilità del testo nell'hero",
+      },
+    },
+    {
       name: 'slug',
       type: 'text',
       required: true,

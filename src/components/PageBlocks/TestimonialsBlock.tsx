@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { getSchoolTestimonials } from '@/lib/school'
 import Link from 'next/link'
 import SpotlightCard from '../SpotlightCard/SpotlightCard'
+import { Button } from '../ui/button'
 
 // Tipi per il block
 export type TestimonialsBlockType = Extract<
@@ -14,9 +15,10 @@ export type TestimonialsBlockType = Extract<
 type Props = {
   block: TestimonialsBlockType
   schoolId: string | number
+  schoolSlug: string
 }
 
-export default async function TestimonialsBlock({ block, schoolId }: Props) {
+export default async function TestimonialsBlock({ block, schoolId, schoolSlug }: Props) {
   const testimonials = await getSchoolTestimonials(schoolId, block.limit || 6)
   console.log('Testimonials fetched:', testimonials, schoolId)
 
@@ -58,33 +60,18 @@ export default async function TestimonialsBlock({ block, schoolId }: Props) {
               <blockquote className="italic text-lg mb-4">“{t.content}”</blockquote>
               <div className="font-bold text-primary text-lg">{t.authorName}</div>
               {t.role && <div className="text-sm text-muted-foreground mb-1">{t.role}</div>}
-              {t.rating && (
-                <div className="flex gap-1 justify-center mt-2">
-                  {Array.from({ length: t.rating }).map((_, i) => (
-                    <span key={i} className="text-yellow-400">
-                      ★
-                    </span>
-                  ))}
-                  {Array.from({ length: 5 - t.rating }).map((_, i) => (
-                    <span key={i} className="text-gray-300">
-                      ★
-                    </span>
-                  ))}
-                </div>
-              )}
             </SpotlightCard>
           ))}
         </div>
-        {/* {block.showViewAll && (
+        {block.showViewAll && (
           <div className="text-center mt-8">
-            <Link
-              href="/testimonials"
-              className="inline-block text-primary font-semibold hover:underline"
-            >
-              Vedi tutte le testimonianze →
+            <Link href={`/${schoolSlug}/testimonianze`}>
+              <Button variant="outline" size="lg">
+                Vedi tutte le testimonianze →
+              </Button>
             </Link>
           </div>
-        )} */}
+        )}
       </div>
     </section>
   )

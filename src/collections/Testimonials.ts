@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { publicRead, tenantCreate, tenantUpdate, tenantDelete } from '@/lib/access'
+import { publicRead, tenantCreate, tenantUpdate, tenantDelete, getSchoolField } from '@/lib/access'
 
 export const Testimonials: CollectionConfig = {
   slug: 'testimonials',
@@ -19,14 +19,16 @@ export const Testimonials: CollectionConfig = {
     group: 'Scuola e genitori',
   },
   fields: [
+    getSchoolField('Scuola a cui appartiene questa testimonianza'),
     {
-      name: 'school',
-      type: 'relationship',
-      relationTo: 'schools',
-      required: true,
-      label: 'Scuola',
+      name: 'approved',
+      type: 'checkbox',
+      label: 'Approvata',
+      defaultValue: false,
       admin: {
         position: 'sidebar',
+        description:
+          'Se non approvata, la testimonianza non sarà visibile nel frontend. Solo gli admin possono approvare.',
       },
     },
     {

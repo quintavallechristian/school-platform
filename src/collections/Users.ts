@@ -14,17 +14,21 @@ export const Users: CollectionConfig = {
   auth: true,
   access: {
     // Super-admin vedono tutti, gli altri solo utenti con almeno una scuola in comune
-    read: ({ req: { user } }) => {
+    read: ({ req }) => {
+      const user = req.user
       if (!user) return false
       if (user.role === 'super-admin') return true
 
-      if (user.schools && user.schools.length > 0) {
+      const schoolIDs = user.schools?.map((s) => (typeof s === 'object' ? s.id : s))
+
+      if (schoolIDs?.length) {
         return {
           schools: {
-            in: user.schools,
+            in: schoolIDs,
           },
         }
       }
+
       return false
     },
     // Solo super-admin possono creare utenti per qualsiasi scuola
@@ -37,10 +41,13 @@ export const Users: CollectionConfig = {
 
       // School-admin può modificare solo utenti con almeno una scuola in comune
       if (user.role === 'school-admin' && user.schools && user.schools.length > 0) {
-        return {
-          schools: {
-            in: user.schools,
-          },
+        const schoolIDs = user.schools?.map((s) => (typeof s === 'object' ? s.id : s))
+        if (schoolIDs?.length) {
+          return {
+            schools: {
+              in: schoolIDs,
+            },
+          }
         }
       }
       return false
@@ -51,13 +58,16 @@ export const Users: CollectionConfig = {
 
       // School-admin può eliminare solo utenti con almeno una scuola in comune (eccetto se stesso)
       if (user.role === 'school-admin' && user.schools && user.schools.length > 0) {
-        return {
-          schools: {
-            in: user.schools,
-          },
-          id: {
-            not_equals: user.id,
-          },
+        const schoolIDs = user.schools?.map((s) => (typeof s === 'object' ? s.id : s))
+        if (schoolIDs?.length) {
+          return {
+            schools: {
+              in: schoolIDs,
+            },
+            id: {
+              not_equals: user.id,
+            },
+          }
         }
       }
       return false

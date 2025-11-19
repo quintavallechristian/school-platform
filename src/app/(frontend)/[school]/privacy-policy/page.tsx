@@ -17,11 +17,9 @@ export default async function PrivacyPolicyPage({ params }: PageProps) {
     notFound()
   }
 
-  // Recupera la Global PrivacyPolicy
   const privacyPolicy = await getSchoolPrivacyPolicy(school.id)
 
-  console.log(privacyPolicy)
-  if (!privacyPolicy || !privacyPolicy.customizePrivacyPolicy) {
+  if (!privacyPolicy) {
     return (
       <div className="min-h-[calc(100vh-200px)]">
         <Hero title="Privacy Policy" big={false} />

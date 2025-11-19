@@ -52,7 +52,7 @@ export default async function Navbar({
 
   // Menu items statici - filtrati in base alle impostazioni della scuola
   const staticMenuItems = [
-    { label: 'Chi Siamo', href: `${baseHref}/chi-siamo`, feature: null }, // Sempre visibile
+    { label: 'Chi Siamo', href: `${baseHref}/chi-siamo`, feature: 'chiSiamo' as const },
     { label: 'Blog', href: `${baseHref}/blog`, feature: 'blog' as const },
     { label: 'Eventi', href: `${baseHref}/eventi`, feature: 'events' as const },
     { label: 'Progetti', href: `${baseHref}/progetti`, feature: 'projects' as const },

@@ -152,14 +152,14 @@ export default function PageBlocks({ blocks, schoolId, schoolSlug }: Props) {
         }
 
         if (block.blockType === 'testimonials') {
-          if (!schoolId) {
+          if (!schoolId || !schoolSlug) {
             console.warn('TestimonialsBlock requires schoolId')
             return null
           }
           return (
             <div key={index} className={wrapperClass} style={bgStyle.style}>
               <div className="max-w-5xl mx-auto px-4">
-                <TestimonialsBlock block={block} schoolId={schoolId} />
+                <TestimonialsBlock block={block} schoolId={schoolId} schoolSlug={schoolSlug} />
               </div>
             </div>
           )

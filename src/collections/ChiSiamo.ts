@@ -1,38 +1,61 @@
-import { GlobalConfig } from 'payload'
-import { getSchoolField, publicRead, tenantUpdate } from '../lib/access'
+import { CollectionConfig } from 'payload'
+import {
+  assignSchoolBeforeChange,
+  getSchoolField,
+  tenantCreate,
+  tenantDelete,
+  tenantRead,
+  tenantUpdate,
+} from '../lib/access'
 import { shapeDividerFields } from '../lib/blocks'
 
-export const ChiSiamo: GlobalConfig = {
-  slug: 'ChiSiamo',
-  label: 'Chi Siamo',
+export const ChiSiamo: CollectionConfig = {
+  slug: 'chi-siamo',
+  labels: {
+    singular: 'Chi siamo',
+    plural: 'Chi siamo',
+  },
   admin: {
     group: 'Scuola',
     description: 'Configura i contenuti della pagina Chi Siamo',
+    defaultColumns: ['name', 'school', 'isActive'],
   },
   access: {
-    read: publicRead,
+    read: tenantRead,
+    create: tenantCreate,
     update: tenantUpdate,
+    delete: tenantDelete,
+  },
+  hooks: {
+    beforeChange: [assignSchoolBeforeChange],
   },
   fields: [
     getSchoolField('Scuola a cui appartiene questa configurazione'),
     {
-      name: 'customizeChiSiamo',
+      name: 'isActive',
       type: 'checkbox',
-      label: 'Personalizza Chi Siamo',
-      defaultValue: false,
+      label: 'Attiva',
+      defaultValue: true,
       admin: {
-        description:
-          'Se disabilitato, verrà mostrata la pagina di default con hero "Chi Siamo" e la lista degli insegnanti. Se abilitato, puoi personalizzare completamente la pagina.',
+        position: 'sidebar',
+        description: 'Se disattivata, la testimonianza non sarà visibile nel frontend',
       },
     },
-    // Configurazione copertina
+    {
+      name: 'name',
+      type: 'text',
+      label: 'Nome',
+      defaultValue: 'Chi Siamo',
+      admin: {
+        description: 'Dai un nome a questa versione della pagina Chi Siamo',
+      },
+    },
     {
       name: 'heroSettings',
       type: 'group',
       label: 'Configurazione copertina',
       admin: {
         description: "Personalizza l'hero di default della pagina",
-        condition: (data) => data.customizeChiSiamo === true,
       },
       fields: [
         {
@@ -141,8 +164,7 @@ export const ChiSiamo: GlobalConfig = {
       type: 'richText',
       label: 'Contenuto principale',
       admin: {
-        description: "Testo principale che appare dopo l'hero",
-        condition: (data) => data.customizeChiSiamo === true,
+        description: 'Testo principale che appare dopo la copertina',
       },
     },
     // Sezione insegnanti
@@ -152,7 +174,6 @@ export const ChiSiamo: GlobalConfig = {
       label: 'Sezione Insegnanti',
       admin: {
         description: 'Configura la sezione con la lista degli insegnanti',
-        condition: (data) => data.customizeChiSiamo === true,
       },
       fields: [
         {

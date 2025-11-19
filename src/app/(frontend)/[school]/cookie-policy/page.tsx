@@ -17,11 +17,10 @@ export default async function CookiePolicyPage({ params }: PageProps) {
     notFound()
   }
 
-  // Recupera la Global CookiePolicy
   const cookiePolicy = await getSchoolCookiePolicy(school.id)
 
   console.log(cookiePolicy)
-  if (!cookiePolicy || !cookiePolicy.customizeCookiePolicy) {
+  if (!cookiePolicy) {
     return (
       <div className="min-h-[calc(100vh-200px)]">
         <Hero title="Cookie Policy" big={false} />

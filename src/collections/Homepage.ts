@@ -1,28 +1,50 @@
-import { GlobalConfig } from 'payload'
-import { getSchoolField, publicRead, tenantUpdate } from '../lib/access'
+import { CollectionConfig } from 'payload'
+import {
+  assignSchoolBeforeChange,
+  getSchoolField,
+  tenantCreate,
+  tenantDelete,
+  tenantRead,
+  tenantUpdate,
+} from '../lib/access'
 import { pageBlocks, shapeDividerFields } from '../lib/blocks'
 
-export const Homepage: GlobalConfig = {
+export const Homepage: CollectionConfig = {
   slug: 'homepage',
-  label: 'Home Page',
   admin: {
     group: 'Struttura Sito',
-    description: 'Configura i contenuti della home page',
+    description:
+      'Qui puoi configurare lo stile della tua homepage. Puoi creare più homepage diverse e attivarle una per volta. Se non imposti alcuna homepage personalizzata, verrà utilizzata una versione di default.',
+    defaultColumns: ['name', 'school', 'isActive'],
   },
   access: {
-    read: publicRead,
+    read: tenantRead,
+    create: tenantCreate,
     update: tenantUpdate,
+    delete: tenantDelete,
+  },
+  hooks: {
+    beforeChange: [assignSchoolBeforeChange],
   },
   fields: [
     getSchoolField('Scuola a cui appartiene questa configurazione'),
     {
-      name: 'customizeHomepage',
+      name: 'isActive',
       type: 'checkbox',
-      label: 'Personalizza Homepage',
-      defaultValue: false,
+      label: 'Attiva',
+      defaultValue: true,
       admin: {
-        description:
-          'Se disabilitato, verrà mostrata la homepage di default con articoli ed eventi. Se abilitato, puoi personalizzare completamente la homepage.',
+        position: 'sidebar',
+        description: 'Se disattivata, la testimonianza non sarà visibile nel frontend',
+      },
+    },
+    {
+      name: 'name',
+      type: 'text',
+      label: 'Nome',
+      defaultValue: 'Home Page',
+      admin: {
+        description: 'Dai un nome a questa homepage',
       },
     },
     // Configurazione copertina
@@ -32,7 +54,6 @@ export const Homepage: GlobalConfig = {
       label: 'Configurazione copertina',
       admin: {
         description: "Personalizza l'hero di default della pagina",
-        condition: (data) => data.customizeHomepage === true,
       },
       fields: [
         {
@@ -144,7 +165,6 @@ export const Homepage: GlobalConfig = {
       admin: {
         description:
           'Aggiungi sezioni personalizzate come call-to-action, team cards, feature grids, ecc.',
-        condition: (data) => data.customizeHomepage === true,
       },
       blocks: pageBlocks,
     },

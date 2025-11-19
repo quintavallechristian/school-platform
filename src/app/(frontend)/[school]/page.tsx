@@ -27,18 +27,15 @@ export default async function SchoolHomePage({ params }: PageProps) {
     notFound()
   }
 
-  // Controlla se c'è una homepage configurata nella Global
   const homepage = await getSchoolHomepage(school.id)
 
-  if (homepage && homepage.customizeHomepage) {
+  if (homepage) {
     const typedPage = homepage as HomepageType
 
-    // Mostra l'hero di default solo se showHero è esplicitamente true o undefined
     const shouldShowDefaultHero =
       typedPage.heroSettings?.showHero === true || typedPage.heroSettings?.showHero === undefined
     const heroFullHeight = typedPage.heroSettings?.fullHeight ?? false
 
-    // Prepara il divisore inferiore per l'hero di default
     const bottomDivider =
       typedPage.heroSettings?.bottomDivider?.enabled && typedPage.heroSettings?.bottomDivider?.style
         ? {
@@ -68,10 +65,6 @@ export default async function SchoolHomePage({ params }: PageProps) {
       </div>
     )
   }
-
-  // Se non c'è homepage configurata, mostra la homepage di default
-
-  // Ottieni i dati della scuola in parallelo, solo per le features abilitate
   const showEvents = isFeatureEnabled(school, 'events')
   const showArticles = isFeatureEnabled(school, 'blog')
   const showCommunications = isFeatureEnabled(school, 'communications')

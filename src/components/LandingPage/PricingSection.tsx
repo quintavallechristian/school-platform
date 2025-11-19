@@ -1,67 +1,10 @@
 'use client'
 
 import React, { useState } from 'react'
+import Link from 'next/link'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import { Button } from '@/components/ui/button'
-
-const pricingPlans = [
-  {
-    name: 'Starter',
-    description: 'Perfetto per scuole piccole che iniziano il loro percorso digitale',
-    monthlyPrice: 49,
-    yearlyPrice: 470,
-    features: [
-      'Fino a 100 famiglie',
-      'Comunicazioni illimitate',
-      'Blog e articoli',
-      'Calendario eventi',
-      'Menu settimanale',
-      '1 Galleria fotografica',
-      'Supporto via email',
-      'Personalizzazione base',
-    ],
-    highlighted: false,
-    trialDays: 30,
-  },
-  {
-    name: 'Professional',
-    description: 'La scelta ideale per scuole che vogliono il massimo',
-    monthlyPrice: 99,
-    yearlyPrice: 950,
-    features: [
-      'Fino a 300 famiglie',
-      'Tutte le funzionalità Starter',
-      'Gallerie fotografiche illimitate',
-      'Gestione multi-sezione',
-      'Notifiche push personalizzate',
-      'Analytics avanzate',
-      'Supporto prioritario',
-      'Personalizzazione completa',
-      'Backup giornalieri',
-    ],
-    highlighted: true,
-    trialDays: 30,
-  },
-  {
-    name: 'Enterprise',
-    description: 'Per istituti scolastici con esigenze complesse',
-    monthlyPrice: 199,
-    yearlyPrice: 1910,
-    features: [
-      'Famiglie illimitate',
-      'Tutte le funzionalità Professional',
-      'Multi-tenant (più scuole)',
-      'API personalizzate',
-      'Integrazioni su misura',
-      'Account manager dedicato',
-      'Formazione personalizzata',
-      'SLA garantito 99.9%',
-      'Backup continui',
-    ],
-    highlighted: false,
-    trialDays: 30,
-  },
-]
+import { planDetails } from '@/lib/plans'
 
 export function PricingSection() {
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('yearly')
@@ -82,36 +25,29 @@ export function PricingSection() {
             Inizia con 30 giorni di prova gratuita. Nessuna carta di credito richiesta.
           </p>
 
-          {/* Billing Period Toggle */}
-          <div className="inline-flex items-center gap-4 p-1 bg-background rounded-full border">
-            <button
+          <div className="inline-flex items-center gap-4 p-1 bg-background rounded-full border cursor-pointer">
+            <Button
               onClick={() => setBillingPeriod('monthly')}
-              className={`px-6 py-2 rounded-full transition-all ${
-                billingPeriod === 'monthly'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
+              className={`px-6 py-2 rounded-full transition-all`}
+              variant={billingPeriod === 'monthly' ? 'default' : 'ghost'}
             >
               Mensile
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => setBillingPeriod('yearly')}
-              className={`px-6 py-2 rounded-full transition-all ${
-                billingPeriod === 'yearly'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
+              className={`px-6 py-2 rounded-full transition-all`}
+              variant={billingPeriod === 'yearly' ? 'default' : 'ghost'}
             >
               Annuale
               <span className="ml-2 text-xs bg-emerald-500 text-white px-2 py-1 rounded-full">
                 Risparmia fino al 20%
               </span>
-            </button>
+            </Button>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {pricingPlans.map((plan, index) => (
+          {planDetails.map((plan, index) => (
             <SpotlightCard
               key={index}
               className={plan.highlighted ? 'ring-2 ring-primary scale-105' : ''}
@@ -127,7 +63,6 @@ export function PricingSection() {
                   <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
                   <p className="text-sm text-muted-foreground">{plan.description}</p>
                 </div>
-
                 <div className="mb-6">
                   <div className="flex items-baseline gap-2">
                     <span className="text-5xl font-bold">
@@ -147,23 +82,29 @@ export function PricingSection() {
                     🎉 {plan.trialDays} giorni di prova gratuita
                   </p>
                 </div>
-
                 <ul className="space-y-3 mb-8 grow">
                   {plan.features.map((feature, featureIndex) => (
                     <li key={featureIndex} className="flex items-start gap-3">
-                      <span className="text-emerald-500 mt-1">✓</span>
+                      <span className="text-emerald-500 -mt-1">✓</span>
                       <span className="text-sm">{feature}</span>
                     </li>
                   ))}
                 </ul>
-
-                <Button
-                  className="w-full"
-                  variant={plan.highlighted ? 'default' : 'outline'}
-                  size="lg"
+                <Link
+                  href={
+                    '/register?priceId=' +
+                    (billingPeriod === 'monthly' ? plan.monthlyPriceId : plan.yearlyPriceId)
+                  }
+                  className="block w-full text-center text-blue-600 hover:underline text-sm mt-1"
                 >
-                  Inizia la prova gratuita
-                </Button>
+                  <Button
+                    className="w-full mb-2"
+                    variant={plan.highlighted ? 'default' : 'outline'}
+                    size="lg"
+                  >
+                    Inizia la prova gratuita
+                  </Button>
+                </Link>
               </div>
             </SpotlightCard>
           ))}

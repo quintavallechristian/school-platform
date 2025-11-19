@@ -2,6 +2,7 @@ import { headers } from 'next/headers'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import type { School } from '@/payload-types'
+import { ChiSiamo } from '@/collections/ChiSiamo'
 
 /**
  * Utility functions per gestire il multi-tenancy nel frontend
@@ -195,8 +196,11 @@ export async function getSchoolTestimonials(schoolId: string | number, limit = 5
   return await payload.find({
     collection: 'testimonials',
     where: {
-      isActive: { equals: true },
-      school: { equals: schoolId },
+      and: [
+        { isActive: { equals: true } },
+        { approved: { equals: true } },
+        { school: { equals: schoolId } },
+      ],
     },
     sort: '-date',
     limit,
@@ -284,111 +288,70 @@ export async function isSchoolActive(schoolId: string | number): Promise<boolean
 }
 
 /**
- * Ottiene la Global Homepage per una scuola
+ * Ottiene la Collection Homepage per una scuola
  */
 export async function getSchoolHomepage(schoolId: string | number) {
   const payload = await getPayload({ config: configPromise })
 
-  try {
-    const homepage = await payload.findGlobal({
-      slug: 'homepage',
-      depth: 3,
-    })
+  const result = await payload.find({
+    collection: 'homepage',
+    where: {
+      and: [{ school: { equals: schoolId } }, { isActive: { equals: true } }],
+    },
+    limit: 1,
+  })
 
-    // Verifica che la homepage appartenga alla scuola
-    const homepageSchoolId =
-      homepage.school && typeof homepage.school === 'object' ? homepage.school.id : homepage.school
-
-    if (homepage && String(homepageSchoolId) === String(schoolId)) {
-      return homepage
-    }
-
-    return null
-  } catch (error) {
-    console.log('Error finding homepage:', error)
-    return null
-  }
+  return result.docs[0] || null
 }
 
 /**
- * Ottiene la Global ChiSiamo per una scuola
+ * Ottiene la Collection ChiSiamo per una scuola
  */
 export async function getSchoolChiSiamo(schoolId: string | number) {
   const payload = await getPayload({ config: configPromise })
 
-  try {
-    const chiSiamo = await payload.findGlobal({
-      slug: 'ChiSiamo',
-      depth: 2,
-    })
+  const result = await payload.find({
+    collection: 'chi-siamo',
+    where: {
+      and: [{ school: { equals: schoolId } }, { isActive: { equals: true } }],
+    },
+    limit: 1,
+  })
 
-    console.log(chiSiamo)
-    // Verifica che la pagina appartenga alla scuola
-    const chiSiamoSchoolId =
-      chiSiamo.school && typeof chiSiamo.school === 'object' ? chiSiamo.school.id : chiSiamo.school
-
-    if (chiSiamo && String(chiSiamoSchoolId) === String(schoolId)) {
-      return chiSiamo
-    }
-
-    return null
-  } catch (error) {
-    console.log('Error finding ChiSiamo:', error)
-    return null
-  }
+  return result.docs[0] || null
 }
 
 /**
- * Ottiene la Global PrivacyPolicy per una scuola
+ * Ottiene la Collection PrivacyPolicy per una scuola
  */
 export async function getSchoolPrivacyPolicy(schoolId: string | number) {
   const payload = await getPayload({ config: configPromise })
-  try {
-    const privacyPolicy = await payload.findGlobal({
-      slug: 'PrivacyPolicy',
-      depth: 2,
-    })
 
-    const privacyPolicySchoolId =
-      privacyPolicy.school && typeof privacyPolicy.school === 'object'
-        ? privacyPolicy.school.id
-        : privacyPolicy.school
-    console.log(privacyPolicy.school)
-    if (privacyPolicy && String(privacyPolicySchoolId) === String(schoolId)) {
-      return privacyPolicy
-    }
+  const result = await payload.find({
+    collection: 'privacy-policy',
+    where: {
+      and: [{ school: { equals: schoolId } }, { isActive: { equals: true } }],
+    },
+    limit: 1,
+  })
 
-    return null
-  } catch (error) {
-    console.log('Error finding PrivacyPolicy:', error)
-    return null
-  }
+  return result.docs[0] || null
 }
 /**
- * Ottiene la Global CookiePolicy per una scuola
+ * Ottiene la Collection CookiePolicy per una scuola
  */
 export async function getSchoolCookiePolicy(schoolId: string | number) {
   const payload = await getPayload({ config: configPromise })
-  try {
-    const cookiePolicy = await payload.findGlobal({
-      slug: 'CookiePolicy',
-      depth: 2,
-    })
 
-    const cookiePolicySchoolId =
-      cookiePolicy.school && typeof cookiePolicy.school === 'object'
-        ? cookiePolicy.school.id
-        : cookiePolicy.school
-    console.log(cookiePolicy.school)
-    if (cookiePolicy && String(cookiePolicySchoolId) === String(schoolId)) {
-      return cookiePolicy
-    }
+  const result = await payload.find({
+    collection: 'cookie-policy',
+    where: {
+      and: [{ school: { equals: schoolId } }, { isActive: { equals: true } }],
+    },
+    limit: 1,
+  })
 
-    return null
-  } catch (error) {
-    console.log('Error finding CookiePolicy:', error)
-    return null
-  }
+  return result.docs[0] || null
 }
 
 /**
@@ -424,14 +387,6 @@ export async function getSchoolPage(schoolId: string | number, pageSlugOrId: str
       // Verifica che la pagina appartenga alla scuola
       const pageSchoolId =
         page.school && typeof page.school === 'object' ? page.school.id : page.school
-
-      console.log('Comparing schools:', {
-        pageSchoolId,
-        schoolId,
-        pageSchoolIdStr: String(pageSchoolId),
-        schoolIdStr: String(schoolId),
-        match: String(pageSchoolId) === String(schoolId),
-      })
 
       // Normalizza i confronti a stringhe
       if (page && String(pageSchoolId) === String(schoolId)) {
@@ -556,7 +511,15 @@ export async function getSchoolProjectById(schoolId: string | number, projectId:
  */
 export function isFeatureEnabled(
   school: School,
-  feature: 'blog' | 'events' | 'projects' | 'communications' | 'calendar' | 'menu' | 'documents',
+  feature:
+    | 'blog'
+    | 'events'
+    | 'projects'
+    | 'communications'
+    | 'calendar'
+    | 'menu'
+    | 'documents'
+    | 'chiSiamo',
 ): boolean {
   // Se featureVisibility non è definito, mostra tutte le features per retrocompatibilità
   if (!school.featureVisibility) {
@@ -564,6 +527,7 @@ export function isFeatureEnabled(
   }
 
   const featureMap = {
+    chiSiamo: school.featureVisibility.showChiSiamo,
     blog: school.featureVisibility.showBlog,
     events: school.featureVisibility.showEvents,
     projects: school.featureVisibility.showProjects,
@@ -582,6 +546,7 @@ export function isFeatureEnabled(
  */
 export function getEnabledFeatures(school: School): string[] {
   const features = [
+    'chiSiamo',
     'blog',
     'events',
     'projects',

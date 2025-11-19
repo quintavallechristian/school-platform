@@ -31,11 +31,22 @@ export const Schools: CollectionConfig = {
       }
       return false
     },
-    update: ({ req: { user } }) => {
-      return user?.role === 'super-admin'
-    },
+
     delete: ({ req: { user } }) => {
       return user?.role === 'super-admin'
+    },
+    update: ({ req: { user } }) => {
+      if (user?.role === 'super-admin') {
+        return true
+      }
+      if (user?.role === 'school-admin' && user.schools && user.schools.length > 0) {
+        return {
+          id: {
+            in: user.schools,
+          },
+        }
+      }
+      return false
     },
   },
   fields: [
@@ -128,7 +139,7 @@ export const Schools: CollectionConfig = {
       name: 'isActive',
       type: 'checkbox',
       label: 'Scuola Attiva',
-      defaultValue: true,
+      defaultValue: false,
       admin: {
         description: 'Se disattivata, il sito della scuola non sarà accessibile',
       },
@@ -156,67 +167,29 @@ export const Schools: CollectionConfig = {
       ],
     },
     {
-      name: 'settings',
-      type: 'group',
-      label: 'Impostazioni',
-      fields: [
-        {
-          name: 'homepage',
-          type: 'relationship',
-          relationTo: 'pages',
-          label: 'Homepage',
-          admin: {
-            description: 'Seleziona la pagina da usare come homepage della scuola (opzionale)',
-            condition: (data) => !!data?.id,
-          },
-        },
-        {
-          name: 'allowPublicRegistration',
-          type: 'checkbox',
-          label: 'Permetti Registrazione Pubblica',
-          defaultValue: false,
-          admin: {
-            description: 'Gli utenti possono auto-registrarsi per questa scuola',
-          },
-        },
-        {
-          name: 'timezone',
-          type: 'text',
-          label: 'Fuso Orario',
-          defaultValue: 'Europe/Rome',
-          admin: {
-            description: 'Fuso orario della scuola (es: Europe/Rome)',
-          },
-        },
-        {
-          name: 'language',
-          type: 'select',
-          label: 'Lingua',
-          defaultValue: 'it',
-          options: [
-            { label: 'Italiano', value: 'it' },
-            { label: 'English', value: 'en' },
-            { label: 'Français', value: 'fr' },
-            { label: 'Español', value: 'es' },
-          ],
-        },
-      ],
-    },
-    {
       name: 'featureVisibility',
       type: 'group',
-      label: 'Visibilità Sezioni Frontend',
+      label: 'Funzionalità attive',
       admin: {
-        description: 'Scegli quali sezioni mostrare nel frontend della scuola',
+        description: 'Scegli quali funzionalità mostrare nel sito della tua scuola',
       },
       fields: [
+        {
+          name: 'showChiSiamo',
+          type: 'checkbox',
+          label: 'Mostra Chi Siamo',
+          defaultValue: true,
+          admin: {
+            description: '📦 Piano Starter | Se attivo, la sezione "Chi Siamo" sarà visibile nel sito',
+          },
+        },
         {
           name: 'showBlog',
           type: 'checkbox',
           label: 'Mostra Blog',
           defaultValue: true,
           admin: {
-            description: 'Se attivo, la sezione Blog sarà visibile nel frontend',
+            description: '📦 Piano Starter | Se attivo, la sezione Blog sarà visibile nel sito',
           },
         },
         {
@@ -225,52 +198,103 @@ export const Schools: CollectionConfig = {
           label: 'Mostra Eventi',
           defaultValue: true,
           admin: {
-            description: 'Se attivo, la sezione Eventi sarà visibile nel frontend',
+            description: '📦 Piano Starter | Se attivo, la sezione Eventi sarà visibile nel sito',
           },
         },
         {
           name: 'showProjects',
           type: 'checkbox',
           label: 'Mostra Progetti',
-          defaultValue: true,
+          defaultValue: false,
           admin: {
-            description: 'Se attivo, la sezione Progetti sarà visibile nel frontend',
+            description: '💼 Piano Professional | Aggiorna il tuo piano per attivare questa funzionalità',
+          },
+          access: {
+            update: ({ req: { user }, data }) => {
+              if (user?.role === 'super-admin') return true
+              const plan = data?.subscription?.plan
+              return plan === 'professional' || plan === 'enterprise'
+            },
           },
         },
         {
           name: 'showCommunications',
           type: 'checkbox',
           label: 'Mostra Comunicazioni',
-          defaultValue: true,
+          defaultValue: false,
           admin: {
-            description: 'Se attivo, la sezione Comunicazioni sarà visibile nel frontend',
+            description: '🏢 Piano Enterprise | Aggiorna il tuo piano per attivare questa funzionalità',
+          },
+          access: {
+            update: ({ req: { user }, data }) => {
+              if (user?.role === 'super-admin') return true
+              const plan = data?.subscription?.plan
+              return plan === 'enterprise'
+            },
           },
         },
         {
           name: 'showCalendar',
           type: 'checkbox',
           label: 'Mostra Calendario',
-          defaultValue: true,
+          defaultValue: false,
           admin: {
-            description: 'Se attivo, la sezione Calendario sarà visibile nel frontend',
+            description: '💼 Piano Professional | Aggiorna il tuo piano per attivare questa funzionalità',
+          },
+          access: {
+            update: ({ req: { user }, data }) => {
+              if (user?.role === 'super-admin') return true
+              const plan = data?.subscription?.plan
+              return plan === 'professional' || plan === 'enterprise'
+            },
           },
         },
         {
           name: 'showMenu',
           type: 'checkbox',
           label: 'Mostra Mensa',
-          defaultValue: true,
+          defaultValue: false,
           admin: {
-            description: 'Se attivo, la sezione Mensa sarà visibile nel frontend',
+            description: '💼 Piano Professional | Aggiorna il tuo piano per attivare questa funzionalità',
+          },
+          access: {
+            update: ({ req: { user }, data }) => {
+              if (user?.role === 'super-admin') return true
+              const plan = data?.subscription?.plan
+              return plan === 'professional' || plan === 'enterprise'
+            },
           },
         },
         {
           name: 'showDocuments',
           type: 'checkbox',
           label: 'Mostra Documenti',
-          defaultValue: true,
+          defaultValue: false,
           admin: {
-            description: 'Se attivo, la sezione Documenti sarà visibile nel frontend',
+            description: '🏢 Piano Enterprise | Aggiorna il tuo piano per attivare questa funzionalità',
+          },
+          access: {
+            update: ({ req: { user }, data }) => {
+              if (user?.role === 'super-admin') return true
+              const plan = data?.subscription?.plan
+              return plan === 'enterprise'
+            },
+          },
+        },
+        {
+          name: 'showParentsArea',
+          type: 'checkbox',
+          label: 'Mostra Area Riservata Genitori',
+          defaultValue: false,
+          admin: {
+            description: '🏢 Piano Enterprise | Aggiorna il tuo piano per attivare questa funzionalità',
+          },
+          access: {
+            update: ({ req: { user }, data }) => {
+              if (user?.role === 'super-admin') return true
+              const plan = data?.subscription?.plan
+              return plan === 'enterprise'
+            },
           },
         },
       ],
@@ -282,18 +306,35 @@ export const Schools: CollectionConfig = {
       admin: {
         description: 'Informazioni sul piano di abbonamento',
       },
+
       fields: [
         {
           name: 'plan',
           type: 'select',
           label: 'Piano',
-          defaultValue: 'free',
+          defaultValue: 'starter',
           options: [
-            { label: 'Gratuito', value: 'free' },
-            { label: 'Basic', value: 'basic' },
-            { label: 'Premium', value: 'premium' },
+            { label: 'Starter', value: 'starter' },
+            { label: 'Professional', value: 'professional' },
             { label: 'Enterprise', value: 'enterprise' },
           ],
+          access: {
+            read: ({ req: { user } }) => user?.role === 'super-admin' || user?.role === 'school-admin',
+            update: ({ req: { user } }) => user?.role === 'super-admin',
+          },
+        },
+        {
+          name: 'isTrial',
+          type: 'checkbox',
+          label: 'Periodo di Prova',
+          defaultValue: false,
+          admin: {
+            description: 'Se disattivata, il sito della scuola avrà terminato il periodo di prova',
+          },
+          access: {
+            read: ({ req: { user } }) => user?.role === 'super-admin' || user?.role === 'school-admin',
+            update: ({ req: { user } }) => user?.role === 'super-admin',
+          },
         },
         {
           name: 'expiresAt',
@@ -302,8 +343,12 @@ export const Schools: CollectionConfig = {
           admin: {
             description: 'Data di scadenza del piano corrente',
             date: {
-              pickerAppearance: 'dayOnly',
+              displayFormat: 'dd/MM/YYYY',
             },
+          },
+          access: {
+            read: ({ req: { user } }) => user?.role === 'super-admin' || user?.role === 'school-admin',
+            update: ({ req: { user } }) => user?.role === 'super-admin',
           },
         },
         {
@@ -314,6 +359,9 @@ export const Schools: CollectionConfig = {
           admin: {
             description: 'Numero massimo di utenti amministratori',
           },
+          access: {
+            read: ({ req: { user } }) => user?.role === 'super-admin',
+          },
         },
         {
           name: 'maxStorage',
@@ -322,6 +370,29 @@ export const Schools: CollectionConfig = {
           defaultValue: 1000,
           admin: {
             description: 'Spazio di archiviazione massimo in MB',
+          },
+          access: {
+            read: ({ req: { user } }) => user?.role === 'super-admin',
+          },
+        },
+        {
+          name: 'stripeCustomerId',
+          type: 'text',
+          admin: {
+            readOnly: true,
+          },
+          access: {
+            read: ({ req }) => req.user?.role === 'super-admin',
+            update: ({ req }) => req.user?.role === 'super-admin',
+          },
+        },
+        {
+          type: 'ui',
+          name: 'manageSubscription',
+          admin: {
+            components: {
+              Field: '@/components/ChangePlanPortalButton',
+            },
           },
         },
       ],

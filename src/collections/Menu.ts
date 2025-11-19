@@ -44,6 +44,7 @@ const createDayFields = (dayName: string, emoji: string = '🗓️') => ({
 // Helper per creare i campi di una settimana
 const createWeekFields = (weekNumber: number) => ({
   name: `week${weekNumber}`,
+  label: `Settimana ${weekNumber}`,
   type: 'group' as const,
   fields: [
     createDayFields('Lunedì'),

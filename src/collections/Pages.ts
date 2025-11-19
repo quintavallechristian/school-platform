@@ -198,7 +198,7 @@ export const Pages: CollectionConfig = {
       type: 'richText',
       label: 'Contenuto principale',
       admin: {
-        description: "Testo principale che appare dopo l'hero",
+        description: 'Testo principale che appare dopo la copertina',
       },
     },
     // Blocchi componibili

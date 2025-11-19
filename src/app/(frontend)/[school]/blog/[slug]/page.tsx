@@ -52,6 +52,8 @@ export default async function ArticlePage({
                   })
                 : undefined
             }
+            backgroundImage={article.cover}
+            gradientOverlay={article.gradientOverlay || false}
           />
         </header>
 
@@ -70,30 +72,16 @@ export default async function ArticlePage({
               <span className="text-muted-foreground">{article.title}</span>
             </nav>
 
-            {/* Cover Image */}
-            {article.cover && typeof article.cover === 'object' && article.cover.url && (
-              <div className="relative w-full h-96 rounded-xl overflow-hidden shadow-2xl mb-8">
-                <Image
-                  src={article.cover.url}
-                  alt={article.title}
-                  fill
-                  className="object-cover"
-                  priority
-                />
-              </div>
-            )}
-
-            {/* Author info */}
-            {author && (
-              <div className="mb-6 text-sm text-muted-foreground">
-                Scritto da <span className="font-semibold">{author.email}</span>
-              </div>
-            )}
-
             {/* Content */}
             {article.content && (
               <SpotlightCard>
                 <RichTextRenderer content={article.content} />
+                {/* Author info */}
+                {author && (
+                  <div className="mb-6 text-sm text-muted-foreground">
+                    Scritto da <span className="font-semibold">{author.email}</span>
+                  </div>
+                )}
               </SpotlightCard>
             )}
           </div>

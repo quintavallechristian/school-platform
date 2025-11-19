@@ -21,11 +21,11 @@ import { Gallery } from './collections/Gallery'
 import { EmailSubscribers } from './collections/EmailSubscribers'
 import { Documents } from './collections/Documents'
 import { Testimonials } from './collections/Testimonials'
-import { Homepage } from './globals/Homepage'
-import { ChiSiamo } from './globals/ChiSiamo'
+import { Homepage } from './collections/Homepage'
+import { ChiSiamo } from './collections/ChiSiamo'
 import { CalendarDays } from './collections/CalendarDays'
-import { PrivacyPolicy } from './globals/PrivacyPolicy'
-import { CookiePolicy } from './globals/CookiePolicy'
+import { PrivacyPolicy } from './collections/PrivacyPolicy'
+import { CookiePolicy } from './collections/CookiePolicy'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -40,11 +40,13 @@ export default buildConfig({
   i18n: {
     supportedLanguages: { it },
   },
-  globals: [Homepage, ChiSiamo, PrivacyPolicy, CookiePolicy],
   collections: [
-    Users,
-    Schools,
+    //Configurazione sito
+    Homepage,
+    PrivacyPolicy,
+    CookiePolicy,
     // Contenuti
+    ChiSiamo,
     Projects,
     Teachers,
     CalendarDays,
@@ -62,6 +64,9 @@ export default buildConfig({
     Gallery,
     // Newsletter
     EmailSubscribers,
+    // Sistema
+    Users,
+    Schools,
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

@@ -1,5 +1,10 @@
-import { notFound } from 'next/navigation'
-import { getCurrentSchool, getSchoolChiSiamo, getSchoolTeachers } from '@/lib/school'
+import { notFound, redirect } from 'next/navigation'
+import {
+  getCurrentSchool,
+  getSchoolChiSiamo,
+  getSchoolTeachers,
+  isFeatureEnabled,
+} from '@/lib/school'
 import Hero from '@/components/Hero/Hero'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import { RichTextRenderer } from '@/components/RichTextRenderer/RichTextRenderer'
@@ -17,15 +22,17 @@ export default async function ChiSiamoPage({ params }: PageProps) {
   const school = await getCurrentSchool(schoolSlug)
 
   if (!school) {
-    console.log('cioa')
     notFound()
   }
 
-  // Recupera la Global ChiSiamo
+  // Reindirizza alla homepage se la feature chiSiamo è disabilitata
+  if (!isFeatureEnabled(school, 'chiSiamo')) {
+    redirect(`/${schoolSlug}`)
+  }
+
   const chiSiamo = await getSchoolChiSiamo(school.id)
 
-  // Se non è configurata o non è personalizzata, mostra la versione di default con lista insegnanti
-  if (!chiSiamo || !chiSiamo.customizeChiSiamo) {
+  if (!chiSiamo) {
     const teachers = await getSchoolTeachers(school.id)
 
     return (
@@ -149,10 +156,8 @@ export default async function ChiSiamoPage({ params }: PageProps) {
             className={`max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-0 ${shouldShowDefaultHero ? '-mt-16' : 'mt-8'}`}
           >
             <RichTextRenderer content={typedPage.content} />
-            ciao
           </SpotlightCard>
         )}
-
         {shouldShowTeachers && teachers && teachers.docs.length > 0 && (
           <div className="py-16">
             <div className="max-w-7xl mx-auto px-8">
@@ -194,13 +199,8 @@ export default async function ChiSiamoPage({ params }: PageProps) {
                             {teacher.subject}
                           </p>
                         )}
-                        {teacher.bio && <p className="leading-relaxed">{teacher.bio}</p>}
-                        {teacher.email && (
-                          <p className="mt-4 text-sm">
-                            <a href={`mailto:${teacher.email}`} className="text-primary underline">
-                              {teacher.email}
-                            </a>
-                          </p>
+                        {teacher.bio && (
+                          <p className="leading-relaxed line-clamp-2">{teacher.bio}</p>
                         )}
                       </SpotlightCard>
                     </Link>

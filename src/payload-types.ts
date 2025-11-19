@@ -67,8 +67,10 @@ export interface Config {
   };
   blocks: {};
   collections: {
-    users: User;
-    schools: School;
+    homepage: Homepage;
+    'privacy-policy': PrivacyPolicy;
+    'cookie-policy': CookiePolicy;
+    'chi-siamo': ChiSiamo;
     projects: Project;
     teachers: Teacher;
     'calendar-days': CalendarDay;
@@ -82,6 +84,8 @@ export interface Config {
     media: Media;
     gallery: Gallery;
     'email-subscribers': EmailSubscriber;
+    users: User;
+    schools: School;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -89,8 +93,10 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
-    users: UsersSelect<false> | UsersSelect<true>;
-    schools: SchoolsSelect<false> | SchoolsSelect<true>;
+    homepage: HomepageSelect<false> | HomepageSelect<true>;
+    'privacy-policy': PrivacyPolicySelect<false> | PrivacyPolicySelect<true>;
+    'cookie-policy': CookiePolicySelect<false> | CookiePolicySelect<true>;
+    'chi-siamo': ChiSiamoSelect<false> | ChiSiamoSelect<true>;
     projects: ProjectsSelect<false> | ProjectsSelect<true>;
     teachers: TeachersSelect<false> | TeachersSelect<true>;
     'calendar-days': CalendarDaysSelect<false> | CalendarDaysSelect<true>;
@@ -104,6 +110,8 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     gallery: GallerySelect<false> | GallerySelect<true>;
     'email-subscribers': EmailSubscribersSelect<false> | EmailSubscribersSelect<true>;
+    users: UsersSelect<false> | UsersSelect<true>;
+    schools: SchoolsSelect<false> | SchoolsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -112,18 +120,8 @@ export interface Config {
   db: {
     defaultIDType: string;
   };
-  globals: {
-    homepage: Homepage;
-    ChiSiamo: ChiSiamo;
-    PrivacyPolicy: PrivacyPolicy;
-    CookiePolicy: CookiePolicy;
-  };
-  globalsSelect: {
-    homepage: HomepageSelect<false> | HomepageSelect<true>;
-    ChiSiamo: ChiSiamoSelect<false> | ChiSiamoSelect<true>;
-    PrivacyPolicy: PrivacyPolicySelect<false> | PrivacyPolicySelect<true>;
-    CookiePolicy: CookiePolicySelect<false> | CookiePolicySelect<true>;
-  };
+  globals: {};
+  globalsSelect: {};
   locale: null;
   user: User & {
     collection: 'users';
@@ -152,39 +150,382 @@ export interface UserAuthOperations {
   };
 }
 /**
+ * Qui puoi configurare lo stile della tua homepage. Puoi creare più homepage diverse e attivarle una per volta. Se non imposti alcuna homepage personalizzata, verrà utilizzata una versione di default.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
+ * via the `definition` "homepage".
  */
-export interface User {
+export interface Homepage {
   id: string;
   /**
-   * Super Admin: accesso globale | School Admin: gestisce la propria scuola | Editor: può modificare contenuti | Viewer: solo lettura
+   * Scuola a cui appartiene questa configurazione
    */
-  role?: ('super-admin' | 'school-admin' | 'editor' | 'viewer') | null;
+  school?: (string | null) | School;
   /**
-   * Scuole di appartenenza
+   * Se disattivata, la testimonianza non sarà visibile nel frontend
    */
-  schools?: (string | School)[] | null;
-  firstName?: string | null;
-  lastName?: string | null;
-  phone?: string | null;
+  isActive?: boolean | null;
+  /**
+   * Dai un nome a questa homepage
+   */
+  name?: string | null;
+  /**
+   * Personalizza l'hero di default della pagina
+   */
+  heroSettings?: {
+    /**
+     * Se disabilitato, la copertina non verrà mostrata (utile se usi un immagini personalizzate)
+     */
+    showHero?: boolean | null;
+    /**
+     * Titolo che appare nella copertina
+     */
+    title?: string | null;
+    /**
+     * Testo che appare sotto il titolo nell'hero
+     */
+    subtitle?: string | null;
+    /**
+     * Se abilitato, la copertina occuperà l'intera altezza dello schermo
+     */
+    fullHeight?: boolean | null;
+    /**
+     * Immagine opzionale per lo sfondo dell'hero
+     */
+    backgroundImage?: (string | null) | Media;
+    /**
+     * Se abilitato, l'immagine di sfondo avrà un effetto parallax durante lo scroll
+     */
+    parallax?: boolean | null;
+    /**
+     * Se abilitato, aggiunge un overlay gradiente sopra l'immagine per migliorare la leggibilità del testo
+     */
+    gradientOverlay?: boolean | null;
+    /**
+     * Aggiungi un divisore decorativo in fondo alla copertina
+     */
+    bottomDivider?: {
+      enabled?: boolean | null;
+      style?:
+        | (
+            | 'wave'
+            | 'wave-brush'
+            | 'waves'
+            | 'zigzag'
+            | 'triangle'
+            | 'triangle-asymmetric'
+            | 'curve'
+            | 'curve-asymmetric'
+            | 'tilt'
+            | 'arrow'
+            | 'split'
+            | 'clouds'
+            | 'mountains'
+          )
+        | null;
+      /**
+       * Altezza del divisore in pixel (30-300)
+       */
+      height?: number | null;
+      flip?: boolean | null;
+      invert?: boolean | null;
+    };
+  };
+  /**
+   * Aggiungi sezioni personalizzate come call-to-action, team cards, feature grids, ecc.
+   */
+  blocks?:
+    | (
+        | {
+            backgroundColor?: string | null;
+            /**
+             * Titolo principale con effetto gradiente animato
+             */
+            title: string;
+            /**
+             * Testo secondario con animazione blur
+             */
+            subtitle?: string | null;
+            /**
+             * Se attivo, l'hero occuperà l'intera altezza dello schermo
+             */
+            fullHeight?: boolean | null;
+            /**
+             * Immagine opzionale per lo sfondo dell'hero
+             */
+            backgroundImage?: (string | null) | Media;
+            /**
+             * Se abilitato, l'immagine di sfondo avrà un effetto parallax durante lo scroll
+             */
+            parallax?: boolean | null;
+            /**
+             * Se abilitato, aggiunge un overlay gradiente sopra l'immagine per migliorare la leggibilità del testo
+             */
+            gradientOverlay?: boolean | null;
+            buttons?:
+              | {
+                  text: string;
+                  href: string;
+                  variant?: ('default' | 'destructive' | 'outline' | 'link') | null;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Aggiungi un divisore decorativo in cima all'hero
+             */
+            topDivider?: {
+              enabled?: boolean | null;
+              style?:
+                | (
+                    | 'wave'
+                    | 'wave-brush'
+                    | 'waves'
+                    | 'zigzag'
+                    | 'triangle'
+                    | 'triangle-asymmetric'
+                    | 'curve'
+                    | 'curve-asymmetric'
+                    | 'tilt'
+                    | 'arrow'
+                    | 'split'
+                    | 'clouds'
+                    | 'mountains'
+                  )
+                | null;
+              /**
+               * Altezza del divisore in pixel (30-300)
+               */
+              height?: number | null;
+              flip?: boolean | null;
+              invert?: boolean | null;
+            };
+            /**
+             * Aggiungi un divisore decorativo in fondo all'hero
+             */
+            bottomDivider?: {
+              enabled?: boolean | null;
+              style?:
+                | (
+                    | 'wave'
+                    | 'wave-brush'
+                    | 'waves'
+                    | 'zigzag'
+                    | 'triangle'
+                    | 'triangle-asymmetric'
+                    | 'curve'
+                    | 'curve-asymmetric'
+                    | 'tilt'
+                    | 'arrow'
+                    | 'split'
+                    | 'clouds'
+                    | 'mountains'
+                  )
+                | null;
+              /**
+               * Altezza del divisore in pixel (30-300)
+               */
+              height?: number | null;
+              flip?: boolean | null;
+              invert?: boolean | null;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'hero';
+          }
+        | {
+            backgroundColor?: string | null;
+            title?: string | null;
+            limit: number;
+            showViewAll?: boolean | null;
+            featuredOnly?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'testimonials';
+          }
+        | {
+            backgroundColor?: string | null;
+            title: string;
+            subtitle?: string | null;
+            image?: (string | null) | Media;
+            buttons?:
+              | {
+                  text: string;
+                  href: string;
+                  variant?: ('default' | 'secondary' | 'outline' | 'ghost') | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'callToAction';
+          }
+        | {
+            backgroundColor?: string | null;
+            content: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'richText';
+          }
+        | {
+            backgroundColor?: string | null;
+            title?: string | null;
+            columns?: ('2' | '3' | '4') | null;
+            cards?:
+              | {
+                  title: string;
+                  description?: string | null;
+                  image?: (string | null) | Media;
+                  link?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cardGrid';
+          }
+        | {
+            backgroundColor?: string | null;
+            /**
+             * Es: "Documenti Utili", "Moduli da scaricare"
+             */
+            title?: string | null;
+            description?: string | null;
+            files?:
+              | {
+                  /**
+                   * PDF, DOC, XLS, o altri documenti
+                   */
+                  file: string | Media;
+                  /**
+                   * Se vuoto, usa il nome del file
+                   */
+                  title?: string | null;
+                  description?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'fileDownload';
+          }
+        | {
+            backgroundColor?: string | null;
+            /**
+             * Seleziona una galleria esistente da mostrare
+             */
+            gallery: string | Gallery;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'gallery';
+          }
+        | {
+            backgroundColor?: string | null;
+            /**
+             * Es: "Ultime Notizie", "Articoli in Evidenza"
+             */
+            title?: string | null;
+            /**
+             * Quanti articoli mostrare (max 12)
+             */
+            limit: number;
+            /**
+             * Mostra un pulsante per andare alla pagina blog completa
+             */
+            showViewAll?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'articleList';
+          }
+        | {
+            backgroundColor?: string | null;
+            /**
+             * Es: "Prossimi Eventi", "Eventi della Scuola"
+             */
+            title?: string | null;
+            /**
+             * Quanti eventi mostrare (max 12)
+             */
+            limit: number;
+            /**
+             * Scegli quali eventi mostrare in base alla data
+             */
+            filter?: ('all' | 'upcoming' | 'past') | null;
+            /**
+             * Mostra un pulsante per andare alla pagina eventi completa
+             */
+            showViewAll?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'eventList';
+          }
+        | {
+            backgroundColor?: string | null;
+            /**
+             * Es: "I Nostri Progetti", "Progetti della Scuola"
+             */
+            title?: string | null;
+            /**
+             * Quanti progetti mostrare (max 12)
+             */
+            limit: number;
+            /**
+             * Mostra un pulsante per andare alla pagina progetti completa
+             */
+            showViewAll?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'projectList';
+          }
+        | {
+            backgroundColor?: string | null;
+            /**
+             * Es: "Comunicazioni Importanti", "Avvisi"
+             */
+            title?: string | null;
+            /**
+             * Quante comunicazioni mostrare (max 20)
+             */
+            limit: number;
+            /**
+             * Seleziona le priorità da mostrare (se vuoto, mostra tutte)
+             */
+            priorityFilter?: ('low' | 'normal' | 'high' | 'urgent')[] | null;
+            /**
+             * Mostra un pulsante per andare alla pagina comunicazioni completa
+             */
+            showViewAll?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'communications';
+          }
+        | {
+            backgroundColor?: string | null;
+            /**
+             * Es: "Il Nostro Team", "I Nostri Insegnanti"
+             */
+            title?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'teacherList';
+          }
+      )[]
+    | null;
   updatedAt: string;
   createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
-    | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
-      }[]
-    | null;
-  password?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -233,59 +574,56 @@ export interface School {
     phone?: string | null;
     address?: string | null;
   };
-  settings?: {
-    /**
-     * Seleziona la pagina da usare come homepage della scuola (opzionale)
-     */
-    homepage?: (string | null) | Page;
-    /**
-     * Gli utenti possono auto-registrarsi per questa scuola
-     */
-    allowPublicRegistration?: boolean | null;
-    /**
-     * Fuso orario della scuola (es: Europe/Rome)
-     */
-    timezone?: string | null;
-    language?: ('it' | 'en' | 'fr' | 'es') | null;
-  };
   /**
-   * Scegli quali sezioni mostrare nel frontend della scuola
+   * Scegli quali funzionalità mostrare nel sito della tua scuola
    */
   featureVisibility?: {
     /**
-     * Se attivo, la sezione Blog sarà visibile nel frontend
+     * 📦 Piano Starter | Se attivo, la sezione "Chi Siamo" sarà visibile nel sito
+     */
+    showChiSiamo?: boolean | null;
+    /**
+     * 📦 Piano Starter | Se attivo, la sezione Blog sarà visibile nel sito
      */
     showBlog?: boolean | null;
     /**
-     * Se attivo, la sezione Eventi sarà visibile nel frontend
+     * 📦 Piano Starter | Se attivo, la sezione Eventi sarà visibile nel sito
      */
     showEvents?: boolean | null;
     /**
-     * Se attivo, la sezione Progetti sarà visibile nel frontend
+     * 💼 Piano Professional | Aggiorna il tuo piano per attivare questa funzionalità
      */
     showProjects?: boolean | null;
     /**
-     * Se attivo, la sezione Comunicazioni sarà visibile nel frontend
+     * 🏢 Piano Enterprise | Aggiorna il tuo piano per attivare questa funzionalità
      */
     showCommunications?: boolean | null;
     /**
-     * Se attivo, la sezione Calendario sarà visibile nel frontend
+     * 💼 Piano Professional | Aggiorna il tuo piano per attivare questa funzionalità
      */
     showCalendar?: boolean | null;
     /**
-     * Se attivo, la sezione Mensa sarà visibile nel frontend
+     * 💼 Piano Professional | Aggiorna il tuo piano per attivare questa funzionalità
      */
     showMenu?: boolean | null;
     /**
-     * Se attivo, la sezione Documenti sarà visibile nel frontend
+     * 🏢 Piano Enterprise | Aggiorna il tuo piano per attivare questa funzionalità
      */
     showDocuments?: boolean | null;
+    /**
+     * 🏢 Piano Enterprise | Aggiorna il tuo piano per attivare questa funzionalità
+     */
+    showParentsArea?: boolean | null;
   };
   /**
    * Informazioni sul piano di abbonamento
    */
   subscription?: {
-    plan?: ('free' | 'basic' | 'premium' | 'enterprise') | null;
+    plan?: ('starter' | 'professional' | 'enterprise') | null;
+    /**
+     * Se disattivata, il sito della scuola avrà terminato il periodo di prova
+     */
+    isTrial?: boolean | null;
     /**
      * Data di scadenza del piano corrente
      */
@@ -298,6 +636,7 @@ export interface School {
      * Spazio di archiviazione massimo in MB
      */
     maxStorage?: number | null;
+    stripeCustomerId?: string | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -324,6 +663,129 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "gallery".
+ */
+export interface Gallery {
+  id: string;
+  /**
+   * Scuola a cui appartiene questa galleria
+   */
+  school?: (string | null) | School;
+  /**
+   * Nome identificativo della galleria
+   */
+  title: string;
+  /**
+   * Breve descrizione della galleria (opzionale)
+   */
+  description?: string | null;
+  /**
+   * Aggiungi le immagini alla galleria
+   */
+  images?:
+    | {
+        image: string | Media;
+        /**
+         * Testo descrittivo per l'immagine (opzionale)
+         */
+        caption?: string | null;
+        /**
+         * Numero per ordinare le immagini (più basso = prima)
+         */
+        order?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Specifica a quale contenuto è collegata questa galleria (opzionale)
+   */
+  linkedTo?: {
+    type?: ('none' | 'article' | 'page' | 'event') | null;
+    article?: (string | null) | Article;
+    page?: (string | null) | Page;
+    event?: (string | null) | Event;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "articles".
+ */
+export interface Article {
+  id: string;
+  /**
+   * Scuola a cui appartiene questo articolo
+   */
+  school?: (string | null) | School;
+  title: string;
+  cover?: (string | null) | Media;
+  /**
+   * Se abilitato, aggiunge un overlay gradiente sopra l'immagine di copertina per migliorare la leggibilità del testo nell'hero
+   */
+  gradientOverlay?: boolean | null;
+  slug: string;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  author?: (string | null) | User;
+  publishedAt?: string | null;
+  /**
+   * Collega una galleria di immagini a questo articolo (opzionale)
+   */
+  gallery?: (string | null) | Gallery;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: string;
+  /**
+   * Super Admin: accesso globale | School Admin: gestisce la propria scuola | Editor: può modificare contenuti | Viewer: solo lettura
+   */
+  role?: ('super-admin' | 'school-admin' | 'editor' | 'viewer') | null;
+  /**
+   * Scuole di appartenenza
+   */
+  schools?: (string | School)[] | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  phone?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -399,7 +861,7 @@ export interface Page {
     invert?: boolean | null;
   };
   /**
-   * Testo principale che appare dopo l'hero
+   * Testo principale che appare dopo la copertina
    */
   content?: {
     root: {
@@ -715,90 +1177,6 @@ export interface Page {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "gallery".
- */
-export interface Gallery {
-  id: string;
-  /**
-   * Scuola a cui appartiene questa galleria
-   */
-  school?: (string | null) | School;
-  /**
-   * Nome identificativo della galleria
-   */
-  title: string;
-  /**
-   * Breve descrizione della galleria (opzionale)
-   */
-  description?: string | null;
-  /**
-   * Aggiungi le immagini alla galleria
-   */
-  images?:
-    | {
-        image: string | Media;
-        /**
-         * Testo descrittivo per l'immagine (opzionale)
-         */
-        caption?: string | null;
-        /**
-         * Numero per ordinare le immagini (più basso = prima)
-         */
-        order?: number | null;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Specifica a quale contenuto è collegata questa galleria (opzionale)
-   */
-  linkedTo?: {
-    type?: ('none' | 'article' | 'page' | 'event') | null;
-    article?: (string | null) | Article;
-    page?: (string | null) | Page;
-    event?: (string | null) | Event;
-  };
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "articles".
- */
-export interface Article {
-  id: string;
-  /**
-   * Scuola a cui appartiene questo articolo
-   */
-  school?: (string | null) | School;
-  title: string;
-  cover?: (string | null) | Media;
-  slug: string;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  author?: (string | null) | User;
-  publishedAt?: string | null;
-  /**
-   * Collega una galleria di immagini a questo articolo (opzionale)
-   */
-  gallery?: (string | null) | Gallery;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "events".
  */
 export interface Event {
@@ -834,6 +1212,208 @@ export interface Event {
    * Collega una galleria di immagini a questo evento (opzionale)
    */
   gallery?: (string | null) | Gallery;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Configura i contenuti della pagina Privacy Policy
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "privacy-policy".
+ */
+export interface PrivacyPolicy {
+  id: string;
+  /**
+   * Scuola a cui appartiene questa configurazione
+   */
+  school?: (string | null) | School;
+  /**
+   * Se disattivata, la testimonianza non sarà visibile nel frontend
+   */
+  isActive?: boolean | null;
+  /**
+   * Dai un nome a questa versione della pagina Privacy Policy
+   */
+  name?: string | null;
+  /**
+   * Testo principale
+   */
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Configura i contenuti della pagina Cookie Policy
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "cookie-policy".
+ */
+export interface CookiePolicy {
+  id: string;
+  /**
+   * Scuola a cui appartiene questa configurazione
+   */
+  school?: (string | null) | School;
+  /**
+   * Se disattivata, la testimonianza non sarà visibile nel frontend
+   */
+  isActive?: boolean | null;
+  /**
+   * Dai un nome a questa versione della pagina Cookie Policy
+   */
+  name?: string | null;
+  /**
+   * Testo principale
+   */
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Configura i contenuti della pagina Chi Siamo
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "chi-siamo".
+ */
+export interface ChiSiamo {
+  id: string;
+  /**
+   * Scuola a cui appartiene questa configurazione
+   */
+  school?: (string | null) | School;
+  /**
+   * Se disattivata, la testimonianza non sarà visibile nel frontend
+   */
+  isActive?: boolean | null;
+  /**
+   * Dai un nome a questa versione della pagina Chi Siamo
+   */
+  name?: string | null;
+  /**
+   * Personalizza l'hero di default della pagina
+   */
+  heroSettings?: {
+    /**
+     * Se disabilitato, la copertina non verrà mostrata (utile se usi un immagini personalizzate)
+     */
+    showHero?: boolean | null;
+    /**
+     * Titolo che appare nella copertina
+     */
+    title?: string | null;
+    /**
+     * Testo che appare sotto il titolo nell'hero
+     */
+    subtitle?: string | null;
+    /**
+     * Se abilitato, la copertina occuperà l'intera altezza dello schermo
+     */
+    fullHeight?: boolean | null;
+    /**
+     * Immagine opzionale per lo sfondo dell'hero
+     */
+    backgroundImage?: (string | null) | Media;
+    /**
+     * Se abilitato, l'immagine di sfondo avrà un effetto parallax durante lo scroll
+     */
+    parallax?: boolean | null;
+    /**
+     * Se abilitato, aggiunge un overlay gradiente sopra l'immagine per migliorare la leggibilità del testo
+     */
+    gradientOverlay?: boolean | null;
+    /**
+     * Aggiungi un divisore decorativo in fondo alla copertina
+     */
+    bottomDivider?: {
+      enabled?: boolean | null;
+      style?:
+        | (
+            | 'wave'
+            | 'wave-brush'
+            | 'waves'
+            | 'zigzag'
+            | 'triangle'
+            | 'triangle-asymmetric'
+            | 'curve'
+            | 'curve-asymmetric'
+            | 'tilt'
+            | 'arrow'
+            | 'split'
+            | 'clouds'
+            | 'mountains'
+          )
+        | null;
+      /**
+       * Altezza del divisore in pixel (30-300)
+       */
+      height?: number | null;
+      flip?: boolean | null;
+      invert?: boolean | null;
+    };
+  };
+  /**
+   * Testo principale che appare dopo la copertina
+   */
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Configura la sezione con la lista degli insegnanti
+   */
+  teachersSection?: {
+    /**
+     * Se abilitato, verrà mostrata la lista degli insegnanti della scuola
+     */
+    enabled?: boolean | null;
+    /**
+     * Titolo della sezione insegnanti
+     */
+    title?: string | null;
+    /**
+     * Sottotitolo opzionale per la sezione insegnanti
+     */
+    subtitle?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -1295,7 +1875,14 @@ export interface Communication {
  */
 export interface Testimonial {
   id: string;
-  school: string | School;
+  /**
+   * Scuola a cui appartiene questa testimonianza
+   */
+  school?: (string | null) | School;
+  /**
+   * Se non approvata, la testimonianza non sarà visibile nel frontend. Solo gli admin possono approvare.
+   */
+  approved?: boolean | null;
   /**
    * Se disattivata, la testimonianza non sarà visibile nel frontend
    */
@@ -1384,12 +1971,20 @@ export interface PayloadLockedDocument {
   id: string;
   document?:
     | ({
-        relationTo: 'users';
-        value: string | User;
+        relationTo: 'homepage';
+        value: string | Homepage;
       } | null)
     | ({
-        relationTo: 'schools';
-        value: string | School;
+        relationTo: 'privacy-policy';
+        value: string | PrivacyPolicy;
+      } | null)
+    | ({
+        relationTo: 'cookie-policy';
+        value: string | CookiePolicy;
+      } | null)
+    | ({
+        relationTo: 'chi-siamo';
+        value: string | ChiSiamo;
       } | null)
     | ({
         relationTo: 'projects';
@@ -1442,6 +2037,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'email-subscribers';
         value: string | EmailSubscriber;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: string | User;
+      } | null)
+    | ({
+        relationTo: 'schools';
+        value: string | School;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1487,78 +2090,267 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users_select".
+ * via the `definition` "homepage_select".
  */
-export interface UsersSelect<T extends boolean = true> {
-  role?: T;
-  schools?: T;
-  firstName?: T;
-  lastName?: T;
-  phone?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  email?: T;
-  resetPasswordToken?: T;
-  resetPasswordExpiration?: T;
-  salt?: T;
-  hash?: T;
-  loginAttempts?: T;
-  lockUntil?: T;
-  sessions?:
+export interface HomepageSelect<T extends boolean = true> {
+  school?: T;
+  isActive?: T;
+  name?: T;
+  heroSettings?:
     | T
     | {
-        id?: T;
-        createdAt?: T;
-        expiresAt?: T;
+        showHero?: T;
+        title?: T;
+        subtitle?: T;
+        fullHeight?: T;
+        backgroundImage?: T;
+        parallax?: T;
+        gradientOverlay?: T;
+        bottomDivider?:
+          | T
+          | {
+              enabled?: T;
+              style?: T;
+              height?: T;
+              flip?: T;
+              invert?: T;
+            };
       };
+  blocks?:
+    | T
+    | {
+        hero?:
+          | T
+          | {
+              backgroundColor?: T;
+              title?: T;
+              subtitle?: T;
+              fullHeight?: T;
+              backgroundImage?: T;
+              parallax?: T;
+              gradientOverlay?: T;
+              buttons?:
+                | T
+                | {
+                    text?: T;
+                    href?: T;
+                    variant?: T;
+                    id?: T;
+                  };
+              topDivider?:
+                | T
+                | {
+                    enabled?: T;
+                    style?: T;
+                    height?: T;
+                    flip?: T;
+                    invert?: T;
+                  };
+              bottomDivider?:
+                | T
+                | {
+                    enabled?: T;
+                    style?: T;
+                    height?: T;
+                    flip?: T;
+                    invert?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        testimonials?:
+          | T
+          | {
+              backgroundColor?: T;
+              title?: T;
+              limit?: T;
+              showViewAll?: T;
+              featuredOnly?: T;
+              id?: T;
+              blockName?: T;
+            };
+        callToAction?:
+          | T
+          | {
+              backgroundColor?: T;
+              title?: T;
+              subtitle?: T;
+              image?: T;
+              buttons?:
+                | T
+                | {
+                    text?: T;
+                    href?: T;
+                    variant?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        richText?:
+          | T
+          | {
+              backgroundColor?: T;
+              content?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cardGrid?:
+          | T
+          | {
+              backgroundColor?: T;
+              title?: T;
+              columns?: T;
+              cards?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                    image?: T;
+                    link?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        fileDownload?:
+          | T
+          | {
+              backgroundColor?: T;
+              title?: T;
+              description?: T;
+              files?:
+                | T
+                | {
+                    file?: T;
+                    title?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        gallery?:
+          | T
+          | {
+              backgroundColor?: T;
+              gallery?: T;
+              id?: T;
+              blockName?: T;
+            };
+        articleList?:
+          | T
+          | {
+              backgroundColor?: T;
+              title?: T;
+              limit?: T;
+              showViewAll?: T;
+              id?: T;
+              blockName?: T;
+            };
+        eventList?:
+          | T
+          | {
+              backgroundColor?: T;
+              title?: T;
+              limit?: T;
+              filter?: T;
+              showViewAll?: T;
+              id?: T;
+              blockName?: T;
+            };
+        projectList?:
+          | T
+          | {
+              backgroundColor?: T;
+              title?: T;
+              limit?: T;
+              showViewAll?: T;
+              id?: T;
+              blockName?: T;
+            };
+        communications?:
+          | T
+          | {
+              backgroundColor?: T;
+              title?: T;
+              limit?: T;
+              priorityFilter?: T;
+              showViewAll?: T;
+              id?: T;
+              blockName?: T;
+            };
+        teacherList?:
+          | T
+          | {
+              backgroundColor?: T;
+              title?: T;
+              id?: T;
+              blockName?: T;
+            };
+      };
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "schools_select".
+ * via the `definition` "privacy-policy_select".
  */
-export interface SchoolsSelect<T extends boolean = true> {
-  name?: T;
-  slug?: T;
-  domain?: T;
-  logo?: T;
-  primaryColor?: T;
-  secondaryColor?: T;
-  backgroundPrimaryColor?: T;
-  backgroundSecondaryColor?: T;
+export interface PrivacyPolicySelect<T extends boolean = true> {
+  school?: T;
   isActive?: T;
-  contactInfo?:
+  name?: T;
+  content?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "cookie-policy_select".
+ */
+export interface CookiePolicySelect<T extends boolean = true> {
+  school?: T;
+  isActive?: T;
+  name?: T;
+  content?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "chi-siamo_select".
+ */
+export interface ChiSiamoSelect<T extends boolean = true> {
+  school?: T;
+  isActive?: T;
+  name?: T;
+  heroSettings?:
     | T
     | {
-        email?: T;
-        phone?: T;
-        address?: T;
+        showHero?: T;
+        title?: T;
+        subtitle?: T;
+        fullHeight?: T;
+        backgroundImage?: T;
+        parallax?: T;
+        gradientOverlay?: T;
+        bottomDivider?:
+          | T
+          | {
+              enabled?: T;
+              style?: T;
+              height?: T;
+              flip?: T;
+              invert?: T;
+            };
       };
-  settings?:
+  content?: T;
+  teachersSection?:
     | T
     | {
-        homepage?: T;
-        allowPublicRegistration?: T;
-        timezone?: T;
-        language?: T;
-      };
-  featureVisibility?:
-    | T
-    | {
-        showBlog?: T;
-        showEvents?: T;
-        showProjects?: T;
-        showCommunications?: T;
-        showCalendar?: T;
-        showMenu?: T;
-        showDocuments?: T;
-      };
-  subscription?:
-    | T
-    | {
-        plan?: T;
-        expiresAt?: T;
-        maxUsers?: T;
-        maxStorage?: T;
+        enabled?: T;
+        title?: T;
+        subtitle?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -1932,6 +2724,7 @@ export interface CommunicationsSelect<T extends boolean = true> {
  */
 export interface TestimonialsSelect<T extends boolean = true> {
   school?: T;
+  approved?: T;
   isActive?: T;
   authorName?: T;
   role?: T;
@@ -1951,6 +2744,7 @@ export interface ArticlesSelect<T extends boolean = true> {
   school?: T;
   title?: T;
   cover?: T;
+  gradientOverlay?: T;
   slug?: T;
   content?: T;
   author?: T;
@@ -2211,6 +3005,80 @@ export interface EmailSubscribersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users_select".
+ */
+export interface UsersSelect<T extends boolean = true> {
+  role?: T;
+  schools?: T;
+  firstName?: T;
+  lastName?: T;
+  phone?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  email?: T;
+  resetPasswordToken?: T;
+  resetPasswordExpiration?: T;
+  salt?: T;
+  hash?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "schools_select".
+ */
+export interface SchoolsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  domain?: T;
+  logo?: T;
+  primaryColor?: T;
+  secondaryColor?: T;
+  backgroundPrimaryColor?: T;
+  backgroundSecondaryColor?: T;
+  isActive?: T;
+  contactInfo?:
+    | T
+    | {
+        email?: T;
+        phone?: T;
+        address?: T;
+      };
+  featureVisibility?:
+    | T
+    | {
+        showChiSiamo?: T;
+        showBlog?: T;
+        showEvents?: T;
+        showProjects?: T;
+        showCommunications?: T;
+        showCalendar?: T;
+        showMenu?: T;
+        showDocuments?: T;
+        showParentsArea?: T;
+      };
+  subscription?:
+    | T
+    | {
+        plan?: T;
+        isTrial?: T;
+        expiresAt?: T;
+        maxUsers?: T;
+        maxStorage?: T;
+        stripeCustomerId?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -2248,837 +3116,6 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
-}
-/**
- * Configura i contenuti della home page
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "homepage".
- */
-export interface Homepage {
-  id: string;
-  /**
-   * Scuola a cui appartiene questa configurazione
-   */
-  school?: (string | null) | School;
-  /**
-   * Se disabilitato, verrà mostrata la homepage di default con articoli ed eventi. Se abilitato, puoi personalizzare completamente la homepage.
-   */
-  customizeHomepage?: boolean | null;
-  /**
-   * Personalizza l'hero di default della pagina
-   */
-  heroSettings?: {
-    /**
-     * Se disabilitato, la copertina non verrà mostrata (utile se usi un immagini personalizzate)
-     */
-    showHero?: boolean | null;
-    /**
-     * Titolo che appare nella copertina
-     */
-    title?: string | null;
-    /**
-     * Testo che appare sotto il titolo nell'hero
-     */
-    subtitle?: string | null;
-    /**
-     * Se abilitato, la copertina occuperà l'intera altezza dello schermo
-     */
-    fullHeight?: boolean | null;
-    /**
-     * Immagine opzionale per lo sfondo dell'hero
-     */
-    backgroundImage?: (string | null) | Media;
-    /**
-     * Se abilitato, l'immagine di sfondo avrà un effetto parallax durante lo scroll
-     */
-    parallax?: boolean | null;
-    /**
-     * Se abilitato, aggiunge un overlay gradiente sopra l'immagine per migliorare la leggibilità del testo
-     */
-    gradientOverlay?: boolean | null;
-    /**
-     * Aggiungi un divisore decorativo in fondo alla copertina
-     */
-    bottomDivider?: {
-      enabled?: boolean | null;
-      style?:
-        | (
-            | 'wave'
-            | 'wave-brush'
-            | 'waves'
-            | 'zigzag'
-            | 'triangle'
-            | 'triangle-asymmetric'
-            | 'curve'
-            | 'curve-asymmetric'
-            | 'tilt'
-            | 'arrow'
-            | 'split'
-            | 'clouds'
-            | 'mountains'
-          )
-        | null;
-      /**
-       * Altezza del divisore in pixel (30-300)
-       */
-      height?: number | null;
-      flip?: boolean | null;
-      invert?: boolean | null;
-    };
-  };
-  /**
-   * Aggiungi sezioni personalizzate come call-to-action, team cards, feature grids, ecc.
-   */
-  blocks?:
-    | (
-        | {
-            backgroundColor?: string | null;
-            /**
-             * Titolo principale con effetto gradiente animato
-             */
-            title: string;
-            /**
-             * Testo secondario con animazione blur
-             */
-            subtitle?: string | null;
-            /**
-             * Se attivo, l'hero occuperà l'intera altezza dello schermo
-             */
-            fullHeight?: boolean | null;
-            /**
-             * Immagine opzionale per lo sfondo dell'hero
-             */
-            backgroundImage?: (string | null) | Media;
-            /**
-             * Se abilitato, l'immagine di sfondo avrà un effetto parallax durante lo scroll
-             */
-            parallax?: boolean | null;
-            /**
-             * Se abilitato, aggiunge un overlay gradiente sopra l'immagine per migliorare la leggibilità del testo
-             */
-            gradientOverlay?: boolean | null;
-            buttons?:
-              | {
-                  text: string;
-                  href: string;
-                  variant?: ('default' | 'destructive' | 'outline' | 'link') | null;
-                  id?: string | null;
-                }[]
-              | null;
-            /**
-             * Aggiungi un divisore decorativo in cima all'hero
-             */
-            topDivider?: {
-              enabled?: boolean | null;
-              style?:
-                | (
-                    | 'wave'
-                    | 'wave-brush'
-                    | 'waves'
-                    | 'zigzag'
-                    | 'triangle'
-                    | 'triangle-asymmetric'
-                    | 'curve'
-                    | 'curve-asymmetric'
-                    | 'tilt'
-                    | 'arrow'
-                    | 'split'
-                    | 'clouds'
-                    | 'mountains'
-                  )
-                | null;
-              /**
-               * Altezza del divisore in pixel (30-300)
-               */
-              height?: number | null;
-              flip?: boolean | null;
-              invert?: boolean | null;
-            };
-            /**
-             * Aggiungi un divisore decorativo in fondo all'hero
-             */
-            bottomDivider?: {
-              enabled?: boolean | null;
-              style?:
-                | (
-                    | 'wave'
-                    | 'wave-brush'
-                    | 'waves'
-                    | 'zigzag'
-                    | 'triangle'
-                    | 'triangle-asymmetric'
-                    | 'curve'
-                    | 'curve-asymmetric'
-                    | 'tilt'
-                    | 'arrow'
-                    | 'split'
-                    | 'clouds'
-                    | 'mountains'
-                  )
-                | null;
-              /**
-               * Altezza del divisore in pixel (30-300)
-               */
-              height?: number | null;
-              flip?: boolean | null;
-              invert?: boolean | null;
-            };
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'hero';
-          }
-        | {
-            backgroundColor?: string | null;
-            title?: string | null;
-            limit: number;
-            showViewAll?: boolean | null;
-            featuredOnly?: boolean | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'testimonials';
-          }
-        | {
-            backgroundColor?: string | null;
-            title: string;
-            subtitle?: string | null;
-            image?: (string | null) | Media;
-            buttons?:
-              | {
-                  text: string;
-                  href: string;
-                  variant?: ('default' | 'secondary' | 'outline' | 'ghost') | null;
-                  id?: string | null;
-                }[]
-              | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'callToAction';
-          }
-        | {
-            backgroundColor?: string | null;
-            content: {
-              root: {
-                type: string;
-                children: {
-                  type: any;
-                  version: number;
-                  [k: string]: unknown;
-                }[];
-                direction: ('ltr' | 'rtl') | null;
-                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-                indent: number;
-                version: number;
-              };
-              [k: string]: unknown;
-            };
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'richText';
-          }
-        | {
-            backgroundColor?: string | null;
-            title?: string | null;
-            columns?: ('2' | '3' | '4') | null;
-            cards?:
-              | {
-                  title: string;
-                  description?: string | null;
-                  image?: (string | null) | Media;
-                  link?: string | null;
-                  id?: string | null;
-                }[]
-              | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'cardGrid';
-          }
-        | {
-            backgroundColor?: string | null;
-            /**
-             * Es: "Documenti Utili", "Moduli da scaricare"
-             */
-            title?: string | null;
-            description?: string | null;
-            files?:
-              | {
-                  /**
-                   * PDF, DOC, XLS, o altri documenti
-                   */
-                  file: string | Media;
-                  /**
-                   * Se vuoto, usa il nome del file
-                   */
-                  title?: string | null;
-                  description?: string | null;
-                  id?: string | null;
-                }[]
-              | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'fileDownload';
-          }
-        | {
-            backgroundColor?: string | null;
-            /**
-             * Seleziona una galleria esistente da mostrare
-             */
-            gallery: string | Gallery;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'gallery';
-          }
-        | {
-            backgroundColor?: string | null;
-            /**
-             * Es: "Ultime Notizie", "Articoli in Evidenza"
-             */
-            title?: string | null;
-            /**
-             * Quanti articoli mostrare (max 12)
-             */
-            limit: number;
-            /**
-             * Mostra un pulsante per andare alla pagina blog completa
-             */
-            showViewAll?: boolean | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'articleList';
-          }
-        | {
-            backgroundColor?: string | null;
-            /**
-             * Es: "Prossimi Eventi", "Eventi della Scuola"
-             */
-            title?: string | null;
-            /**
-             * Quanti eventi mostrare (max 12)
-             */
-            limit: number;
-            /**
-             * Scegli quali eventi mostrare in base alla data
-             */
-            filter?: ('all' | 'upcoming' | 'past') | null;
-            /**
-             * Mostra un pulsante per andare alla pagina eventi completa
-             */
-            showViewAll?: boolean | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'eventList';
-          }
-        | {
-            backgroundColor?: string | null;
-            /**
-             * Es: "I Nostri Progetti", "Progetti della Scuola"
-             */
-            title?: string | null;
-            /**
-             * Quanti progetti mostrare (max 12)
-             */
-            limit: number;
-            /**
-             * Mostra un pulsante per andare alla pagina progetti completa
-             */
-            showViewAll?: boolean | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'projectList';
-          }
-        | {
-            backgroundColor?: string | null;
-            /**
-             * Es: "Comunicazioni Importanti", "Avvisi"
-             */
-            title?: string | null;
-            /**
-             * Quante comunicazioni mostrare (max 20)
-             */
-            limit: number;
-            /**
-             * Seleziona le priorità da mostrare (se vuoto, mostra tutte)
-             */
-            priorityFilter?: ('low' | 'normal' | 'high' | 'urgent')[] | null;
-            /**
-             * Mostra un pulsante per andare alla pagina comunicazioni completa
-             */
-            showViewAll?: boolean | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'communications';
-          }
-        | {
-            backgroundColor?: string | null;
-            /**
-             * Es: "Il Nostro Team", "I Nostri Insegnanti"
-             */
-            title?: string | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'teacherList';
-          }
-      )[]
-    | null;
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
- * Configura i contenuti della pagina Chi Siamo
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "ChiSiamo".
- */
-export interface ChiSiamo {
-  id: string;
-  /**
-   * Scuola a cui appartiene questa configurazione
-   */
-  school?: (string | null) | School;
-  /**
-   * Se disabilitato, verrà mostrata la pagina di default con hero "Chi Siamo" e la lista degli insegnanti. Se abilitato, puoi personalizzare completamente la pagina.
-   */
-  customizeChiSiamo?: boolean | null;
-  /**
-   * Personalizza l'hero di default della pagina
-   */
-  heroSettings?: {
-    /**
-     * Se disabilitato, la copertina non verrà mostrata (utile se usi un immagini personalizzate)
-     */
-    showHero?: boolean | null;
-    /**
-     * Titolo che appare nella copertina
-     */
-    title?: string | null;
-    /**
-     * Testo che appare sotto il titolo nell'hero
-     */
-    subtitle?: string | null;
-    /**
-     * Se abilitato, la copertina occuperà l'intera altezza dello schermo
-     */
-    fullHeight?: boolean | null;
-    /**
-     * Immagine opzionale per lo sfondo dell'hero
-     */
-    backgroundImage?: (string | null) | Media;
-    /**
-     * Se abilitato, l'immagine di sfondo avrà un effetto parallax durante lo scroll
-     */
-    parallax?: boolean | null;
-    /**
-     * Se abilitato, aggiunge un overlay gradiente sopra l'immagine per migliorare la leggibilità del testo
-     */
-    gradientOverlay?: boolean | null;
-    /**
-     * Aggiungi un divisore decorativo in fondo alla copertina
-     */
-    bottomDivider?: {
-      enabled?: boolean | null;
-      style?:
-        | (
-            | 'wave'
-            | 'wave-brush'
-            | 'waves'
-            | 'zigzag'
-            | 'triangle'
-            | 'triangle-asymmetric'
-            | 'curve'
-            | 'curve-asymmetric'
-            | 'tilt'
-            | 'arrow'
-            | 'split'
-            | 'clouds'
-            | 'mountains'
-          )
-        | null;
-      /**
-       * Altezza del divisore in pixel (30-300)
-       */
-      height?: number | null;
-      flip?: boolean | null;
-      invert?: boolean | null;
-    };
-  };
-  /**
-   * Testo principale che appare dopo l'hero
-   */
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * Configura la sezione con la lista degli insegnanti
-   */
-  teachersSection?: {
-    /**
-     * Se abilitato, verrà mostrata la lista degli insegnanti della scuola
-     */
-    enabled?: boolean | null;
-    /**
-     * Titolo della sezione insegnanti
-     */
-    title?: string | null;
-    /**
-     * Sottotitolo opzionale per la sezione insegnanti
-     */
-    subtitle?: string | null;
-  };
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
- * Configura i contenuti della pagina Privacy Policy
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "PrivacyPolicy".
- */
-export interface PrivacyPolicy {
-  id: string;
-  /**
-   * Scuola a cui appartiene questa configurazione
-   */
-  school?: (string | null) | School;
-  /**
-   * Se disabilitato, verrà mostrata la pagina di default "Privacy Policy". Se abilitato, puoi personalizzare in contenuto. Suggeriamo di abilitare questa opzione e personalizzare la Privacy Policy con i dati della tua scuola.
-   */
-  customizePrivacyPolicy?: boolean | null;
-  /**
-   * Testo principale
-   */
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
- * Configura i contenuti della pagina Cookie Policy
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "CookiePolicy".
- */
-export interface CookiePolicy {
-  id: string;
-  /**
-   * Scuola a cui appartiene questa configurazione
-   */
-  school?: (string | null) | School;
-  /**
-   * Se disabilitato, verrà mostrata la pagina di default "Cookie Policy". Se abilitato, puoi personalizzare in contenuto. Suggeriamo di abilitare questa opzione e personalizzare la Cookie Policy con i dati della tua scuola.
-   */
-  customizeCookiePolicy?: boolean | null;
-  /**
-   * Testo principale
-   */
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "homepage_select".
- */
-export interface HomepageSelect<T extends boolean = true> {
-  school?: T;
-  customizeHomepage?: T;
-  heroSettings?:
-    | T
-    | {
-        showHero?: T;
-        title?: T;
-        subtitle?: T;
-        fullHeight?: T;
-        backgroundImage?: T;
-        parallax?: T;
-        gradientOverlay?: T;
-        bottomDivider?:
-          | T
-          | {
-              enabled?: T;
-              style?: T;
-              height?: T;
-              flip?: T;
-              invert?: T;
-            };
-      };
-  blocks?:
-    | T
-    | {
-        hero?:
-          | T
-          | {
-              backgroundColor?: T;
-              title?: T;
-              subtitle?: T;
-              fullHeight?: T;
-              backgroundImage?: T;
-              parallax?: T;
-              gradientOverlay?: T;
-              buttons?:
-                | T
-                | {
-                    text?: T;
-                    href?: T;
-                    variant?: T;
-                    id?: T;
-                  };
-              topDivider?:
-                | T
-                | {
-                    enabled?: T;
-                    style?: T;
-                    height?: T;
-                    flip?: T;
-                    invert?: T;
-                  };
-              bottomDivider?:
-                | T
-                | {
-                    enabled?: T;
-                    style?: T;
-                    height?: T;
-                    flip?: T;
-                    invert?: T;
-                  };
-              id?: T;
-              blockName?: T;
-            };
-        testimonials?:
-          | T
-          | {
-              backgroundColor?: T;
-              title?: T;
-              limit?: T;
-              showViewAll?: T;
-              featuredOnly?: T;
-              id?: T;
-              blockName?: T;
-            };
-        callToAction?:
-          | T
-          | {
-              backgroundColor?: T;
-              title?: T;
-              subtitle?: T;
-              image?: T;
-              buttons?:
-                | T
-                | {
-                    text?: T;
-                    href?: T;
-                    variant?: T;
-                    id?: T;
-                  };
-              id?: T;
-              blockName?: T;
-            };
-        richText?:
-          | T
-          | {
-              backgroundColor?: T;
-              content?: T;
-              id?: T;
-              blockName?: T;
-            };
-        cardGrid?:
-          | T
-          | {
-              backgroundColor?: T;
-              title?: T;
-              columns?: T;
-              cards?:
-                | T
-                | {
-                    title?: T;
-                    description?: T;
-                    image?: T;
-                    link?: T;
-                    id?: T;
-                  };
-              id?: T;
-              blockName?: T;
-            };
-        fileDownload?:
-          | T
-          | {
-              backgroundColor?: T;
-              title?: T;
-              description?: T;
-              files?:
-                | T
-                | {
-                    file?: T;
-                    title?: T;
-                    description?: T;
-                    id?: T;
-                  };
-              id?: T;
-              blockName?: T;
-            };
-        gallery?:
-          | T
-          | {
-              backgroundColor?: T;
-              gallery?: T;
-              id?: T;
-              blockName?: T;
-            };
-        articleList?:
-          | T
-          | {
-              backgroundColor?: T;
-              title?: T;
-              limit?: T;
-              showViewAll?: T;
-              id?: T;
-              blockName?: T;
-            };
-        eventList?:
-          | T
-          | {
-              backgroundColor?: T;
-              title?: T;
-              limit?: T;
-              filter?: T;
-              showViewAll?: T;
-              id?: T;
-              blockName?: T;
-            };
-        projectList?:
-          | T
-          | {
-              backgroundColor?: T;
-              title?: T;
-              limit?: T;
-              showViewAll?: T;
-              id?: T;
-              blockName?: T;
-            };
-        communications?:
-          | T
-          | {
-              backgroundColor?: T;
-              title?: T;
-              limit?: T;
-              priorityFilter?: T;
-              showViewAll?: T;
-              id?: T;
-              blockName?: T;
-            };
-        teacherList?:
-          | T
-          | {
-              backgroundColor?: T;
-              title?: T;
-              id?: T;
-              blockName?: T;
-            };
-      };
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "ChiSiamo_select".
- */
-export interface ChiSiamoSelect<T extends boolean = true> {
-  school?: T;
-  customizeChiSiamo?: T;
-  heroSettings?:
-    | T
-    | {
-        showHero?: T;
-        title?: T;
-        subtitle?: T;
-        fullHeight?: T;
-        backgroundImage?: T;
-        parallax?: T;
-        gradientOverlay?: T;
-        bottomDivider?:
-          | T
-          | {
-              enabled?: T;
-              style?: T;
-              height?: T;
-              flip?: T;
-              invert?: T;
-            };
-      };
-  content?: T;
-  teachersSection?:
-    | T
-    | {
-        enabled?: T;
-        title?: T;
-        subtitle?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "PrivacyPolicy_select".
- */
-export interface PrivacyPolicySelect<T extends boolean = true> {
-  school?: T;
-  customizePrivacyPolicy?: T;
-  content?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "CookiePolicy_select".
- */
-export interface CookiePolicySelect<T extends boolean = true> {
-  school?: T;
-  customizeCookiePolicy?: T;
-  content?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

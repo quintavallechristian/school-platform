@@ -1,0 +1,48 @@
+'use client'
+import { useEffect, useState, useCallback } from 'react'
+
+export type PayloadUser = {
+  id: string
+  email: string
+  role?: string
+  [key: string]: any
+}
+
+export function usePayloadUser() {
+  const [user, setUser] = useState<PayloadUser | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<null | string>(null)
+
+  const fetchUser = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/users/me`, {
+        credentials: 'include',
+      })
+
+      if (!res.ok) {
+        setUser(null)
+      } else {
+        const data = await res.json()
+        setUser(data.user || data)
+      }
+    } catch (err) {
+      setError('Errore di rete')
+      setUser(null)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchUser()
+
+    // Auto-refresh ogni 30 sec (opzionale)
+    const interval = setInterval(fetchUser, 30000)
+    return () => clearInterval(interval)
+  }, [fetchUser])
+
+  return { user, loading, error, refresh: fetchUser }
+}

@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import React from 'react'
 
 interface RichTextRendererProps {
@@ -7,26 +8,21 @@ interface RichTextRendererProps {
 export function RichTextRenderer({ content }: RichTextRendererProps) {
   if (!content) return null
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const renderNode = (node: any, index: number = 0): React.ReactNode => {
     if (!node) return null
 
-    // Text node with Lexical formatting
     if (node.type === 'text' && typeof node.text === 'string') {
       let text: React.ReactNode = node.text
 
-      // Prepare inline styles for color and background
       const inlineStyle: React.CSSProperties = {}
 
       if (node.style) {
-        // Parse style string if it's a string
         if (typeof node.style === 'string') {
           const styleObj = node.style
             .split(';')
             .reduce((acc: Record<string, string>, rule: string) => {
               const [key, value] = rule.split(':').map((s) => s.trim())
               if (key && value) {
-                // Convert CSS property names to camelCase
                 const camelKey = key.replace(/-([a-z])/g, (g) => g[1].toUpperCase())
                 acc[camelKey] = value
               }
@@ -34,12 +30,10 @@ export function RichTextRenderer({ content }: RichTextRendererProps) {
             }, {})
           Object.assign(inlineStyle, styleObj)
         } else {
-          // If it's already an object
           Object.assign(inlineStyle, node.style)
         }
       }
 
-      // Support direct color and background properties
       if (node.color) {
         inlineStyle.color = node.color
       }
@@ -47,34 +41,26 @@ export function RichTextRenderer({ content }: RichTextRendererProps) {
         inlineStyle.backgroundColor = node.backgroundColor
       }
 
-      // Lexical uses bitwise format flags
       if (typeof node.format === 'number') {
         const format = node.format
 
-        // Apply formatting in nested order (code, strikethrough, underline, italic, bold)
         if (format & 16) {
-          // code
           text = <code key={`code-${index}`}>{text}</code>
         }
         if (format & 4) {
-          // strikethrough
           text = <s key={`strike-${index}`}>{text}</s>
         }
         if (format & 8) {
-          // underline
           text = <u key={`underline-${index}`}>{text}</u>
         }
         if (format & 2) {
-          // italic
           text = <em key={`italic-${index}`}>{text}</em>
         }
         if (format & 1) {
-          // bold
           text = <strong key={`bold-${index}`}>{text}</strong>
         }
       }
 
-      // Wrap in span with inline styles if any color/background is set
       if (Object.keys(inlineStyle).length > 0) {
         text = (
           <span key={`styled-${index}`} style={inlineStyle}>
@@ -86,11 +72,9 @@ export function RichTextRenderer({ content }: RichTextRendererProps) {
       return text
     }
 
-    // Handle nodes with children
     if (Array.isArray(node.children)) {
       const children = node.children.map((child: unknown, i: number) => renderNode(child, i))
 
-      // Extract inline styles for block elements
       const blockStyle: React.CSSProperties = {}
       if (node.style) {
         if (typeof node.style === 'string') {
@@ -120,7 +104,7 @@ export function RichTextRenderer({ content }: RichTextRendererProps) {
             </p>
           )
 
-        case 'heading':
+        case 'heading': {
           const tag = node.tag || 'h1'
           const styleProps = hasBlockStyle ? { style: blockStyle } : {}
           switch (tag) {
@@ -167,6 +151,7 @@ export function RichTextRenderer({ content }: RichTextRendererProps) {
                 </h1>
               )
           }
+        }
 
         case 'list':
           if (node.listType === 'bullet') {
@@ -182,7 +167,7 @@ export function RichTextRenderer({ content }: RichTextRendererProps) {
         case 'quote':
           return <blockquote key={index}>{children}</blockquote>
 
-        case 'link':
+        case 'link': {
           const url = node.fields?.url || node.url || '#'
           const newTab = node.fields?.newTab || node.newTab || false
           return (
@@ -195,13 +180,35 @@ export function RichTextRenderer({ content }: RichTextRendererProps) {
               {children}
             </a>
           )
+        }
+
+        case 'image':
+        case 'img': {
+          const src =
+            node.src || node.url || (node.fields && (node.fields.src || node.fields.url)) || ''
+          const alt = node.alt || (node.fields && node.fields.alt) || ''
+          const imgStyle = hasBlockStyle ? blockStyle : undefined
+
+          const width = node.width || (node.fields && node.fields.width)
+          const height = node.height || (node.fields && node.fields.height)
+          return (
+            <img
+              key={index}
+              src={src}
+              alt={alt}
+              style={imgStyle}
+              width={width}
+              height={height}
+              loading="lazy"
+            />
+          )
+        }
 
         default:
           return <React.Fragment key={index}>{children}</React.Fragment>
       }
     }
 
-    // Handle linebreak
     if (node.type === 'linebreak') {
       return <br key={index} />
     }
@@ -210,14 +217,12 @@ export function RichTextRenderer({ content }: RichTextRendererProps) {
   }
 
   const renderContent = () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const contentObj = content as any
 
     if (contentObj?.root?.children) {
       return contentObj.root.children.map((node: unknown, index: number) => renderNode(node, index))
     }
 
-    // Fallback for different structures
     if (Array.isArray(contentObj)) {
       return contentObj.map((node, index) => renderNode(node, index))
     }
