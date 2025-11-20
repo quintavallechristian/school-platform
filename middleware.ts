@@ -85,19 +85,6 @@ export function middleware(request: NextRequest) {
   return NextResponse.next()
 }
 
-// Configura il matcher per applicare il middleware
 export const config = {
-  matcher: [
-    /*
-     * Match tutti i path eccetto:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization)
-     * - favicon.ico, robots.txt, sitemap.xml
-     * - admin (Payload admin)
-     * - media (uploads)
-     * - file con estensione (es. .jpg, .png, .css, .js)
-     */
-    '/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|admin|media|.*\\..*).*)',
-  ],
+  matcher: ['/((?!_next|api|admin|media|favicon.ico).*)'],
 }
