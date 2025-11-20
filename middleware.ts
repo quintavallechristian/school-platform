@@ -11,7 +11,17 @@ import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
-  const hostname = request.headers.get('host') || ''
+  
+  // Gestione hostname per proxy (ngrok) e porte
+  let hostHeader = request.headers.get('x-forwarded-host') || request.headers.get('host') || ''
+  
+  // Se ci sono più host (es. proxy chain), prendi il primo
+  if (hostHeader.includes(',')) {
+    hostHeader = hostHeader.split(',')[0].trim()
+  }
+  
+  const hostname = hostHeader.split(':')[0].toLowerCase()
+  console.log('Middleware processing:', { hostname, pathname })
 
   // Ignora richieste all'admin panel, API e assets
   if (
@@ -54,7 +64,6 @@ export function middleware(request: NextRequest) {
   // Per domini custom (non localhost, non Vercel)
   if (!isLocalhost && !isVercel) {
     const parts = hostname.split('.')
-
     // Se abbiamo almeno 3 parti (sottodominio.dominio.tld)
     if (parts.length >= 3) {
       const subdomain = parts[0]
