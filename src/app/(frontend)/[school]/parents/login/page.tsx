@@ -48,6 +48,15 @@ export default function ParentLoginPage() {
               </div>
             )}
             <SubmitButton />
+            <div className="text-center text-sm">
+              <span className="text-muted-foreground">Non hai un account? </span>
+              <a
+                href={`/${school}/parents/register`}
+                className="font-medium underline underline-offset-4 hover:text-primary"
+              >
+                Registrati
+              </a>
+            </div>
           </form>
         </div>
       </SpotlightCard>

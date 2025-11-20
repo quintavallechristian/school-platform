@@ -89,6 +89,7 @@ export interface Config {
     children: Child;
     'child-updates': ChildUpdate;
     'parent-appointments': ParentAppointment;
+    'parent-registrations': ParentRegistration;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -118,6 +119,7 @@ export interface Config {
     children: ChildrenSelect<false> | ChildrenSelect<true>;
     'child-updates': ChildUpdatesSelect<false> | ChildUpdatesSelect<true>;
     'parent-appointments': ParentAppointmentsSelect<false> | ParentAppointmentsSelect<true>;
+    'parent-registrations': ParentRegistrationsSelect<false> | ParentRegistrationsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -2061,6 +2063,57 @@ export interface ParentAppointment {
   createdAt: string;
 }
 /**
+ * Gestisci le richieste di registrazione dei genitori in attesa di approvazione
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "parent-registrations".
+ */
+export interface ParentRegistration {
+  id: string;
+  /**
+   * Scuola per cui il genitore sta richiedendo l'accesso
+   */
+  school?: (string | null) | School;
+  /**
+   * Stato della richiesta di registrazione
+   */
+  status: 'pending' | 'approved' | 'rejected';
+  parentFirstName: string;
+  parentLastName: string;
+  /**
+   * Verrà utilizzata come username per l'accesso
+   */
+  parentEmail: string;
+  childFirstName: string;
+  childLastName: string;
+  /**
+   * Es: "1A", "Sezione Azzurra", ecc.
+   */
+  childClassroom: string;
+  /**
+   * ID dell'utente creato dopo l'approvazione
+   */
+  createdUserId?: string | null;
+  /**
+   * ID del bambino creato dopo l'approvazione
+   */
+  createdChildId?: string | null;
+  /**
+   * Utente che ha approvato la richiesta
+   */
+  approvedBy?: (string | null) | User;
+  /**
+   * Data e ora dell'approvazione
+   */
+  approvedAt?: string | null;
+  /**
+   * Motivo per cui la richiesta è stata rifiutata
+   */
+  rejectionReason?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -2171,6 +2224,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'parent-appointments';
         value: string | ParentAppointment;
+      } | null)
+    | ({
+        relationTo: 'parent-registrations';
+        value: string | ParentRegistration;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -3268,6 +3325,27 @@ export interface ParentAppointmentsSelect<T extends boolean = true> {
   location?: T;
   status?: T;
   notes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "parent-registrations_select".
+ */
+export interface ParentRegistrationsSelect<T extends boolean = true> {
+  school?: T;
+  status?: T;
+  parentFirstName?: T;
+  parentLastName?: T;
+  parentEmail?: T;
+  childFirstName?: T;
+  childLastName?: T;
+  childClassroom?: T;
+  createdUserId?: T;
+  createdChildId?: T;
+  approvedBy?: T;
+  approvedAt?: T;
+  rejectionReason?: T;
   updatedAt?: T;
   createdAt?: T;
 }

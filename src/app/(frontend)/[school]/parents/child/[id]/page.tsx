@@ -6,6 +6,7 @@ import Hero from '@/components/Hero/Hero'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import { RichTextRenderer } from '@/components/RichTextRenderer/RichTextRenderer'
 import { Media } from '@/payload-types'
+import Image from 'next/image'
 
 export default async function ChildDetailPage({
   params,
@@ -95,7 +96,7 @@ export default async function ChildDetailPage({
   return (
     <div className="min-h-screen bg-background">
       <Hero
-        title={child.fullName}
+        title={child.fullName!}
         subtitle={heroSubtitle}
         backgroundImage={child.photo as Media}
         gradientOverlay={true}
@@ -160,7 +161,7 @@ export default async function ChildDetailPage({
                             if (typeof photo === 'object' && photo.url) {
                               return (
                                 <div key={index} className="aspect-square rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 group">
-                                  <img
+                                  <Image
                                     src={photo.url}
                                     alt={`Foto ${index + 1}`}
                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -224,7 +225,7 @@ export default async function ChildDetailPage({
                           )}
                           {appointment.description && (
                             <p className="text-sm mt-3 pt-3 border-t text-muted-foreground/80 italic">
-                              "{appointment.description}"
+                              {appointment.description}
                             </p>
                           )}
                         </div>

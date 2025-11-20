@@ -50,7 +50,7 @@ export default async function TestimonialsBlock({ block, schoolId, schoolSlug }:
               {t.photo && typeof t.photo === 'object' && (t.photo as Media).url && (
                 <div className="relative w-20 h-20 mb-4 rounded-full overflow-hidden border-2 border-primary">
                   <Image
-                    src={(t.photo as Media).url}
+                    src={(t.photo as Media).url!}
                     alt={t.authorName}
                     fill
                     className="object-cover"

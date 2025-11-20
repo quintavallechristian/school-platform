@@ -7,11 +7,8 @@ import {
   Calendar,
   FileText,
   UtensilsCrossed,
-  Image,
   Users,
   Palette,
-  BarChart3,
-  Shield,
 } from 'lucide-react'
 
 const features = [

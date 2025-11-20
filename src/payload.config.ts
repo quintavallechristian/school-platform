@@ -29,6 +29,7 @@ import { CookiePolicy } from './collections/CookiePolicy'
 import { Children } from './collections/Children'
 import { ChildUpdates } from './collections/ChildUpdates'
 import { ParentAppointments } from './collections/ParentAppointments'
+import { ParentRegistrations } from './collections/ParentRegistrations'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -74,6 +75,7 @@ export default buildConfig({
     Children,
     ChildUpdates,
     ParentAppointments,
+    ParentRegistrations,
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

@@ -5,7 +5,12 @@ export type PayloadUser = {
   id: string
   email: string
   role?: string
-  [key: string]: any
+  firstName?: string
+  lastName?: string
+  phone?: string
+  schools?: unknown[]
+  children?: unknown[]
+  [key: string]: unknown
 }
 
 export function usePayloadUser() {
@@ -29,6 +34,7 @@ export function usePayloadUser() {
         setUser(data.user || data)
       }
     } catch (err) {
+      console.error(err)
       setError('Errore di rete')
       setUser(null)
     } finally {

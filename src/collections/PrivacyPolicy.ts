@@ -2,7 +2,6 @@ import { CollectionConfig } from 'payload'
 import {
   assignSchoolBeforeChange,
   getSchoolField,
-  publicRead,
   tenantCreate,
   tenantDelete,
   tenantRead,

@@ -1,5 +1,5 @@
 import React from 'react'
-import type { Page } from '@/payload-types'
+import type { Page, Homepage } from '@/payload-types'
 import HeroBlock from './HeroBlock'
 import CallToActionBlock from './CallToActionBlock'
 import RichTextBlock from './RichTextBlock'
@@ -14,7 +14,7 @@ import TeacherListBlock from './TeacherListBlock'
 import TestimonialsBlock from './TestimonialsBlock'
 
 type Props = {
-  blocks: Page['blocks']
+  blocks: Page['blocks'] | Homepage['blocks']
   schoolId?: string | number
   schoolSlug?: string
 }

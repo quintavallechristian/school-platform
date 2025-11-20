@@ -4,8 +4,8 @@ import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import Hero from '@/components/Hero/Hero'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
-import { Media } from '@/payload-types'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default async function ParentsDashboardPage({
   params,
@@ -94,9 +94,9 @@ export default async function ParentsDashboardPage({
                   <div className="flex flex-col items-center text-center">
                     {child.photo && typeof child.photo === 'object' ? (
                       <div className="mb-6 w-40 h-40 rounded-full overflow-hidden shadow-lg group-hover:scale-105 transition-transform duration-500 border-4 border-background">
-                        <img
+                        <Image
                           src={child.photo.url || ''}
-                          alt={child.fullName}
+                          alt={child.fullName!}
                           className="w-full h-full object-cover"
                         />
                       </div>

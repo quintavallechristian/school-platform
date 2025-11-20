@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
 import { getCurrentSchool, getSchoolTestimonials } from '@/lib/school'
 import TestimonialsForm from '@/components/TestimonialsForm'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
@@ -7,7 +6,7 @@ import type { Testimonial, Media } from '@/payload-types'
 import Image from 'next/image'
 import Hero from '@/components/Hero/Hero'
 
-export default async function TestimonianzePage({ params }: { params: { school: string } }) {
+export default async function TestimonianzePage({ params }: { params: Promise<{ school: string }> }) {
   const { school: schoolSlug } = await params
   const school = await getCurrentSchool(schoolSlug)
   if (!school) notFound()

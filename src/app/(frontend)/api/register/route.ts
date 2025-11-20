@@ -88,8 +88,11 @@ export async function POST(request: NextRequest) {
     const { token, user: _user } = await payload.login({
       collection: 'users',
       data: { email: email.toLowerCase(), password },
-      req: {} as any,
     })
+
+    if (!token) {
+      throw new Error('Failed to generate authentication token')
+    }
 
     // Imposta il cookie della sessione Payload
     const cookieStore = await cookies()

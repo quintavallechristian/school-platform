@@ -7,7 +7,7 @@ import { useSearchParams } from 'next/navigation'
 import EmptyArea from '@/components/EmptyArea/EmptyArea'
 import { getPlanFromPrice, priceIdList } from '@/lib/plans'
 import { registerSchoolSchema } from '@/lib/validations/register'
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { z } from 'zod'
 
 async function handleCheckout(
@@ -24,7 +24,7 @@ async function handleCheckout(
   window.location.href = data.url // redirect al checkout
 }
 
-export default function SignupPage() {
+function SignupContent() {
   const searchParams = useSearchParams()
   const priceId = searchParams.get('priceId')
 
@@ -276,5 +276,13 @@ export default function SignupPage() {
         </SpotlightCard>
       </div>
     </div>
+  )
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={<div>Caricamento...</div>}>
+      <SignupContent />
+    </Suspense>
   )
 }

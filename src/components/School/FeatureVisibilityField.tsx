@@ -5,7 +5,7 @@ import React from 'react'
 import type { GroupFieldClientComponent } from 'payload'
 import ChangePlanPortalButton from '../ChangePlanPortalButton'
 
-const FeatureVisibilityField: GroupFieldClientComponent = ({ field, path }) => {
+const FeatureVisibilityField: GroupFieldClientComponent = ({ path }) => {
   // Use useDocumentInfo to access the actual document data
   const { data: schoolData } = useDocumentInfo()
   

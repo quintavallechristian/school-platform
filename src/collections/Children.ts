@@ -1,4 +1,4 @@
-import { CollectionConfig } from 'payload'
+import { CollectionConfig, Access } from 'payload'
 import {
   tenantCreate,
   tenantDelete,
@@ -30,7 +30,7 @@ export const Children: CollectionConfig = {
   },
   access: {
     // Parents vedono solo i propri figli, school-admin/editor vedono tutti i bambini della scuola
-    read: ({ req: { user } }) => {
+    read: (({ req: { user } }) => {
       if (!user) return false
       
       // Super-admin vede tutto
@@ -61,7 +61,7 @@ export const Children: CollectionConfig = {
       }
       
       return false
-    },
+    }) as Access,
     create: tenantCreate, // School-admin ed editor possono creare
     update: ({ req: { user } }) => {
       if (!user) return false

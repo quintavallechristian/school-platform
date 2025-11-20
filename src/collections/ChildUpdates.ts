@@ -45,7 +45,7 @@ export const ChildUpdates: CollectionConfig = {
           child: {
             in: childrenIds,
           },
-        }
+        } as any
       }
       
       // School-admin ed editor vedono updates della loro scuola
@@ -57,7 +57,7 @@ export const ChildUpdates: CollectionConfig = {
           school: {
             in: schoolIds,
           },
-        }
+        } as any
       }
       
       return false

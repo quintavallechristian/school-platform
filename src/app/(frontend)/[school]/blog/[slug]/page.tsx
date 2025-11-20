@@ -1,5 +1,4 @@
 import { notFound, redirect } from 'next/navigation'
-import Image from 'next/image'
 import Link from 'next/link'
 import { getCurrentSchool, getSchoolArticleBySlug, isFeatureEnabled } from '@/lib/school'
 import Hero from '@/components/Hero/Hero'

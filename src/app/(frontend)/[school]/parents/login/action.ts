@@ -5,7 +5,11 @@ import config from '@payload-config'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 
-export async function loginParent(prevState: any, formData: FormData) {
+type FormState = {
+  error?: string
+} | null
+
+export async function loginParent(prevState: FormState, formData: FormData) {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
   const school = formData.get('school') as string

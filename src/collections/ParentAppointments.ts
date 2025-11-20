@@ -1,4 +1,4 @@
-import { CollectionConfig } from 'payload'
+import { CollectionConfig, Access } from 'payload'
 import {
   assignSchoolBeforeChange,
   getSchoolField,
@@ -28,7 +28,7 @@ export const ParentAppointments: CollectionConfig = {
   },
   access: {
     // Parents vedono solo i propri appuntamenti
-    read: ({ req: { user } }) => {
+    read: (({ req: { user } }) => {
       if (!user) return false
       
       // Super-admin vede tutto
@@ -56,12 +56,12 @@ export const ParentAppointments: CollectionConfig = {
       }
       
       return false
-    },
+    }) as Access,
     create: ({ req: { user } }) => {
       // Solo school-admin ed editor possono creare appuntamenti
       return user?.role === 'super-admin' || user?.role === 'school-admin' || user?.role === 'editor'
     },
-    update: ({ req: { user } }) => {
+    update: (({ req: { user } }) => {
       if (!user) return false
       if (user.role === 'super-admin') return true
       
@@ -87,8 +87,8 @@ export const ParentAppointments: CollectionConfig = {
       }
       
       return false
-    },
-    delete: ({ req: { user } }) => {
+    }) as Access,
+    delete: (({ req: { user } }) => {
       if (!user) return false
       if (user.role === 'super-admin') return true
       
@@ -105,7 +105,7 @@ export const ParentAppointments: CollectionConfig = {
       }
       
       return false
-    },
+    }) as Access,
   },
   hooks: {
     beforeChange: [assignSchoolBeforeChange],

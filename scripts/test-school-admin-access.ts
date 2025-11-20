@@ -1,5 +1,6 @@
 import { getPayload } from 'payload'
 import config from '../src/payload.config'
+import type { School } from '../src/payload-types'
 
 async function testSchoolAdminAccess() {
   console.log('🔍 Test accesso school-admin alle collezioni...\n')
@@ -28,7 +29,7 @@ async function testSchoolAdminAccess() {
     console.log(`   Email: ${schoolAdmin.email}`)
     console.log(`   ID: ${schoolAdmin.id}`)
     console.log(
-      `   Scuole: ${schoolAdmin.schools?.map((s: any) => (typeof s === 'object' ? s.name : s)).join(', ')}\n`,
+      `   Scuole: ${schoolAdmin.schools?.map((s) => (typeof s === 'object' ? (s as School).name : s)).join(', ')}\n`,
     )
 
     if (!schoolAdmin.schools || schoolAdmin.schools.length === 0) {
@@ -37,7 +38,7 @@ async function testSchoolAdminAccess() {
     }
 
     // Estrai gli ID delle scuole
-    const schoolIds = schoolAdmin.schools.map((s: any) => (typeof s === 'object' ? s.id : s))
+    const schoolIds = schoolAdmin.schools.map((s) => (typeof s === 'object' ? (s as School).id : s))
     console.log('🏫 School IDs:', schoolIds, '\n')
 
     // Test accesso agli articoli
@@ -95,9 +96,9 @@ async function testSchoolAdminAccess() {
       limit: 1000,
     })
 
-    const articlesOfOtherSchools = allArticles.docs.filter((a: any) => {
-      const articleSchoolId = typeof a.school === 'object' ? a.school.id : a.school
-      return !schoolIds.includes(articleSchoolId)
+    const articlesOfOtherSchools = allArticles.docs.filter((a) => {
+      const articleSchoolId = typeof a.school === 'object' ? (a.school as School).id : a.school
+      return articleSchoolId !== undefined && !schoolIds.includes(articleSchoolId)
     })
 
     console.log(`   Totale articoli nel sistema: ${allArticles.totalDocs}`)

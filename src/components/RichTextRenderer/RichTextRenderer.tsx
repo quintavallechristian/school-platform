@@ -1,6 +1,56 @@
 import Image from 'next/image'
 import React from 'react'
 
+// Type definitions for RichText nodes
+type TextNode = {
+  type: 'text'
+  text: string
+  format?: number
+  style?: string | Record<string, string>
+  color?: string
+  backgroundColor?: string
+}
+
+type ElementNode = {
+  type: string
+  children?: RichTextNode[]
+  tag?: string
+  listType?: 'bullet' | 'number'
+  style?: string | Record<string, string>
+  fields?: {
+    url?: string
+    newTab?: boolean
+    src?: string
+    alt?: string
+    width?: number
+    height?: number
+  }
+  url?: string
+  newTab?: boolean
+  src?: string
+  alt?: string
+  width?: number
+  height?: number
+}
+
+type LineBreakNode = {
+  type: 'linebreak'
+}
+
+type RichTextNode = TextNode | ElementNode | LineBreakNode
+
+type _RichTextContent = {
+  root?: {
+    type: string
+    children: RichTextNode[]
+    direction?: 'ltr' | 'rtl' | null
+    format?: string
+    indent?: number
+    version?: number
+  }
+  [key: string]: unknown
+}
+
 interface RichTextRendererProps {
   content: unknown
 }
@@ -8,10 +58,11 @@ interface RichTextRendererProps {
 export function RichTextRenderer({ content }: RichTextRendererProps) {
   if (!content) return null
 
-  const renderNode = (node: any, index: number = 0): React.ReactNode => {
+  const renderNode = (node: RichTextNode, index: number = 0): React.ReactNode => {
     if (!node) return null
 
-    if (node.type === 'text' && typeof node.text === 'string') {
+    // Handle text nodes
+    if (node.type === 'text' && 'text' in node && typeof node.text === 'string') {
       let text: React.ReactNode = node.text
 
       const inlineStyle: React.CSSProperties = {}
@@ -72,8 +123,14 @@ export function RichTextRenderer({ content }: RichTextRendererProps) {
       return text
     }
 
-    if (Array.isArray(node.children)) {
-      const children = node.children.map((child: unknown, i: number) => renderNode(child, i))
+    // Handle linebreak nodes
+    if (node.type === 'linebreak') {
+      return <br key={index} />
+    }
+
+    // Handle element nodes with children
+    if ('children' in node && Array.isArray(node.children)) {
+      const children = node.children.map((child: RichTextNode, i: number) => renderNode(child, i))
 
       const blockStyle: React.CSSProperties = {}
       if (node.style) {
@@ -192,7 +249,7 @@ export function RichTextRenderer({ content }: RichTextRendererProps) {
           const width = node.width || (node.fields && node.fields.width)
           const height = node.height || (node.fields && node.fields.height)
           return (
-            <img
+            <Image
               key={index}
               src={src}
               alt={alt}
@@ -209,22 +266,29 @@ export function RichTextRenderer({ content }: RichTextRendererProps) {
       }
     }
 
-    if (node.type === 'linebreak') {
-      return <br key={index} />
-    }
-
     return null
   }
 
   const renderContent = () => {
-    const contentObj = content as any
+    const contentObj = content as { root?: { children?: unknown[] }; [key: string]: unknown }
 
     if (contentObj?.root?.children) {
-      return contentObj.root.children.map((node: unknown, index: number) => renderNode(node, index))
+      return contentObj.root.children.map((node, index) => {
+        // Type guard to ensure node is a valid RichTextNode
+        if (typeof node === 'object' && node !== null && 'type' in node) {
+          return renderNode(node as RichTextNode, index as number)
+        }
+        return null
+      })
     }
 
     if (Array.isArray(contentObj)) {
-      return contentObj.map((node, index) => renderNode(node, index))
+      return contentObj.map((node, index) => {
+        if (typeof node === 'object' && node !== null && 'type' in node) {
+          return renderNode(node as RichTextNode, index)
+        }
+        return null
+      })
     }
 
     return null

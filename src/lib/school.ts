@@ -2,7 +2,6 @@ import { headers } from 'next/headers'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import type { School } from '@/payload-types'
-import { ChiSiamo } from '@/collections/ChiSiamo'
 
 /**
  * Utility functions per gestire il multi-tenancy nel frontend
@@ -218,8 +217,20 @@ export async function getSchoolCalendarDays(
 ) {
   const payload = await getPayload({ config: configPromise })
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let where: any = {
+  type CalendarDayWhere = {
+    school?: { equals: string | number }
+    and?: Array<{
+      school?: { equals: string | number }
+      or?: Array<{
+        and?: Array<{
+          startDate?: { greater_than_equal?: string; less_than_equal?: string }
+          endDate?: { greater_than_equal?: string; less_than_equal?: string }
+        }>
+      }>
+    }>
+  }
+
+  let where: CalendarDayWhere = {
     school: { equals: schoolId },
   }
 
