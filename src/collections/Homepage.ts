@@ -16,6 +16,7 @@ export const Homepage: CollectionConfig = {
     description:
       'Qui puoi configurare lo stile della tua homepage. Puoi creare più homepage diverse e attivarle una per volta. Se non imposti alcuna homepage personalizzata, verrà utilizzata una versione di default.',
     defaultColumns: ['name', 'school', 'isActive'],
+    useAsTitle: 'name',
   },
   access: {
     read: tenantRead,

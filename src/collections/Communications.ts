@@ -23,6 +23,17 @@ export const Communications: CollectionConfig = {
     defaultColumns: ['title', 'priority', 'publishedAt', 'isActive', 'school'],
     description: 'Gestisci le comunicazioni di servizio che appaiono nel popup',
     group: 'Scuola e genitori',
+    components: {
+      beforeList: [
+        {
+          path: '@/components/UpgradeMessage',
+          clientProps: {
+            requiredPlan: 'professional',
+            featureName: 'Comunicazioni',
+          },
+        },
+      ],
+    },
   },
   access: {
     read: tenantRead,
@@ -37,16 +48,26 @@ export const Communications: CollectionConfig = {
         // Invia email solo quando viene creata una nuova comunicazione attiva
         if (operation === 'create' && doc.isActive && resend) {
           try {
-            // Recupera tutti gli iscritti attivi
+            // Recupera tutti gli iscritti attivi DELLA STESSA SCUOLA
             const subscribers = await req.payload.find({
               collection: 'email-subscribers',
               where: {
-                isActive: {
-                  equals: true,
-                },
+                and: [
+                  {
+                    isActive: {
+                      equals: true,
+                    },
+                  },
+                  {
+                    school: {
+                      equals: doc.school,
+                    },
+                  },
+                ],
               },
               limit: 1000,
             })
+            console.log(subscribers.docs);
 
             if (subscribers.docs.length === 0) {
               console.log('Nessun iscritto trovato per le notifiche email')

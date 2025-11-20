@@ -26,6 +26,9 @@ import { ChiSiamo } from './collections/ChiSiamo'
 import { CalendarDays } from './collections/CalendarDays'
 import { PrivacyPolicy } from './collections/PrivacyPolicy'
 import { CookiePolicy } from './collections/CookiePolicy'
+import { Children } from './collections/Children'
+import { ChildUpdates } from './collections/ChildUpdates'
+import { ParentAppointments } from './collections/ParentAppointments'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -47,8 +50,8 @@ export default buildConfig({
     CookiePolicy,
     // Contenuti
     ChiSiamo,
-    Projects,
     Teachers,
+    Projects,
     CalendarDays,
     Events,
     Menu,
@@ -67,6 +70,10 @@ export default buildConfig({
     // Sistema
     Users,
     Schools,
+    // Area Genitori
+    Children,
+    ChildUpdates,
+    ParentAppointments,
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

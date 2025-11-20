@@ -71,8 +71,8 @@ export interface Config {
     'privacy-policy': PrivacyPolicy;
     'cookie-policy': CookiePolicy;
     'chi-siamo': ChiSiamo;
-    projects: Project;
     teachers: Teacher;
+    projects: Project;
     'calendar-days': CalendarDay;
     events: Event;
     menu: Menu;
@@ -86,6 +86,9 @@ export interface Config {
     'email-subscribers': EmailSubscriber;
     users: User;
     schools: School;
+    children: Child;
+    'child-updates': ChildUpdate;
+    'parent-appointments': ParentAppointment;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -97,8 +100,8 @@ export interface Config {
     'privacy-policy': PrivacyPolicySelect<false> | PrivacyPolicySelect<true>;
     'cookie-policy': CookiePolicySelect<false> | CookiePolicySelect<true>;
     'chi-siamo': ChiSiamoSelect<false> | ChiSiamoSelect<true>;
-    projects: ProjectsSelect<false> | ProjectsSelect<true>;
     teachers: TeachersSelect<false> | TeachersSelect<true>;
+    projects: ProjectsSelect<false> | ProjectsSelect<true>;
     'calendar-days': CalendarDaysSelect<false> | CalendarDaysSelect<true>;
     events: EventsSelect<false> | EventsSelect<true>;
     menu: MenuSelect<false> | MenuSelect<true>;
@@ -112,6 +115,9 @@ export interface Config {
     'email-subscribers': EmailSubscribersSelect<false> | EmailSubscribersSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     schools: SchoolsSelect<false> | SchoolsSelect<true>;
+    children: ChildrenSelect<false> | ChildrenSelect<true>;
+    'child-updates': ChildUpdatesSelect<false> | ChildUpdatesSelect<true>;
+    'parent-appointments': ParentAppointmentsSelect<false> | ParentAppointmentsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -542,33 +548,59 @@ export interface School {
    */
   slug: string;
   /**
-   * Dominio personalizzato (es: scuola.example.com) - opzionale
+   * Se disattivata, il sito della scuola non sarà accessibile
    */
-  domain?: string | null;
+  isActive?: boolean | null;
   /**
    * Logo della scuola
    */
   logo?: (string | null) | Media;
   /**
-   * Colore principale del tema
+   * Colori utilizzati quando il tema chiaro è attivo
    */
+  lightTheme?: {
+    /**
+     * Colore principale del testo (tema chiaro)
+     */
+    textPrimary?: string | null;
+    /**
+     * Colore secondario del testo (tema chiaro)
+     */
+    textSecondary?: string | null;
+    /**
+     * Colore di sfondo primario (tema chiaro)
+     */
+    backgroundPrimary?: string | null;
+    /**
+     * Colore di sfondo secondario (tema chiaro)
+     */
+    backgroundSecondary?: string | null;
+  };
+  /**
+   * Colori utilizzati quando il tema scuro è attivo
+   */
+  darkTheme?: {
+    /**
+     * Colore principale del testo (tema scuro)
+     */
+    textPrimary?: string | null;
+    /**
+     * Colore secondario del testo (tema scuro)
+     */
+    textSecondary?: string | null;
+    /**
+     * Colore di sfondo primario (tema scuro)
+     */
+    backgroundPrimary?: string | null;
+    /**
+     * Colore di sfondo secondario (tema scuro)
+     */
+    backgroundSecondary?: string | null;
+  };
   primaryColor?: string | null;
-  /**
-   * Colore secondario del tema
-   */
   secondaryColor?: string | null;
-  /**
-   * Colore di sfondo primario del tema
-   */
   backgroundPrimaryColor?: string | null;
-  /**
-   * Colore di sfondo secondario del tema
-   */
   backgroundSecondaryColor?: string | null;
-  /**
-   * Se disattivata, il sito della scuola non sarà accessibile
-   */
-  isActive?: boolean | null;
   contactInfo?: {
     email?: string | null;
     phone?: string | null;
@@ -578,41 +610,14 @@ export interface School {
    * Scegli quali funzionalità mostrare nel sito della tua scuola
    */
   featureVisibility?: {
-    /**
-     * 📦 Piano Starter | Se attivo, la sezione "Chi Siamo" sarà visibile nel sito
-     */
     showChiSiamo?: boolean | null;
-    /**
-     * 📦 Piano Starter | Se attivo, la sezione Blog sarà visibile nel sito
-     */
     showBlog?: boolean | null;
-    /**
-     * 📦 Piano Starter | Se attivo, la sezione Eventi sarà visibile nel sito
-     */
     showEvents?: boolean | null;
-    /**
-     * 💼 Piano Professional | Aggiorna il tuo piano per attivare questa funzionalità
-     */
     showProjects?: boolean | null;
-    /**
-     * 🏢 Piano Enterprise | Aggiorna il tuo piano per attivare questa funzionalità
-     */
-    showCommunications?: boolean | null;
-    /**
-     * 💼 Piano Professional | Aggiorna il tuo piano per attivare questa funzionalità
-     */
     showCalendar?: boolean | null;
-    /**
-     * 💼 Piano Professional | Aggiorna il tuo piano per attivare questa funzionalità
-     */
     showMenu?: boolean | null;
-    /**
-     * 🏢 Piano Enterprise | Aggiorna il tuo piano per attivare questa funzionalità
-     */
     showDocuments?: boolean | null;
-    /**
-     * 🏢 Piano Enterprise | Aggiorna il tuo piano per attivare questa funzionalità
-     */
+    showCommunications?: boolean | null;
     showParentsArea?: boolean | null;
   };
   /**
@@ -620,22 +625,11 @@ export interface School {
    */
   subscription?: {
     plan?: ('starter' | 'professional' | 'enterprise') | null;
-    /**
-     * Se disattivata, il sito della scuola avrà terminato il periodo di prova
-     */
     isTrial?: boolean | null;
     /**
      * Data di scadenza del piano corrente
      */
     expiresAt?: string | null;
-    /**
-     * Numero massimo di utenti amministratori
-     */
-    maxUsers?: number | null;
-    /**
-     * Spazio di archiviazione massimo in MB
-     */
-    maxStorage?: number | null;
     stripeCustomerId?: string | null;
   };
   updatedAt: string;
@@ -759,13 +753,17 @@ export interface Article {
 export interface User {
   id: string;
   /**
-   * Super Admin: accesso globale | School Admin: gestisce la propria scuola | Editor: può modificare contenuti | Viewer: solo lettura
+   * Super Admin: accesso globale | School Admin: gestisce la propria scuola | Editor: può modificare contenuti | Viewer: solo lettura | Genitore: area riservata
    */
-  role?: ('super-admin' | 'school-admin' | 'editor' | 'viewer') | null;
+  role?: ('super-admin' | 'school-admin' | 'editor' | 'viewer' | 'parent') | null;
   /**
    * Scuole di appartenenza
    */
   schools?: (string | School)[] | null;
+  /**
+   * Bambini associati a questo genitore
+   */
+  children?: (string | Child)[] | null;
   firstName?: string | null;
   lastName?: string | null;
   phone?: string | null;
@@ -786,6 +784,36 @@ export interface User {
       }[]
     | null;
   password?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "children".
+ */
+export interface Child {
+  id: string;
+  /**
+   * Scuola a cui è iscritto il bambino
+   */
+  school?: (string | null) | School;
+  firstName: string;
+  lastName: string;
+  fullName?: string | null;
+  dateOfBirth: string;
+  /**
+   * Es: "1A", "Sezione Azzurra", ecc.
+   */
+  classroom: string;
+  /**
+   * Foto del bambino
+   */
+  photo?: (string | null) | Media;
+  enrollmentDate?: string | null;
+  /**
+   * Note visibili solo alla scuola, non ai genitori
+   */
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1203,6 +1231,10 @@ export interface Event {
     [k: string]: unknown;
   } | null;
   location?: string | null;
+  /**
+   * Costo dell'evento (es. "15€" o "Gratuito")
+   */
+  cost?: string | null;
   cover?: (string | null) | Media;
   /**
    * Se abilitato, aggiunge un overlay gradiente sopra l'immagine di copertina per migliorare la leggibilità del testo nell'hero
@@ -1212,6 +1244,14 @@ export interface Event {
    * Collega una galleria di immagini a questo evento (opzionale)
    */
   gallery?: (string | null) | Gallery;
+  /**
+   * Se abilitato, verrà creata automaticamente una entry nel calendario collegata a questo evento
+   */
+  addToCalendar?: boolean | null;
+  /**
+   * Se abilitato, verrà creata automaticamente una comunicazione per notificare questo evento
+   */
+  sendCommunication?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1419,6 +1459,28 @@ export interface ChiSiamo {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "teachers".
+ */
+export interface Teacher {
+  id: string;
+  /**
+   * Scuola a cui appartiene questo insegnante
+   */
+  school?: (string | null) | School;
+  name: string;
+  /**
+   * Es: Coordinatore, Insegnante di Matematica
+   */
+  role?: string | null;
+  subject?: string | null;
+  email?: string | null;
+  bio?: string | null;
+  photo?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "projects".
  */
 export interface Project {
@@ -1452,28 +1514,6 @@ export interface Project {
    * Collega una galleria di immagini a questo progetto (opzionale)
    */
   gallery?: (string | null) | Gallery;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "teachers".
- */
-export interface Teacher {
-  id: string;
-  /**
-   * Scuola a cui appartiene questo insegnante
-   */
-  school?: (string | null) | School;
-  name: string;
-  /**
-   * Es: Coordinatore, Insegnante di Matematica
-   */
-  role?: string | null;
-  subject?: string | null;
-  email?: string | null;
-  bio?: string | null;
-  photo?: (string | null) | Media;
   updatedAt: string;
   createdAt: string;
 }
@@ -1931,7 +1971,7 @@ export interface EmailSubscriber {
    */
   school?: (string | null) | School;
   /**
-   * Indirizzo email per le notifiche
+   * Indirizzo email per le notifiche (può essere iscritto a più scuole)
    */
   email: string;
   /**
@@ -1943,6 +1983,80 @@ export interface EmailSubscriber {
    * Token unico per la disiscrizione
    */
   unsubscribeToken?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "child-updates".
+ */
+export interface ChildUpdate {
+  id: string;
+  /**
+   * Scuola a cui appartiene questo aggiornamento
+   */
+  school?: (string | null) | School;
+  title: string;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Il bambino a cui si riferisce questo aggiornamento
+   */
+  child: string | Child;
+  type: 'daily_activity' | 'achievement' | 'note' | 'event';
+  /**
+   * Foto delle attività svolte
+   */
+  photos?: (string | Media)[] | null;
+  publishedAt: string;
+  /**
+   * Chi ha creato questo aggiornamento
+   */
+  author?: (string | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "parent-appointments".
+ */
+export interface ParentAppointment {
+  id: string;
+  /**
+   * Scuola
+   */
+  school?: (string | null) | School;
+  title: string;
+  description?: string | null;
+  date: string;
+  child: string | Child;
+  parent: string | User;
+  /**
+   * Insegnante presente all'appuntamento (opzionale)
+   */
+  teacher?: (string | null) | Teacher;
+  /**
+   * Es: "Aula 2A", "Sala Riunioni"
+   */
+  location?: string | null;
+  status: 'scheduled' | 'completed' | 'cancelled';
+  /**
+   * Note compilate dopo l'incontro
+   */
+  notes?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1987,12 +2101,12 @@ export interface PayloadLockedDocument {
         value: string | ChiSiamo;
       } | null)
     | ({
-        relationTo: 'projects';
-        value: string | Project;
-      } | null)
-    | ({
         relationTo: 'teachers';
         value: string | Teacher;
+      } | null)
+    | ({
+        relationTo: 'projects';
+        value: string | Project;
       } | null)
     | ({
         relationTo: 'calendar-days';
@@ -2045,6 +2159,18 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'schools';
         value: string | School;
+      } | null)
+    | ({
+        relationTo: 'children';
+        value: string | Child;
+      } | null)
+    | ({
+        relationTo: 'child-updates';
+        value: string | ChildUpdate;
+      } | null)
+    | ({
+        relationTo: 'parent-appointments';
+        value: string | ParentAppointment;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -2357,20 +2483,6 @@ export interface ChiSiamoSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "projects_select".
- */
-export interface ProjectsSelect<T extends boolean = true> {
-  school?: T;
-  title?: T;
-  description?: T;
-  cover?: T;
-  gradientOverlay?: T;
-  gallery?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "teachers_select".
  */
 export interface TeachersSelect<T extends boolean = true> {
@@ -2381,6 +2493,20 @@ export interface TeachersSelect<T extends boolean = true> {
   email?: T;
   bio?: T;
   photo?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "projects_select".
+ */
+export interface ProjectsSelect<T extends boolean = true> {
+  school?: T;
+  title?: T;
+  description?: T;
+  cover?: T;
+  gradientOverlay?: T;
+  gallery?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2410,9 +2536,12 @@ export interface EventsSelect<T extends boolean = true> {
   date?: T;
   description?: T;
   location?: T;
+  cost?: T;
   cover?: T;
   gradientOverlay?: T;
   gallery?: T;
+  addToCalendar?: T;
+  sendCommunication?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -3010,6 +3139,7 @@ export interface EmailSubscribersSelect<T extends boolean = true> {
 export interface UsersSelect<T extends boolean = true> {
   role?: T;
   schools?: T;
+  children?: T;
   firstName?: T;
   lastName?: T;
   phone?: T;
@@ -3037,13 +3167,28 @@ export interface UsersSelect<T extends boolean = true> {
 export interface SchoolsSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
-  domain?: T;
+  isActive?: T;
   logo?: T;
+  lightTheme?:
+    | T
+    | {
+        textPrimary?: T;
+        textSecondary?: T;
+        backgroundPrimary?: T;
+        backgroundSecondary?: T;
+      };
+  darkTheme?:
+    | T
+    | {
+        textPrimary?: T;
+        textSecondary?: T;
+        backgroundPrimary?: T;
+        backgroundSecondary?: T;
+      };
   primaryColor?: T;
   secondaryColor?: T;
   backgroundPrimaryColor?: T;
   backgroundSecondaryColor?: T;
-  isActive?: T;
   contactInfo?:
     | T
     | {
@@ -3058,10 +3203,10 @@ export interface SchoolsSelect<T extends boolean = true> {
         showBlog?: T;
         showEvents?: T;
         showProjects?: T;
-        showCommunications?: T;
         showCalendar?: T;
         showMenu?: T;
         showDocuments?: T;
+        showCommunications?: T;
         showParentsArea?: T;
       };
   subscription?:
@@ -3070,10 +3215,59 @@ export interface SchoolsSelect<T extends boolean = true> {
         plan?: T;
         isTrial?: T;
         expiresAt?: T;
-        maxUsers?: T;
-        maxStorage?: T;
         stripeCustomerId?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "children_select".
+ */
+export interface ChildrenSelect<T extends boolean = true> {
+  school?: T;
+  firstName?: T;
+  lastName?: T;
+  fullName?: T;
+  dateOfBirth?: T;
+  classroom?: T;
+  photo?: T;
+  enrollmentDate?: T;
+  notes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "child-updates_select".
+ */
+export interface ChildUpdatesSelect<T extends boolean = true> {
+  school?: T;
+  title?: T;
+  content?: T;
+  child?: T;
+  type?: T;
+  photos?: T;
+  publishedAt?: T;
+  author?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "parent-appointments_select".
+ */
+export interface ParentAppointmentsSelect<T extends boolean = true> {
+  school?: T;
+  title?: T;
+  description?: T;
+  date?: T;
+  child?: T;
+  parent?: T;
+  teacher?: T;
+  location?: T;
+  status?: T;
+  notes?: T;
   updatedAt?: T;
   createdAt?: T;
 }

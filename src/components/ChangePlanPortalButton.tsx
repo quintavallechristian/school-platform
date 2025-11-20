@@ -2,7 +2,7 @@
 import { Button, useDocumentInfo } from '@payloadcms/ui'
 import React from 'react'
 
-const ChangePlanPortalButton = () => {
+const ChangePlanPortalButton = ({ title }: { title: string }) => {
   const { data: schoolData } = useDocumentInfo()
   console.log(schoolData)
 
@@ -19,16 +19,16 @@ const ChangePlanPortalButton = () => {
     const data = await res.json()
 
     if (data.url) {
-      window.location.href = data.url
+      window.open(data.url, '_blank')
     } else {
       alert('Impossibile aprire il portale di fatturazione.')
     }
   }
 
   return (
-    <div style={{ marginTop: 20 }}>
+    <div>
       <Button buttonStyle="secondary" onClick={handleClick}>
-        Gestisci Abbonamento su Stripe
+        {title || 'Gestisci Abbonamento'}
       </Button>
     </div>
   )

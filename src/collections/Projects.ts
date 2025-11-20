@@ -18,6 +18,17 @@ export const Projects: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'school'],
     group: 'Scuola',
+    components: {
+      beforeList: [
+        {
+          path: '@/components/UpgradeMessage',
+          clientProps: {
+            requiredPlan: 'professional',
+            featureName: 'Progetti',
+          },
+        },
+      ],
+    },
   },
   access: {
     read: tenantRead,

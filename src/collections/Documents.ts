@@ -19,6 +19,17 @@ export const Documents: CollectionConfig = {
     defaultColumns: ['title', 'school', 'updatedAt'],
     group: 'Scuola e genitori',
     description: 'Gestisci le sezioni di documenti scaricabili',
+    components: {
+      beforeList: [
+        {
+          path: '@/components/UpgradeMessage',
+          clientProps: {
+            requiredPlan: 'professional',
+            featureName: 'Documenti',
+          },
+        },
+      ],
+    },
   },
   access: {
     read: publicRead,

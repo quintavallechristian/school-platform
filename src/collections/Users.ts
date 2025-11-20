@@ -14,6 +14,10 @@ export const Users: CollectionConfig = {
   auth: true,
   access: {
     // Super-admin vedono tutti, gli altri solo utenti con almeno una scuola in comune
+    admin: ({ req: { user } }) => {
+      // I genitori non possono accedere al pannello admin
+      return user?.role !== 'parent'
+    },
     read: ({ req }) => {
       const user = req.user
       if (!user) return false
@@ -96,13 +100,17 @@ export const Users: CollectionConfig = {
           label: 'Viewer',
           value: 'viewer',
         },
+        {
+          label: 'Genitore',
+          value: 'parent',
+        },
       ],
       admin: {
         description:
-          'Super Admin: accesso globale | School Admin: gestisce la propria scuola | Editor: può modificare contenuti | Viewer: solo lettura',
+          'Super Admin: accesso globale | School Admin: gestisce la propria scuola | Editor: può modificare contenuti | Viewer: solo lettura | Genitore: area riservata',
         condition: (data, siblingData, { user }) => {
-          // Solo super-admin può assegnare il ruolo super-admin
-          return user?.role === 'super-admin'
+          // School-admin può vedere il campo per creare genitori
+          return user?.role === 'super-admin' || user?.role === 'school-admin'
         },
       },
       access: {
@@ -143,6 +151,32 @@ export const Users: CollectionConfig = {
       },
     },
     {
+      name: 'children',
+      type: 'relationship',
+      relationTo: 'children',
+      hasMany: true,
+      label: 'Figli',
+      admin: {
+        description: 'Bambini associati a questo genitore',
+        condition: (data, siblingData) => {
+          return siblingData?.role === 'parent'
+        },
+      },
+      access: {
+        read: ({ req: { user }, data }) => {
+          // Super-admin e school-admin possono sempre leggere
+          if (user?.role === 'super-admin' || user?.role === 'school-admin') return true
+          // Parent può vedere solo i propri figli
+          if (user?.role === 'parent' && data && data.id === user.id) return true
+          return false
+        },
+        update: ({ req: { user } }) => {
+          // Solo super-admin e school-admin possono assegnare figli
+          return user?.role === 'super-admin' || user?.role === 'school-admin'
+        },
+      },
+    },
+    {
       name: 'firstName',
       type: 'text',
       label: 'Nome',
@@ -172,7 +206,24 @@ export const Users: CollectionConfig = {
 
         // Se non è super-admin e sta creando un utente, assegna automaticamente le sue scuole
         if (operation === 'create' && req.user && req.user.role !== 'super-admin') {
-          data.schools = req.user.schools
+          // Normalizza a ID
+          data.schools = req.user.schools?.map((school) =>
+            typeof school === 'string' ? school : school.id
+          )
+        }
+
+        // Normalizza sempre schools a ID (in caso di oggetti completi)
+        if (data.schools && Array.isArray(data.schools)) {
+          data.schools = data.schools.map((school) =>
+            typeof school === 'string' ? school : school.id
+          )
+        }
+
+        // Normalizza anche children a ID
+        if (data.children && Array.isArray(data.children)) {
+          data.children = data.children.map((child) =>
+            typeof child === 'string' ? child : child.id
+          )
         }
 
         // Se non è super-admin, non può assegnare il ruolo super-admin

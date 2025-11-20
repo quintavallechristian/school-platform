@@ -241,3 +241,71 @@ export const getSchoolField = (
     return false
   },
 })
+
+/**
+ * Helper per verificare se una feature è abilitata per la scuola dell'utente
+ * Usato per controllare la visibilità delle collezioni nella sidebar admin
+ */
+export const isFeatureEnabledForUser = async ({
+  user,
+  feature,
+}: {
+  user?: { role?: string; schools?: string[] | { id: string }[] }
+  feature:
+    | 'showBlog'
+    | 'showEvents'
+    | 'showProjects'
+    | 'showCalendar'
+    | 'showMenu'
+    | 'showDocuments'
+    | 'showCommunications'
+    | 'showParentsArea'
+    | 'showChiSiamo'
+}): Promise<boolean> => {
+  // Super-admin vede sempre tutto
+  if (user?.role === 'super-admin') {
+    return false // false = non nascondere (show)
+  }
+
+  // Se l'utente non ha scuole assegnate, nascondi
+  if (!user?.schools || user.schools.length === 0) {
+    return true // true = nascondi (hide)
+  }
+
+  try {
+    // Importa dinamicamente per evitare circular dependencies
+    const { getPayload } = await import('payload')
+    const configPromise = await import('@payload-config')
+    const payload = await getPayload({ config: configPromise.default })
+
+    // Ottieni la prima scuola dell'utente
+    const firstSchoolId =
+      typeof user.schools[0] === 'string' ? user.schools[0] : user.schools[0].id
+
+    const school = await payload.findByID({
+      collection: 'schools',
+      id: firstSchoolId,
+    })
+
+    // Se la scuola non ha featureVisibility, mostra tutto (retrocompatibilità)
+    if (!school?.featureVisibility) {
+      return false // false = non nascondere (show)
+    }
+
+    // Controlla il feature flag specifico
+    const isEnabled = school.featureVisibility[feature]
+
+    // Se il flag è undefined, mostra per retrocompatibilità
+    if (isEnabled === undefined) {
+      return false // false = non nascondere (show)
+    }
+
+    // Ritorna l'inverso: se enabled = true, nascondi = false
+    return !isEnabled
+  } catch (error) {
+    console.error('Error checking feature visibility:', error)
+    // In caso di errore, mostra la collezione per sicurezza
+    return false // false = non nascondere (show)
+  }
+}
+

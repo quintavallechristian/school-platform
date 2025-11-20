@@ -2,6 +2,9 @@ import { notFound } from 'next/navigation'
 import { getCurrentSchool, isFeatureEnabled } from '@/lib/school'
 import Navbar from '@/components/Navbar/Navbar'
 import Link from 'next/link'
+import { CommunicationsPopup } from '@/components/CommunicationsPopup/CommunicationsPopup'
+import { getPayload } from 'payload'
+import config from '@/payload.config'
 
 export default async function SchoolLayout({
   children,
@@ -21,6 +24,44 @@ export default async function SchoolLayout({
     notFound()
   }
 
+  // Carica le comunicazioni attive DELLA SCUOLA CORRENTE
+  const payload = await getPayload({ config })
+  const now = new Date()
+
+  const { docs: communications } = await payload.find({
+    collection: 'communications',
+    where: {
+      and: [
+        {
+          school: {
+            equals: school.id,
+          },
+        },
+        {
+          isActive: {
+            equals: true,
+          },
+        },
+        {
+          or: [
+            {
+              expiresAt: {
+                exists: false,
+              },
+            },
+            {
+              expiresAt: {
+                greater_than: now.toISOString(),
+              },
+            },
+          ],
+        },
+      ],
+    },
+    sort: '-priority,-publishedAt',
+    limit: 50,
+  })
+
   return (
     <>
       {/* Applica i colori personalizzati della scuola */}
@@ -28,10 +69,17 @@ export default async function SchoolLayout({
         dangerouslySetInnerHTML={{
           __html: `
           :root {
-            --color-primary: ${school.primaryColor || '#3b82f6'};
-            --color-secondary: ${school.secondaryColor || '#8b5cf6'};
-            --color-background-primary: ${school.backgroundPrimaryColor || '#fa8899'};
-            --color-background-secondary: ${school.backgroundSecondaryColor || '#228899'};
+            --color-primary: ${school.lightTheme?.textPrimary || school.primaryColor || '#3b82f6'};
+            --color-secondary: ${school.lightTheme?.textSecondary || school.secondaryColor || '#8b5cf6'};
+            --color-background-primary: ${school.lightTheme?.backgroundPrimary || school.backgroundPrimaryColor || '#fa8899'};
+            --color-background-secondary: ${school.lightTheme?.backgroundSecondary || school.backgroundSecondaryColor || '#228899'};
+          }
+          
+          .dark {
+            --color-primary: ${school.darkTheme?.textPrimary || school.lightTheme?.textPrimary || school.primaryColor || '#60a5fa'};
+            --color-secondary: ${school.darkTheme?.textSecondary || school.lightTheme?.textSecondary || school.secondaryColor || '#a78bfa'};
+            --color-background-primary: ${school.darkTheme?.backgroundPrimary || school.lightTheme?.backgroundPrimary || school.backgroundPrimaryColor || '#fb7185'};
+            --color-background-secondary: ${school.darkTheme?.backgroundSecondary || school.lightTheme?.backgroundSecondary || school.backgroundSecondaryColor || '#06b6d4'};
           }
           
           /* Override colori Tailwind */
@@ -154,6 +202,9 @@ export default async function SchoolLayout({
           </div>
         </div>
       </footer>
+
+      {/* Popup comunicazioni della scuola */}
+      <CommunicationsPopup communications={communications} schoolSlug={schoolSlug} />
     </>
   )
 }

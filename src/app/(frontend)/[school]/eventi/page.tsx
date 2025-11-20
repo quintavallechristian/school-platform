@@ -31,7 +31,7 @@ export default async function EventsPage({ params }: { params: Promise<{ school:
     <div className="min-h-[calc(100vh-200px)]">
       <Hero
         title="Eventi della scuola"
-        subtitle={`Scopri tutti gli eventi e le attività di ${school.name}`}
+        subtitle={`Scopri tutti i nostri eventi`}
       />
 
       <section className="py-16">
@@ -140,6 +140,6 @@ export async function generateMetadata({ params }: { params: Promise<{ school: s
 
   return {
     title: `Eventi - ${school.name}`,
-    description: `Scopri tutti gli eventi e le attività organizzate da ${school.name}`,
+    description: `Scopri tutti i nostri eventi`,
   }
 }

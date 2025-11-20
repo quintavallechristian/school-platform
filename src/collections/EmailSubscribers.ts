@@ -36,6 +36,38 @@ export const EmailSubscribers: CollectionConfig = {
         return data
       },
     ],
+    beforeValidate: [
+      async ({ data, req, operation }) => {
+        // Verifica che la combinazione email + school sia unica
+        if (!data) return data
+        
+        if (operation === 'create' && data.email && data.school) {
+          const existing = await req.payload.find({
+            collection: 'email-subscribers',
+            where: {
+              and: [
+                {
+                  email: {
+                    equals: data.email,
+                  },
+                },
+                {
+                  school: {
+                    equals: data.school,
+                  },
+                },
+              ],
+            },
+            limit: 1,
+          })
+
+          if (existing.docs.length > 0) {
+            throw new Error('Questa email è già iscritta alle notifiche per questa scuola')
+          }
+        }
+        return data
+      },
+    ],
   },
   fields: [
     {
@@ -55,10 +87,9 @@ export const EmailSubscribers: CollectionConfig = {
       name: 'email',
       type: 'email',
       required: true,
-      unique: true,
       label: 'Email',
       admin: {
-        description: 'Indirizzo email per le notifiche',
+        description: 'Indirizzo email per le notifiche (può essere iscritto a più scuole)',
       },
     },
     {

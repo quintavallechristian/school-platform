@@ -1,6 +1,7 @@
 import { ModeToggle } from './ModeToggle'
 
 import Link from 'next/link'
+import { Button } from '@/components/ui/button'
 
 import { DicesIcon } from 'lucide-react'
 import { GuestNavigationMenu, MobileGuestMenuButton } from './GuestNavigationMenu'
@@ -104,6 +105,13 @@ export default async function Navbar({
         </div>
         <GuestNavigationMenu menuItems={menuItems} />
         <div className="flex items-center gap-4">
+          {school && isFeatureEnabled(school, 'parentsArea') && (
+            <Link href={`${baseHref}/parents/login`}>
+              <Button variant="outline" size="sm" className="hidden md:flex">
+                Area Genitori
+              </Button>
+            </Link>
+          )}
           <ModeToggle />
         </div>
       </div>

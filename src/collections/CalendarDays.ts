@@ -18,6 +18,17 @@ export const CalendarDays: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'type', 'startDate', 'endDate', 'school'],
     group: 'Scuola',
+    components: {
+      beforeList: [
+        {
+          path: '@/components/UpgradeMessage',
+          clientProps: {
+            requiredPlan: 'professional',
+            featureName: 'Calendario',
+          },
+        },
+      ],
+    },
   },
   access: {
     read: tenantRead,

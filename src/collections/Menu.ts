@@ -74,6 +74,17 @@ export const Menu: CollectionConfig = {
     description: 'Gestisci i menù stagionali della mensa',
     defaultColumns: ['name', 'isActive', 'validFrom', 'validTo', 'school', 'updatedAt'],
     group: 'Scuola',
+    components: {
+      beforeList: [
+        {
+          path: '@/components/UpgradeMessage',
+          clientProps: {
+            requiredPlan: 'professional',
+            featureName: 'Menù Mensa',
+          },
+        },
+      ],
+    },
   },
   access: {
     read: tenantRead,
