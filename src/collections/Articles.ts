@@ -17,7 +17,7 @@ export const Articles: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'publishedAt', 'school'],
-    group: 'Blog',
+    group: 'Contenuti',
   },
   access: {
     read: tenantRead,

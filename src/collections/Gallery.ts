@@ -17,7 +17,7 @@ export const Gallery: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'images', 'school', 'updatedAt'],
-    group: 'Media',
+    group: 'Contenuti',
   },
   access: {
     read: tenantRead,
@@ -113,15 +113,6 @@ export const Gallery: CollectionConfig = {
           label: 'Articolo',
           admin: {
             condition: (data, siblingData) => siblingData.type === 'article',
-          },
-        },
-        {
-          name: 'page',
-          type: 'relationship',
-          relationTo: 'pages',
-          label: 'Pagina',
-          admin: {
-            condition: (data, siblingData) => siblingData.type === 'page',
           },
         },
         {

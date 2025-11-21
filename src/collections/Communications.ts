@@ -22,7 +22,7 @@ export const Communications: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'priority', 'publishedAt', 'isActive', 'school'],
     description: 'Gestisci le comunicazioni di servizio che appaiono nel popup',
-    group: 'Scuola e genitori',
+    group: 'Comunicazioni scuola-famiglia',
     components: {
       beforeList: [
         {

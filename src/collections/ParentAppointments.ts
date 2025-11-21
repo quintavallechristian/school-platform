@@ -12,8 +12,8 @@ export const ParentAppointments: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'date', 'child', 'parent', 'status'],
-    group: 'Area Genitori',
+    defaultColumns: ['title', 'date', 'child', 'status'],
+    group: 'Area genitori',
     components: {
       beforeList: [
         {
@@ -34,11 +34,14 @@ export const ParentAppointments: CollectionConfig = {
       // Super-admin vede tutto
       if (user.role === 'super-admin') return true
       
-      // Parent vede solo i propri appuntamenti
-      if (user.role === 'parent') {
+      // Parent vede solo appuntamenti dei propri figli
+      if (user.role === 'parent' && user.children && user.children.length > 0) {
+        const childrenIds = user.children.map((child) => 
+          typeof child === 'string' ? child : child.id
+        )
         return {
-          parent: {
-            equals: user.id,
+          child: {
+            in: childrenIds,
           },
         }
       }
@@ -65,11 +68,14 @@ export const ParentAppointments: CollectionConfig = {
       if (!user) return false
       if (user.role === 'super-admin') return true
       
-      // Parent può cancellare i propri appuntamenti (cambiare status)
-      if (user.role === 'parent') {
+      // Parent può cancellare appuntamenti dei propri figli (cambiare status)
+      if (user.role === 'parent' && user.children && user.children.length > 0) {
+        const childrenIds = user.children.map((child) => 
+          typeof child === 'string' ? child : child.id
+        )
         return {
-          parent: {
-            equals: user.id,
+          child: {
+            in: childrenIds,
           },
         }
       }
@@ -112,6 +118,57 @@ export const ParentAppointments: CollectionConfig = {
   },
   fields: [
     getSchoolField('Scuola'),
+        {
+      name: 'child',
+      type: 'relationship',
+      relationTo: 'children',
+      required: true,
+      label: 'Bambino',
+      admin: {
+        description: 'Il bambino per cui è l\'appuntamento',
+        condition: (data) => {
+          // Mostra il campo solo se è stata selezionata una scuola
+          return !!data.school
+        },
+      },
+      filterOptions: ({ data }) => {
+        // Filtra i bambini per mostrare solo quelli della scuola selezionata
+        if (data?.school) {
+          return {
+            school: {
+              equals: typeof data.school === 'string' ? data.school : data.school.id,
+            },
+          }
+        }
+        // Se non c'è scuola selezionata, restituisci false per non mostrare nessun bambino
+        return false
+      },
+    },
+    {
+      name: 'teacher',
+      type: 'relationship',
+      relationTo: 'teachers',
+      label: 'Insegnante',
+      admin: {
+        description: 'Insegnante presente all\'appuntamento (opzionale)',
+        condition: (data) => {
+          // Mostra il campo solo se è stata selezionata una scuola
+          return !!data.school
+        },
+      },
+      filterOptions: ({ data }) => {
+        // Filtra gli insegnanti per mostrare solo quelli della scuola selezionata
+        if (data?.school) {
+          return {
+            school: {
+              equals: typeof data.school === 'string' ? data.school : data.school.id,
+            },
+          }
+        }
+        // Se non c'è scuola selezionata, restituisci false per non mostrare nessun bambino
+        return false
+      },
+    },
     {
       name: 'title',
       type: 'text',
@@ -133,34 +190,6 @@ export const ParentAppointments: CollectionConfig = {
           displayFormat: 'dd/MM/yyyy HH:mm',
           pickerAppearance: 'dayAndTime',
         },
-      },
-    },
-    {
-      name: 'child',
-      type: 'relationship',
-      relationTo: 'children',
-      required: true,
-      label: 'Bambino',
-    },
-    {
-      name: 'parent',
-      type: 'relationship',
-      relationTo: 'users',
-      required: true,
-      label: 'Genitore',
-      filterOptions: {
-        role: {
-          equals: 'parent',
-        },
-      },
-    },
-    {
-      name: 'teacher',
-      type: 'relationship',
-      relationTo: 'teachers',
-      label: 'Insegnante',
-      admin: {
-        description: 'Insegnante presente all\'appuntamento (opzionale)',
       },
     },
     {

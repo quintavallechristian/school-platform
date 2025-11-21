@@ -9,12 +9,20 @@ export const Schools: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'domain', 'isActive', 'createdAt'],
-    group: 'Sistema',
+    group: 'Configurazione sito',
+    components: {
+      beforeList: [
+        {
+          path: '@/components/HideCreateSchoolButton',
+        },
+      ],
+    },
   },
   access: {
-    // Solo super-admin possono creare/modificare scuole
+    // Super-admin e school-admin possono creare scuole
+    // School-admin devono avere almeno una scuola con piano enterprise (validato in beforeChange)
     create: ({ req: { user } }) => {
-      return user?.role === 'super-admin'
+      return user?.role === 'super-admin' || user?.role === 'school-admin'
     },
     read: ({ req: { user } }) => {
       // Super-admin vedono tutte le scuole
@@ -487,5 +495,52 @@ export const Schools: CollectionConfig = {
       ],
     },
   ],
+  hooks: {
+    beforeChange: [
+      async ({ req, operation }) => {
+        // Solo durante la creazione di nuove scuole
+        if (operation === 'create' && req.user) {
+          const user = req.user
+
+          // Super-admin può sempre creare scuole
+          if (user.role === 'super-admin') {
+            return
+          }
+
+          // School-admin deve avere almeno una scuola con piano enterprise
+          if (user.role === 'school-admin') {
+            if (!user.schools || user.schools.length === 0) {
+              throw new Error('Non hai scuole assegnate. Contatta un super-admin.')
+            }
+
+            // Ottieni le scuole dell'utente
+            const schoolIds = user.schools.map((school) =>
+              typeof school === 'string' ? school : school.id,
+            )
+
+            // Verifica se almeno una scuola ha piano enterprise
+            const schools = await req.payload.find({
+              collection: 'schools',
+              where: {
+                id: {
+                  in: schoolIds,
+                },
+              },
+            })
+
+            const hasEnterprisePlan = schools.docs.some(
+              (school) => school.subscription?.plan === 'enterprise',
+            )
+
+            if (!hasEnterprisePlan) {
+              throw new Error(
+                'Per creare nuove scuole devi avere almeno una scuola con piano Enterprise.',
+              )
+            }
+          }
+        }
+      },
+    ],
+  },
   timestamps: true,
 }

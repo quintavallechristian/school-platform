@@ -28,7 +28,7 @@ export const Events: CollectionConfig = {
     delete: tenantDelete,
   },
   hooks: {
-    beforeChange: [assignSchoolBeforeChange],
+    beforeValidate: [assignSchoolBeforeChange],
     afterChange: [
       async ({ doc, operation, req }) => {
         // Esegui solo quando viene creato un nuovo evento
@@ -201,11 +201,8 @@ export const Events: CollectionConfig = {
           'Se abilitato, verrà creata automaticamente una entry nel calendario collegata a questo evento',
         position: 'sidebar',
         condition: (data) => {
-          // Nascondi la checkbox se non c'è una scuola selezionata
+          console.log("ciao", data)
           if (!data.school) return false
-          
-          // Mostra sempre la checkbox se c'è una scuola
-          // La validazione vera è nel backend che controlla se la feature è attiva
           return true
         },
       },

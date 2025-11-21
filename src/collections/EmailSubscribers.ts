@@ -17,7 +17,7 @@ export const EmailSubscribers: CollectionConfig = {
     useAsTitle: 'email',
     defaultColumns: ['email', 'isActive', 'subscribedAt', 'school'],
     description: 'Gestisci gli iscritti alle notifiche email delle comunicazioni',
-    group: 'Newsletter',
+    group: 'Comunicazioni scuola-famiglia',
   },
   access: {
     read: tenantRead,

@@ -91,8 +91,7 @@ export default async function ChildDetailPage({
     depth: 2,
   })
 
-  const heroSubtitle = `Classe: ${child.classroom} • Nato/a il: ${new Date(child.dateOfBirth).toLocaleDateString('it-IT')}`
-
+  const heroSubtitle = `Classe: ${child.classroom}`
   return (
     <div className="min-h-screen bg-background">
       <Hero

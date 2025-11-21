@@ -15,7 +15,7 @@ export const Children: CollectionConfig = {
   admin: {
     useAsTitle: 'fullName',
     defaultColumns: ['fullName', 'classroom', 'school', 'dateOfBirth'],
-    group: 'Area Genitori',
+    group: 'Utenti',
     components: {
       beforeList: [
         {
@@ -117,7 +117,7 @@ export const Children: CollectionConfig = {
     {
       name: 'dateOfBirth',
       type: 'date',
-      required: true,
+      required: false,
       label: 'Data di nascita',
       admin: {
         date: {

@@ -11,7 +11,7 @@ import {
 export const PrivacyPolicy: CollectionConfig = {
   slug: 'privacy-policy',
   admin: {
-    group: 'Struttura Sito',
+    group: 'Configurazione sito',
     description: 'Configura i contenuti della pagina Privacy Policy',
     defaultColumns: ['name', 'school', 'isActive'],
   },

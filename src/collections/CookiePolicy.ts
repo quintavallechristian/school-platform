@@ -11,7 +11,7 @@ import {
 export const CookiePolicy: CollectionConfig = {
   slug: 'cookie-policy',
   admin: {
-    group: 'Struttura Sito',
+    group: 'Configurazione sito',
     description: 'Configura i contenuti della pagina Cookie Policy',
     defaultColumns: ['name', 'school', 'isActive'],
   },

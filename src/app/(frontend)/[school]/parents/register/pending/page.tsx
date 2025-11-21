@@ -1,14 +1,14 @@
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import Link from 'next/link'
-import { CheckCircle, Clock, Mail } from 'lucide-react'
+import { CheckCircle, Clock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 export default async function PendingPage(props: { params: Promise<{ school: string }> }) {
   const params = await props.params
   
   return (
-    <div className="container flex min-h-screen w-screen flex-col items-center justify-center py-12">
-      <SpotlightCard className="w-full max-w-2xl">
+    <div className="min-h-screen flex items-center justify-center py-24">
+      <SpotlightCard className="w-full max-w-4xl">
         <div className="space-y-6 text-center">
           {/* Success Icon */}
           <div className="flex justify-center">
@@ -37,17 +37,6 @@ export default async function PendingPage(props: { params: Promise<{ school: str
                 </p>
               </div>
             </div>
-
-            <div className="flex items-start gap-3">
-              <Mail className="h-5 w-5 mt-0.5 text-primary" />
-              <div className="space-y-1">
-                <h3 className="font-semibold">Riceverai una conferma via email</h3>
-                <p className="text-sm text-muted-foreground">
-                  Una volta approvata la tua richiesta, riceverai una email con le credenziali di accesso
-                  all&apos;area genitori.
-                </p>
-              </div>
-            </div>
           </div>
 
           {/* Next Steps */}
@@ -66,7 +55,7 @@ export default async function PendingPage(props: { params: Promise<{ school: str
               </li>
               <li className="flex gap-2">
                 <span className="font-semibold">3.</span>
-                <span>Riceverai un&apos;email di conferma con le credenziali</span>
+                <span>Riceverai una conferma dell&apos;approvazione</span>
               </li>
               <li className="flex gap-2">
                 <span className="font-semibold">4.</span>

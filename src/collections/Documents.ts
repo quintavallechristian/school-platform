@@ -17,7 +17,7 @@ export const Documents: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'school', 'updatedAt'],
-    group: 'Scuola e genitori',
+    group: 'Comunicazioni scuola-famiglia',
     description: 'Gestisci le sezioni di documenti scaricabili',
     components: {
       beforeList: [

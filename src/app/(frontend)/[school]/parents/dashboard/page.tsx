@@ -114,9 +114,6 @@ export default async function ParentsDashboardPage({
                       <p className="flex items-center gap-2 justify-center">
                         <span className="font-medium text-foreground">Classe:</span> {child.classroom}
                       </p>
-                      <p className="flex items-center gap-2 justify-center">
-                        <span className="font-medium text-foreground">Nato/a il:</span> {new Date(child.dateOfBirth).toLocaleDateString('it-IT')}
-                      </p>
                     </div>
 
                     <div className="mt-6 w-full">

@@ -1,6 +1,7 @@
 'use client'
 
-import { useFormState, useFormStatus } from 'react-dom'
+import { useFormStatus } from 'react-dom'
+import { useActionState } from 'react'
 import { registerParent } from './action'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -24,7 +25,7 @@ export default function ParentRegisterPage() {
   const params = useParams()
   const router = useRouter()
   const school = params.school as string
-  const [state, formAction] = useFormState(registerParent, null)
+  const [state, formAction] = useActionState(registerParent, null)
 
   // Redirect to pending page on success
   useEffect(() => {
@@ -34,7 +35,7 @@ export default function ParentRegisterPage() {
   }, [state?.success, school, router])
 
   return (
-    <div className="container flex min-h-screen w-screen flex-col items-center justify-center py-12">
+    <div className="min-h-screen flex items-center justify-center py-24">
       <SpotlightCard className="w-full max-w-2xl">
         <div className="space-y-6">
           {/* Header */}
@@ -101,6 +102,34 @@ export default function ParentRegisterPage() {
                 <p className="text-xs text-muted-foreground">
                   Questa email sarà utilizzata per accedere all&apos;area genitori
                 </p>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <label htmlFor="password" className="text-sm font-medium">
+                    Password *
+                  </label>
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    placeholder="Almeno 8 caratteri"
+                    required
+                    minLength={8}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="confirmPassword" className="text-sm font-medium">
+                    Conferma Password *
+                  </label>
+                  <Input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type="password"
+                    placeholder="Ripeti la password"
+                    required
+                  />
+                </div>
               </div>
             </div>
 

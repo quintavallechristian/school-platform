@@ -15,7 +15,7 @@ export const ChildUpdates: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'child', 'type', 'publishedAt'],
-    group: 'Area Genitori',
+    group: 'Area genitori',
     components: {
       beforeList: [
         {
@@ -88,6 +88,32 @@ export const ChildUpdates: CollectionConfig = {
   },
   fields: [
     getSchoolField('Scuola a cui appartiene questo aggiornamento'),
+        {
+      name: 'child',
+      type: 'relationship',
+      relationTo: 'children',
+      required: true,
+      label: 'Bambino',
+      admin: {
+        description: 'Il bambino a cui si riferisce questo aggiornamento',
+        condition: (data) => {
+          // Mostra il campo solo se è stata selezionata una scuola
+          return !!data.school
+        },
+      },
+      filterOptions: ({ data }) => {
+        // Filtra i bambini per mostrare solo quelli della scuola selezionata
+        if (data?.school) {
+          return {
+            school: {
+              equals: typeof data.school === 'string' ? data.school : data.school.id,
+            },
+          }
+        }
+        // Se non c'è scuola selezionata, restituisci false per non mostrare nessun bambino
+        return false
+      },
+    },
     {
       name: 'title',
       type: 'text',
@@ -99,16 +125,6 @@ export const ChildUpdates: CollectionConfig = {
       type: 'richText',
       required: true,
       label: 'Contenuto',
-    },
-    {
-      name: 'child',
-      type: 'relationship',
-      relationTo: 'children',
-      required: true,
-      label: 'Bambino',
-      admin: {
-        description: 'Il bambino a cui si riferisce questo aggiornamento',
-      },
     },
     {
       name: 'type',

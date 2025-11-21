@@ -13,7 +13,7 @@ export const ParentRegistrations: CollectionConfig = {
   admin: {
     useAsTitle: 'parentEmail',
     defaultColumns: ['parentEmail', 'parentFirstName', 'parentLastName', 'status', 'school', 'createdAt'],
-    group: 'Area Genitori',
+    group: 'Area genitori',
     description: 'Gestisci le richieste di registrazione dei genitori in attesa di approvazione',
     components: {
       beforeList: [
@@ -89,7 +89,98 @@ export const ParentRegistrations: CollectionConfig = {
     },
   },
   hooks: {
-    beforeChange: [assignSchoolBeforeChange],
+    beforeChange: [
+      assignSchoolBeforeChange,
+      async ({ data, originalDoc, req, operation }) => {
+        // Crea utente e bambino quando si approva una richiesta
+        if (
+          operation === 'update' &&
+          originalDoc?.status === 'pending' &&
+          data.status === 'approved' &&
+          !data.createdUserId // Evita di ricreare se già creato
+        ) {
+          try {
+            const payload = req.payload
+            const email = data.parentEmail || originalDoc.parentEmail
+
+            // 1. Verifica se l'utente esiste già
+            const existingUsers = await payload.find({
+              collection: 'users',
+              where: {
+                email: {
+                  equals: email,
+                },
+              },
+              limit: 1,
+            })
+
+            let newUser
+            if (existingUsers.docs.length > 0) {
+              // Utente già esistente, usa quello
+              newUser = existingUsers.docs[0]
+              req.payload.logger.info(`User ${email} already exists, using existing user ${newUser.id}`)
+            } else {
+              // Crea nuovo utente - Payload hasherà la password automaticamente
+              newUser = await payload.create({
+                collection: 'users',
+                data: {
+                  email: email,
+                  password: originalDoc.passwordHash, // Payload hasherà questa password
+                  role: 'parent',
+                  firstName: data.parentFirstName || originalDoc.parentFirstName,
+                  lastName: data.parentLastName || originalDoc.parentLastName,
+                  schools: [data.school || originalDoc.school],
+                },
+                disableVerificationEmail: true,
+              })
+              req.payload.logger.info(`Created new user ${newUser.id}`)
+            }
+
+            // 2. Crea il bambino
+            const newChild = await payload.create({
+              collection: 'children',
+              data: {
+                firstName: data.childFirstName || originalDoc.childFirstName,
+                lastName: data.childLastName || originalDoc.childLastName,
+                classroom: data.childClassroom || originalDoc.childClassroom,
+                school: data.school || originalDoc.school,
+              },
+            })
+            req.payload.logger.info(`Created child ${newChild.id}`)
+
+            // 3. Aggiorna l'utente genitore con il riferimento al bambino
+            const existingChildren = newUser.children || []
+            const childrenIds = Array.isArray(existingChildren) 
+              ? existingChildren.map(c => typeof c === 'string' ? c : c.id)
+              : []
+            
+            await payload.update({
+              collection: 'users',
+              id: newUser.id,
+              data: {
+                children: [...childrenIds, newChild.id],
+              },
+            })
+
+            // 4. Modifica i dati prima del salvataggio (evita write conflict)
+            data.createdUserId = newUser.id
+            data.createdChildId = newChild.id
+            data.approvedBy = req.user?.id
+            data.approvedAt = new Date().toISOString()
+
+            req.payload.logger.info(
+              `Created parent user ${newUser.id} and child ${newChild.id} for registration`
+            )
+          } catch (error) {
+            req.payload.logger.error(
+              `Failed to create user/child: ${error}`
+            )
+            throw error
+          }
+        }
+        return data
+      },
+    ],
   },
   fields: [
     getSchoolField('Scuola per cui il genitore sta richiedendo l\'accesso'),
@@ -141,6 +232,16 @@ export const ParentRegistrations: CollectionConfig = {
           label: 'Email Genitore',
           admin: {
             description: 'Verrà utilizzata come username per l\'accesso',
+          },
+        },
+        {
+          name: 'passwordHash',
+          type: 'text',
+          required: false, // Non required per permettere aggiornamenti dall'admin
+          label: 'Password Hash',
+          admin: {
+            hidden: true,
+            description: 'Hash bcrypt della password scelta dal genitore',
           },
         },
       ],

@@ -43,6 +43,7 @@ export const UpgradeMessage: React.FC<UpgradeMessageProps> = ({ requiredPlan, fe
         const currentPlanLevel = planHierarchy[plan as keyof typeof planHierarchy] || 0
         const requiredPlanLevel = planHierarchy[requiredPlan]
 
+
         setShouldShow(currentPlanLevel < requiredPlanLevel)
       } catch (error) {
         console.error('Error checking plan:', error)
@@ -51,6 +52,41 @@ export const UpgradeMessage: React.FC<UpgradeMessageProps> = ({ requiredPlan, fe
 
     checkPlan()
   }, [user, requiredPlan])
+
+  useEffect(() => {
+    // Nascondi il pulsante "Create New" usando JavaScript DOM manipulation
+    if (shouldShow) {
+      const hideButton = () => {
+        // Cerca il pulsante "Crea Nuovo" in vari modi
+        const buttons = document.querySelectorAll('a, button')
+        buttons.forEach((button) => {
+          const text = button.textContent?.trim().toLowerCase()
+          
+          // Nascondi se contiene "crea nuovo" o "create new"
+          if (
+            text?.includes('crea nuovo') ||
+            text?.includes('create new')
+          ) {
+            ;(button as HTMLElement).style.display = 'none'
+          }
+        })
+      }
+
+      // Esegui subito
+      hideButton()
+
+      // Osserva cambiamenti nel DOM per nascondere il pulsante se viene aggiunto dinamicamente
+      const observer = new MutationObserver(hideButton)
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+      })
+
+      return () => {
+        observer.disconnect()
+      }
+    }
+  }, [shouldShow])
 
   if (!shouldShow) {
     return null

@@ -15,7 +15,6 @@ import { Events } from './collections/Events'
 import { Projects } from './collections/Projects'
 import { Teachers } from './collections/Teachers'
 import { Menu } from './collections/Menu'
-import { Pages } from './collections/Pages'
 import { Communications } from './collections/Communications'
 import { Gallery } from './collections/Gallery'
 import { EmailSubscribers } from './collections/EmailSubscribers'
@@ -46,36 +45,34 @@ export default buildConfig({
   },
   collections: [
     //Configurazione sito
+    Schools,
     Homepage,
     PrivacyPolicy,
     CookiePolicy,
     // Contenuti
     ChiSiamo,
     Teachers,
+    Events,
     Projects,
     CalendarDays,
-    Events,
     Menu,
-    //Scuola e genitori
+    // Comunicazioni scuola-famiglia
     Documents,
-    Communications,
     Testimonials,
-    // Blog
-    Articles,
-    Pages,
-    // Media
-    Media,
-    Gallery,
-    // Newsletter
+    Communications,
     EmailSubscribers,
-    // Sistema
-    Users,
-    Schools,
-    // Area Genitori
-    Children,
+    // Area genitori
+    ParentRegistrations,
     ChildUpdates,
     ParentAppointments,
-    ParentRegistrations,
+    // Blog
+    Articles,
+    Media,
+    Gallery,
+    // Utenti
+    Children,
+    Users,
+
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

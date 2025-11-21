@@ -1,5 +1,12 @@
 import type { CollectionConfig } from 'payload'
-import { publicRead, tenantCreate, tenantUpdate, tenantDelete, getSchoolField } from '@/lib/access'
+import {
+  publicRead,
+  tenantCreate,
+  tenantUpdate,
+  tenantDelete,
+  getSchoolField,
+  assignSchoolBeforeChange,
+} from '@/lib/access'
 
 export const Testimonials: CollectionConfig = {
   slug: 'testimonials',
@@ -13,10 +20,13 @@ export const Testimonials: CollectionConfig = {
     update: tenantUpdate,
     delete: tenantDelete,
   },
+  hooks: {
+    beforeValidate: [assignSchoolBeforeChange],
+  },
   admin: {
     useAsTitle: 'authorName',
     defaultColumns: ['authorName', 'role', 'school', 'isActive'],
-    group: 'Scuola e genitori',
+    group: 'Comunicazioni scuola-famiglia',
   },
   fields: [
     getSchoolField('Scuola a cui appartiene questa testimonianza'),

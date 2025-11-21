@@ -10,7 +10,7 @@ import {
 export const Media: CollectionConfig = {
   slug: 'media',
   admin: {
-    group: 'Media',
+    group: 'Contenuti',
   },
   access: {
     read: publicRead,

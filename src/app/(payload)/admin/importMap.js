@@ -1,4 +1,7 @@
 import { default as default_91a62b5153d9f44791641f7d9e8740a8 } from '@/components/ColorPicker/ColorPickerField'
+import { default as default_c84d929c39c84dbf53bc28e517b5822e } from '@/components/School/FeatureVisibilityField'
+import { default as default_99e83bd5be38fef5b383b78aa34c189a } from '@/components/ChangePlanPortalButton'
+import { default as default_56ef74dbfe78eafdb6f5db236ef77a8e } from '@/components/HideCreateSchoolButton'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { LexicalDiffComponent as LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -23,11 +26,12 @@ import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997e
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { default as default_8d573dc83a70acbf4ee29084dadab260 } from '@/components/UpgradeMessage'
-import { default as default_c84d929c39c84dbf53bc28e517b5822e } from '@/components/School/FeatureVisibilityField'
-import { default as default_99e83bd5be38fef5b383b78aa34c189a } from '@/components/ChangePlanPortalButton'
 
 export const importMap = {
   "@/components/ColorPicker/ColorPickerField#default": default_91a62b5153d9f44791641f7d9e8740a8,
+  "@/components/School/FeatureVisibilityField#default": default_c84d929c39c84dbf53bc28e517b5822e,
+  "@/components/ChangePlanPortalButton#default": default_99e83bd5be38fef5b383b78aa34c189a,
+  "@/components/HideCreateSchoolButton#default": default_56ef74dbfe78eafdb6f5db236ef77a8e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#LexicalDiffComponent": LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e,
@@ -51,7 +55,5 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#UnderlineFeatureClient": UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
-  "@/components/UpgradeMessage#default": default_8d573dc83a70acbf4ee29084dadab260,
-  "@/components/School/FeatureVisibilityField#default": default_c84d929c39c84dbf53bc28e517b5822e,
-  "@/components/ChangePlanPortalButton#default": default_99e83bd5be38fef5b383b78aa34c189a
+  "@/components/UpgradeMessage#default": default_8d573dc83a70acbf4ee29084dadab260
 }

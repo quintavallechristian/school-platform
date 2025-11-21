@@ -1,4 +1,4 @@
-import type { Access, CollectionBeforeChangeHook, Field } from 'payload'
+import type { Access, Field, PayloadRequest } from 'payload'
 
 /**
  * Access control per collezioni multi-tenant
@@ -125,13 +125,29 @@ export const tenantDelete: Access = ({ req: { user } }) => {
   return false
 }
 
+
+
 /**
- * Hook beforeChange per assegnare automaticamente la scuola
- * ai nuovi contenuti creati
+ * Hook per assegnare automaticamente la scuola ai nuovi contenuti
+ * Può essere usato sia come beforeValidate (consigliato per campi required)
+ * che come beforeChange
  */
-export const assignSchoolBeforeChange: CollectionBeforeChangeHook = ({ req, data, operation }) => {
+export const assignSchoolBeforeChange = ({
+  req,
+  data,
+  operation,
+}: {
+  req: PayloadRequest
+  data?: any
+  operation: string
+}) => {
   // Se è un'operazione di creazione
   if (operation === 'create' && req.user) {
+    // Se non ci sono dati, non possiamo fare nulla
+    if (!data) {
+      return data
+    }
+
     // Se non è stata specificata una scuola, assegna automaticamente
     if (!data.school) {
       // Per super-admin, non assegnare automaticamente (deve scegliere)
@@ -143,13 +159,17 @@ export const assignSchoolBeforeChange: CollectionBeforeChangeHook = ({ req, data
       // Per altri utenti, assegna automaticamente la prima scuola
       if (req.user.schools && req.user.schools.length > 0) {
         const firstSchool = req.user.schools[0]
-        data.school = typeof firstSchool === 'string' ? firstSchool : firstSchool.id
+        const schoolId = typeof firstSchool === 'string' ? firstSchool : firstSchool.id
+        
+        // Modifica il dato e ritornalo
+        data.school = schoolId
+        return data
       }
     }
   }
 
   // In fase di update, valida che la scuola scelta sia tra quelle permesse
-  if (operation === 'update' && req.user && data.school !== undefined) {
+  if (operation === 'update' && req.user && data?.school) {
     // Super-admin può cambiare a qualsiasi scuola
     if (req.user.role === 'super-admin') {
       return data
@@ -157,7 +177,7 @@ export const assignSchoolBeforeChange: CollectionBeforeChangeHook = ({ req, data
 
     // Altri utenti possono cambiare solo tra le loro scuole assegnate
     if (req.user.schools && req.user.schools.length > 0) {
-      const schoolIds = req.user.schools.map((school) =>
+      const schoolIds = req.user.schools.map((school: string | { id: string }) =>
         typeof school === 'string' ? school : school.id,
       )
 
@@ -231,7 +251,7 @@ export const getSchoolField = (
     if (user.schools && user.schools.length > 0) {
       const schoolIds = user.schools.map((school) =>
         typeof school === 'string' ? school : school.id,
-      )
+    )
       return {
         id: {
           in: schoolIds,

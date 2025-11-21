@@ -23,7 +23,7 @@ export default function ParentLoginPage() {
   const [state, formAction] = useFormState(loginParent, null)
 
   return (
-    <div className="container flex h-screen w-screen flex-col items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center py-8">
       <SpotlightCard className="w-full max-w-md">
         <div className="space-y-1">
           <h2 className="text-2xl font-bold text-center">Area Genitori</h2>

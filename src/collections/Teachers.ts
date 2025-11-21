@@ -5,6 +5,7 @@ import {
   tenantUpdate,
   tenantDelete,
   assignSchoolBeforeChange,
+  getSchoolField,
 } from '../lib/access'
 
 export const Teachers: CollectionConfig = {
@@ -28,19 +29,7 @@ export const Teachers: CollectionConfig = {
     beforeChange: [assignSchoolBeforeChange],
   },
   fields: [
-    {
-      name: 'school',
-      type: 'relationship',
-      relationTo: 'schools',
-      required: true,
-      label: 'Scuola',
-      admin: {
-        description: 'Scuola a cui appartiene questo insegnante',
-        condition: (data, siblingData, { user }) => {
-          return user?.role === 'super-admin'
-        },
-      },
-    },
+    getSchoolField('Scuola a cui appartiene questa testimonianza'),
     { name: 'name', type: 'text', label: 'Nome', required: true },
     {
       name: 'role',
