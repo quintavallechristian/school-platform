@@ -69,8 +69,7 @@ export async function POST(req: Request) {
         try {
           // Extract current_period_end with proper type handling
           // The Stripe SDK types may not include all properties, so we use unknown as intermediate
-          const currentPeriodEnd = (subscription as unknown as { current_period_end: number })
-            .current_period_end
+          const currentPeriodEnd = subscription.items.data[0].current_period_end
 
           await payload.update({
             collection: 'schools',
