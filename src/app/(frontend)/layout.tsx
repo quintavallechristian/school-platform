@@ -6,8 +6,8 @@ import { MyAurora } from '@/components/Aurora/MyAurora'
 import 'leaflet/dist/leaflet.css'
 
 export const metadata: Metadata = {
-  title: 'BrunoPizzolato',
-  description: 'Descrizione di BrunoPizzolato',
+  title: 'Scuole infanzia',
+  description: 'Descrizione di scuole infanzia',
 }
 
 export default async function RootLayout({

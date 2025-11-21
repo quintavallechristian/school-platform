@@ -31,7 +31,7 @@ export function MobileGuestMenuButton({ menuItems }: { menuItems: MenuItem[] }) 
       </SheetTrigger>
       <SheetContent side="left" className="w-[300px] sm:w-[400px] flex flex-col">
         <SheetHeader>
-          <SheetTitle>BrunoPizzolato</SheetTitle>
+          <SheetTitle>Scuole infanzia</SheetTitle>
         </SheetHeader>
         <nav className="flex flex-col gap-4 overflow-y-auto flex-1">
           {menuItems.map((item) => (

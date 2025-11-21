@@ -100,7 +100,7 @@ export default async function Navbar({
             ) : (
               <DicesIcon className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
             )}
-            <span className="text-xl font-bold">{schoolName || 'BrunoPizzolato'}</span>
+            <span className="text-xl font-bold">{schoolName || 'Scuole Infanzia'}</span>
           </Link>
         </div>
         <GuestNavigationMenu menuItems={menuItems} />
