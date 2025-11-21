@@ -22,7 +22,7 @@ function extractSubdomain(request: NextRequest): string | null {
   }
 
   // Production environment
-  const rootDomainFormatted = process.env.NEXT_PUBLIC_ROOT_DOMAIN.split(':')[0];
+  const rootDomainFormatted = process.env.NEXT_PUBLIC_ROOT_DOMAIN?.split(':')[0];
 
   // Handle preview deployment URLs (tenant---branch-name.vercel.app)
   if (hostname.includes('---') && hostname.endsWith('.vercel.app')) {
