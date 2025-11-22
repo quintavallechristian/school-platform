@@ -5,9 +5,7 @@ import { Button } from '@/components/ui/button'
 
 import { DicesIcon } from 'lucide-react'
 import { GuestNavigationMenu, MobileGuestMenuButton } from './GuestNavigationMenu'
-import { getPayload } from 'payload'
-import config from '@/payload.config'
-import type { Page, School } from '@/payload-types'
+import type { School } from '@/payload-types'
 import Image from 'next/image'
 import { NavbarWrapper } from './NavbarWrapper'
 import { isFeatureEnabled } from '@/lib/school'
@@ -16,7 +14,6 @@ export default async function Navbar({
   schoolName,
   schoolLogo,
   baseHref = '/',
-  schoolId,
   school,
 }: {
   schoolName?: string

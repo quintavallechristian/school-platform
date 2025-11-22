@@ -6,7 +6,7 @@ import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
-
+import { Pages } from './collections/Pages'
 import { Users } from './collections/Users'
 import { Schools } from './collections/Schools'
 import { Media } from './collections/Media'
@@ -67,6 +67,7 @@ export default buildConfig({
     ParentAppointments,
     // Blog
     Articles,
+    Pages,
     Media,
     Gallery,
     // Utenti

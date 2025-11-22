@@ -85,6 +85,7 @@ export interface Config {
     'child-updates': ChildUpdate;
     'parent-appointments': ParentAppointment;
     articles: Article;
+    pages: Page;
     media: Media;
     gallery: Gallery;
     children: Child;
@@ -114,6 +115,7 @@ export interface Config {
     'child-updates': ChildUpdatesSelect<false> | ChildUpdatesSelect<true>;
     'parent-appointments': ParentAppointmentsSelect<false> | ParentAppointmentsSelect<true>;
     articles: ArticlesSelect<false> | ArticlesSelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     gallery: GallerySelect<false> | GallerySelect<true>;
     children: ChildrenSelect<false> | ChildrenSelect<true>;
@@ -1718,6 +1720,394 @@ export interface ParentAppointment {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: string;
+  /**
+   * Scuola a cui appartiene questa pagina
+   */
+  school?: (string | null) | School;
+  title: string;
+  /**
+   * Es: chi-siamo, contatti, storia
+   */
+  slug: string;
+  /**
+   * Testo che appare sotto il titolo nell'hero (se l'hero è abilitato)
+   */
+  subtitle?: string | null;
+  /**
+   * Personalizza l'hero di default della pagina
+   */
+  heroSettings?: {
+    /**
+     * Se disabilitato, la copertina non verrà mostrata (utile se usi un immagini personalizzate)
+     */
+    showHero?: boolean | null;
+    /**
+     * Se abilitato, la copertina occuperà l'intera altezza dello schermo
+     */
+    fullHeight?: boolean | null;
+    /**
+     * Immagine opzionale per lo sfondo dell'hero
+     */
+    backgroundImage?: (string | null) | Media;
+    /**
+     * Se abilitato, l'immagine di sfondo avrà un effetto parallax durante lo scroll
+     */
+    parallax?: boolean | null;
+    /**
+     * Se abilitato, aggiunge un overlay gradiente sopra l'immagine per migliorare la leggibilità del testo
+     */
+    gradientOverlay?: boolean | null;
+  };
+  /**
+   * Aggiungi un divisore decorativo in fondo alla copertina
+   */
+  heroBottomDivider?: {
+    enabled?: boolean | null;
+    style?:
+      | (
+          | 'wave'
+          | 'wave-brush'
+          | 'waves'
+          | 'zigzag'
+          | 'triangle'
+          | 'triangle-asymmetric'
+          | 'curve'
+          | 'curve-asymmetric'
+          | 'tilt'
+          | 'arrow'
+          | 'split'
+          | 'clouds'
+          | 'mountains'
+        )
+      | null;
+    /**
+     * Altezza del divisore in pixel (30-300)
+     */
+    height?: number | null;
+    flip?: boolean | null;
+    invert?: boolean | null;
+  };
+  /**
+   * Testo principale che appare dopo la copertina
+   */
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Aggiungi sezioni personalizzate come call-to-action, team cards, feature grids, ecc.
+   */
+  blocks?:
+    | (
+        | {
+            /**
+             * Titolo principale con effetto gradiente animato
+             */
+            title: string;
+            /**
+             * Testo secondario con animazione blur
+             */
+            subtitle?: string | null;
+            /**
+             * Se attivo, l'hero occuperà l'intera altezza dello schermo
+             */
+            fullHeight?: boolean | null;
+            /**
+             * Immagine opzionale per lo sfondo dell'hero
+             */
+            backgroundImage?: (string | null) | Media;
+            /**
+             * Se abilitato, l'immagine di sfondo avrà un effetto parallax durante lo scroll
+             */
+            parallax?: boolean | null;
+            /**
+             * Se abilitato, aggiunge un overlay gradiente sopra l'immagine per migliorare la leggibilità del testo
+             */
+            gradientOverlay?: boolean | null;
+            buttons?:
+              | {
+                  text: string;
+                  href: string;
+                  variant?: ('default' | 'destructive' | 'outline' | 'link') | null;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Aggiungi un divisore decorativo in cima all'hero
+             */
+            topDivider?: {
+              enabled?: boolean | null;
+              style?:
+                | (
+                    | 'wave'
+                    | 'wave-brush'
+                    | 'waves'
+                    | 'zigzag'
+                    | 'triangle'
+                    | 'triangle-asymmetric'
+                    | 'curve'
+                    | 'curve-asymmetric'
+                    | 'tilt'
+                    | 'arrow'
+                    | 'split'
+                    | 'clouds'
+                    | 'mountains'
+                  )
+                | null;
+              /**
+               * Altezza del divisore in pixel (30-300)
+               */
+              height?: number | null;
+              flip?: boolean | null;
+              invert?: boolean | null;
+            };
+            /**
+             * Aggiungi un divisore decorativo in fondo alla copertina
+             */
+            bottomDivider?: {
+              enabled?: boolean | null;
+              style?:
+                | (
+                    | 'wave'
+                    | 'wave-brush'
+                    | 'waves'
+                    | 'zigzag'
+                    | 'triangle'
+                    | 'triangle-asymmetric'
+                    | 'curve'
+                    | 'curve-asymmetric'
+                    | 'tilt'
+                    | 'arrow'
+                    | 'split'
+                    | 'clouds'
+                    | 'mountains'
+                  )
+                | null;
+              /**
+               * Altezza del divisore in pixel (30-300)
+               */
+              height?: number | null;
+              flip?: boolean | null;
+              invert?: boolean | null;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'hero';
+          }
+        | {
+            title: string;
+            subtitle?: string | null;
+            image?: (string | null) | Media;
+            buttons?:
+              | {
+                  text: string;
+                  href: string;
+                  variant?: ('default' | 'secondary' | 'outline' | 'ghost') | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'callToAction';
+          }
+        | {
+            content: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'richText';
+          }
+        | {
+            title?: string | null;
+            columns?: ('2' | '3' | '4') | null;
+            cards?:
+              | {
+                  title: string;
+                  description?: string | null;
+                  image?: (string | null) | Media;
+                  link?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cardGrid';
+          }
+        | {
+            /**
+             * Es: "Documenti Utili", "Moduli da scaricare"
+             */
+            title?: string | null;
+            description?: string | null;
+            files?:
+              | {
+                  /**
+                   * PDF, DOC, XLS, o altri documenti
+                   */
+                  file: string | Media;
+                  /**
+                   * Se vuoto, usa il nome del file
+                   */
+                  title?: string | null;
+                  description?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'fileDownload';
+          }
+        | {
+            /**
+             * Seleziona una galleria esistente da mostrare
+             */
+            gallery: string | Gallery;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'gallery';
+          }
+        | {
+            /**
+             * Es: "Ultime Notizie", "Articoli in Evidenza"
+             */
+            title?: string | null;
+            /**
+             * Quanti articoli mostrare (max 12)
+             */
+            limit: number;
+            /**
+             * Mostra un pulsante per andare alla pagina blog completa
+             */
+            showViewAll?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'articleList';
+          }
+        | {
+            /**
+             * Es: "Prossimi Eventi", "Eventi della Scuola"
+             */
+            title?: string | null;
+            /**
+             * Quanti eventi mostrare (max 12)
+             */
+            limit: number;
+            /**
+             * Scegli quali eventi mostrare in base alla data
+             */
+            filter?: ('all' | 'upcoming' | 'past') | null;
+            /**
+             * Mostra un pulsante per andare alla pagina eventi completa
+             */
+            showViewAll?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'eventList';
+          }
+        | {
+            /**
+             * Es: "I Nostri Progetti", "Progetti della Scuola"
+             */
+            title?: string | null;
+            /**
+             * Quanti progetti mostrare (max 12)
+             */
+            limit: number;
+            /**
+             * Mostra un pulsante per andare alla pagina progetti completa
+             */
+            showViewAll?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'projectList';
+          }
+        | {
+            /**
+             * Es: "Comunicazioni Importanti", "Avvisi"
+             */
+            title?: string | null;
+            /**
+             * Quante comunicazioni mostrare (max 20)
+             */
+            limit: number;
+            /**
+             * Seleziona le priorità da mostrare (se vuoto, mostra tutte)
+             */
+            priorityFilter?: ('low' | 'normal' | 'high' | 'urgent')[] | null;
+            /**
+             * Mostra un pulsante per andare alla pagina comunicazioni completa
+             */
+            showViewAll?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'communications';
+          }
+        | {
+            /**
+             * Es: "Il Nostro Team", "I Nostri Insegnanti"
+             */
+            title?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'teacherList';
+          }
+      )[]
+    | null;
+  /**
+   * Se attivo, questa pagina apparirà automaticamente nel menu di navigazione
+   */
+  showInNavbar?: boolean | null;
+  /**
+   * Numero per ordinare le pagine nel menu (più basso = prima)
+   */
+  navbarOrder?: number | null;
+  /**
+   * Collega una galleria di immagini a questa pagina (opzionale)
+   */
+  gallery?: (string | null) | Gallery;
+  seo?: {
+    /**
+     * Titolo per i motori di ricerca (se vuoto, usa il titolo della pagina)
+     */
+    metaTitle?: string | null;
+    /**
+     * Descrizione per i motori di ricerca (max 160 caratteri)
+     */
+    metaDescription?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -1811,6 +2201,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'articles';
         value: string | Article;
+      } | null)
+    | ({
+        relationTo: 'pages';
+        value: string | Page;
       } | null)
     | ({
         relationTo: 'media';
@@ -2663,6 +3057,197 @@ export interface ArticlesSelect<T extends boolean = true> {
   author?: T;
   publishedAt?: T;
   gallery?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  school?: T;
+  title?: T;
+  slug?: T;
+  subtitle?: T;
+  heroSettings?:
+    | T
+    | {
+        showHero?: T;
+        fullHeight?: T;
+        backgroundImage?: T;
+        parallax?: T;
+        gradientOverlay?: T;
+      };
+  heroBottomDivider?:
+    | T
+    | {
+        enabled?: T;
+        style?: T;
+        height?: T;
+        flip?: T;
+        invert?: T;
+      };
+  content?: T;
+  blocks?:
+    | T
+    | {
+        hero?:
+          | T
+          | {
+              title?: T;
+              subtitle?: T;
+              fullHeight?: T;
+              backgroundImage?: T;
+              parallax?: T;
+              gradientOverlay?: T;
+              buttons?:
+                | T
+                | {
+                    text?: T;
+                    href?: T;
+                    variant?: T;
+                    id?: T;
+                  };
+              topDivider?:
+                | T
+                | {
+                    enabled?: T;
+                    style?: T;
+                    height?: T;
+                    flip?: T;
+                    invert?: T;
+                  };
+              bottomDivider?:
+                | T
+                | {
+                    enabled?: T;
+                    style?: T;
+                    height?: T;
+                    flip?: T;
+                    invert?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        callToAction?:
+          | T
+          | {
+              title?: T;
+              subtitle?: T;
+              image?: T;
+              buttons?:
+                | T
+                | {
+                    text?: T;
+                    href?: T;
+                    variant?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        richText?:
+          | T
+          | {
+              content?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cardGrid?:
+          | T
+          | {
+              title?: T;
+              columns?: T;
+              cards?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                    image?: T;
+                    link?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        fileDownload?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+              files?:
+                | T
+                | {
+                    file?: T;
+                    title?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        gallery?:
+          | T
+          | {
+              gallery?: T;
+              id?: T;
+              blockName?: T;
+            };
+        articleList?:
+          | T
+          | {
+              title?: T;
+              limit?: T;
+              showViewAll?: T;
+              id?: T;
+              blockName?: T;
+            };
+        eventList?:
+          | T
+          | {
+              title?: T;
+              limit?: T;
+              filter?: T;
+              showViewAll?: T;
+              id?: T;
+              blockName?: T;
+            };
+        projectList?:
+          | T
+          | {
+              title?: T;
+              limit?: T;
+              showViewAll?: T;
+              id?: T;
+              blockName?: T;
+            };
+        communications?:
+          | T
+          | {
+              title?: T;
+              limit?: T;
+              priorityFilter?: T;
+              showViewAll?: T;
+              id?: T;
+              blockName?: T;
+            };
+        teacherList?:
+          | T
+          | {
+              title?: T;
+              id?: T;
+              blockName?: T;
+            };
+      };
+  showInNavbar?: T;
+  navbarOrder?: T;
+  gallery?: T;
+  seo?:
+    | T
+    | {
+        metaTitle?: T;
+        metaDescription?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }

@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react'
 import { useAuth } from '@payloadcms/ui'
-import Link from 'next/link'
 
 export const HideCreateSchoolButton: React.FC = () => {
   const { user } = useAuth()

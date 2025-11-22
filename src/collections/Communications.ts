@@ -19,6 +19,9 @@ if (process.env.BREVO_API_KEY) {
   )
 }
 
+// Type for communication priority
+type CommunicationPriority = 'low' | 'normal' | 'high' | 'urgent'
+
 export const Communications: CollectionConfig = {
   slug: 'communications',
   labels: {
@@ -78,21 +81,23 @@ export const Communications: CollectionConfig = {
             `Invio comunicazione a ${subscribers.docs.length} iscritti per: ${doc.title}`
           )
 
-          const priorityEmoji = {
+          const priority = doc.priority as CommunicationPriority
+
+          const priorityEmoji: Record<CommunicationPriority, string> = {
             low: 'ℹ️',
             normal: '🔔',
             high: '⚠️',
             urgent: '🚨',
           }
 
-          const priorityLabels = {
+          const priorityLabels: Record<CommunicationPriority, string> = {
             low: 'Bassa',
             normal: 'Normale',
             high: 'Alta',
             urgent: 'URGENTE',
           }
 
-          const priorityColors = {
+          const priorityColors: Record<CommunicationPriority, string> = {
             low: '#3b82f6',
             normal: '#6b7280',
             high: '#f97316',
@@ -110,10 +115,10 @@ export const Communications: CollectionConfig = {
                   </div>
 
                   <div style="background:white;border-radius:12px;border:1px solid #e5e7eb;">
-                    <div style="background:${priorityColors[doc.priority]};padding:12px 20px;">
+                    <div style="background:${priorityColors[priority]};padding:12px 20px;">
                       <span style="color:white;font-weight:600;font-size:13px;">
-                        ${priorityEmoji[doc.priority]}
-                        Priorità: ${priorityLabels[doc.priority]}
+                        ${priorityEmoji[priority]}
+                        Priorità: ${priorityLabels[priority]}
                       </span>
                     </div>
 
@@ -163,7 +168,7 @@ export const Communications: CollectionConfig = {
             return brevo!.sendTransacEmail({
               sender: { name: process.env.BREVO_SENDER_NAME!, email: process.env.BREVO_SENDER_EMAIL! },
               to: [{ email: subscriber.email }],
-              subject: `${priorityEmoji[doc.priority]} Nuova comunicazione: ${doc.title}`,
+              subject: `${priorityEmoji[priority]} Nuova comunicazione: ${doc.title}`,
               htmlContent: emailHtml(unsubscribeUrl),
             })
           })

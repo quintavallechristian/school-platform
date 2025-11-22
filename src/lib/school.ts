@@ -376,6 +376,67 @@ export async function getSchoolArticleBySlug(schoolId: string | number, articleS
 }
 
 /**
+ * Ottiene una pagina specifica di una scuola per slug o ID
+ */
+export async function getSchoolPage(schoolId: string | number, pageSlugOrId: string | number) {
+  const payload = await getPayload({ config: configPromise })
+
+  console.log('getSchoolPage called with:', { schoolId, pageSlugOrId })
+
+  // Se pageSlugOrId è un numero o sembra un ID MongoDB (24 caratteri hex), cerca per ID
+  const isMongoId =
+    typeof pageSlugOrId === 'string' && /^[a-f0-9]{24}$/i.test(pageSlugOrId.toString())
+  const isNumeric = typeof pageSlugOrId === 'number' || !isNaN(Number(pageSlugOrId))
+
+  console.log('ID detection:', { isMongoId, isNumeric })
+
+  if (isMongoId || isNumeric) {
+    try {
+      console.log('Searching page by ID:', pageSlugOrId)
+      const page = await payload.findByID({
+        collection: 'pages',
+        id: pageSlugOrId,
+        depth: 2,
+      })
+
+      console.log('Page found:', page ? 'YES' : 'NO')
+      if (page) {
+        console.log('Page school:', page.school)
+        console.log('Page title:', page.title)
+      }
+
+      // Verifica che la pagina appartenga alla scuola
+      const pageSchoolId =
+        page.school && typeof page.school === 'object' ? page.school.id : page.school
+
+      // Normalizza i confronti a stringhe
+      if (page && String(pageSchoolId) === String(schoolId)) {
+        console.log('School match! Returning page')
+        return page
+      }
+
+      console.log('School mismatch or no page, returning null')
+      return null
+    } catch (error) {
+      console.log('Error finding page by ID:', error)
+      return null
+    }
+  }
+
+  // Altrimenti cerca per slug
+  const result = await payload.find({
+    collection: 'pages',
+    where: {
+      and: [{ school: { equals: schoolId } }, { slug: { equals: pageSlugOrId } }],
+    },
+    limit: 1,
+    depth: 2,
+  })
+
+  return result.docs[0] || null
+}
+
+/**
  * Ottiene un evento specifico di una scuola per ID
  */
 export async function getSchoolEvent(schoolId: string | number, eventId: string | number) {
