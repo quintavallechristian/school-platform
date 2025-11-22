@@ -98,6 +98,21 @@ export async function POST(request: NextRequest) {
         )
       }
 
+      // Check parent limit before creating user
+      const { checkParentLimit } = await import('@/lib/check-parent-limit')
+      const limitCheck = await checkParentLimit(schoolId, payload)
+      
+      if (!limitCheck.canAdd) {
+        return NextResponse.json(
+          { 
+            error: limitCheck.message || 'Limite genitori raggiunto',
+            currentCount: limitCheck.currentCount,
+            limit: limitCheck.limit,
+          },
+          { status: 400 }
+        )
+      }
+
       const newUser = await payload.create({
         collection: 'users',
         data: {

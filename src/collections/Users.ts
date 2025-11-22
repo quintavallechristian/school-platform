@@ -156,6 +156,27 @@ export const Users: CollectionConfig = {
         // Solo super-admin può modificare i ruoli
         update: ({ req: { user } }) => user?.role === 'super-admin',
       },
+      validate: async (value: string, options: any) => {
+        const { data, req, operation } = options
+        // Check parent limit when creating a new parent user
+        if (operation === 'create' && value === 'parent') {
+          // Super-admin can bypass the limit
+          if (req.user?.role !== 'super-admin') {
+            if (!data?.schools || data.schools.length === 0) {
+              return 'Almeno una scuola deve essere assegnata al genitore'
+            }
+
+            const schoolId = typeof data.schools[0] === 'string' ? data.schools[0] : data.schools[0].id
+            const { checkParentLimit } = await import('../lib/check-parent-limit')
+            const limitCheck = await checkParentLimit(schoolId, req.payload)
+
+            if (!limitCheck.canAdd) {
+              return limitCheck.message || 'Impossibile creare il genitore: limite raggiunto'
+            }
+          }
+        }
+        return true
+      },
     },
     {
       name: 'schools',
@@ -233,7 +254,7 @@ export const Users: CollectionConfig = {
   ],
   hooks: {
     beforeChange: [
-      ({ req, data, operation, context }) => {
+      async ({ req, data, operation, context }) => {
         // Migrazione automatica: converte school → schools
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const oldData = data as any

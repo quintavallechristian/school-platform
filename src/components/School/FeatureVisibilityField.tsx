@@ -18,16 +18,16 @@ const FeatureVisibilityField: GroupFieldClientComponent = ({ path }) => {
       { name: 'showChiSiamo', label: 'Chi Siamo' },
       { name: 'showBlog', label: 'Blog' },
       { name: 'showEvents', label: 'Eventi' },
+      { name: 'showDocuments', label: 'Documenti' },
     ],
     professional: [
       { name: 'showProjects', label: 'Progetti (PRO)' },
       { name: 'showCalendar', label: 'Calendario (PRO)' },
       { name: 'showMenu', label: 'Mensa (PRO)' },
+      { name: 'showParentsArea', label: 'Area Riservata Genitori (PRO)' },
     ],
     enterprise: [
-      { name: 'showDocuments', label: 'Documenti (ENT)' },
       { name: 'showCommunications', label: 'Comunicazioni (ENT)' },
-      { name: 'showParentsArea', label: 'Area Riservata Genitori (ENT)' },
     ],
   }
 

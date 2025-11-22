@@ -15,7 +15,6 @@ export const planDetails = [
       'Eventi',
       'Chi siamo',
       'Gestione Documenti',
-      'Fino a 100 famiglie',
     ],
     highlighted: false,
     trialDays: 30,
@@ -33,7 +32,7 @@ export const planDetails = [
       'Gestione comunicazioni',
       'Gestione Progetti',
       'Menu settimanale',
-      'Fino a 300 famiglie',
+      'Area riservata genitori - 300 famiglie',
       // 'Personalizzazione completa',
       // 'Backup giornalieri',
     ],
@@ -51,8 +50,7 @@ export const planDetails = [
       'Tutte le funzionalità Professional',
       'Gestione fino a 3 scuole',
       'Invio comunicazioni via email',
-      'Area riservata genitori',
-      'Famiglie illimitate',
+      'Area riservata genitori - Famiglie illimitate',
       // 'API personalizzate',
       // 'Integrazioni su misura',
       // 'Account manager dedicato',
@@ -90,4 +88,43 @@ export function getPlanFromPrice(priceId: string): 'starter' | 'professional' | 
     default:
       return 'starter'
   }
+}
+
+// Plan limits configuration
+export const PLAN_LIMITS = {
+  starter: {
+    maxParents: null, // No parent area for starter
+  },
+  professional: {
+    maxParents: 1,
+  },
+  enterprise: {
+    maxParents: null, // Unlimited
+  },
+} as const
+
+/**
+ * Get the parent limit for a specific plan
+ * @param plan - The subscription plan
+ * @returns The maximum number of parents allowed, or null for unlimited
+ */
+export function getParentLimitForPlan(plan: string): number | null {
+  const planLimits = PLAN_LIMITS[plan as keyof typeof PLAN_LIMITS]
+  return planLimits?.maxParents ?? null
+}
+
+/**
+ * Check if a new parent can be added based on the current count and plan
+ * @param currentCount - Current number of parents
+ * @param plan - The subscription plan
+ * @returns True if a parent can be added, false otherwise
+ */
+export function canAddParent(currentCount: number, plan: string): boolean {
+  const limit = getParentLimitForPlan(plan)
+  // If limit is null (unlimited or no parent area), allow if it's a plan that supports parents
+  if (limit === null) {
+    // Only enterprise has unlimited parents, starter doesn't support parent area
+    return plan === 'enterprise'
+  }
+  return currentCount < limit
 }

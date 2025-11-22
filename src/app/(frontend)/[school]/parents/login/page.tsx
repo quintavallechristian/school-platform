@@ -1,26 +1,40 @@
-'use client'
-
-import { useFormState, useFormStatus } from 'react-dom'
-import { loginParent } from './action'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { useParams } from 'next/navigation'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
+import { getPayload } from 'payload'
+import config from '@payload-config'
+import { checkParentLimit } from '@/lib/check-parent-limit'
+import LoginForm from './LoginForm'
 
-function SubmitButton() {
-  const { pending } = useFormStatus()
+export default async function ParentLoginPage({
+  params,
+}: {
+  params: Promise<{ school: string }>
+}) {
+  const { school } = await params
+  const payload = await getPayload({ config })
 
-  return (
-    <Button type="submit" className="w-full" disabled={pending}>
-      {pending ? 'Accesso in corso...' : 'Accedi'}
-    </Button>
-  )
-}
+  // Get school data to check parent limit
+  let canRegister = false
+  let limitMessage: string | undefined
 
-export default function ParentLoginPage() {
-  const params = useParams()
-  const school = params.school as string
-  const [state, formAction] = useFormState(loginParent, null)
+  try {
+    const schoolQuery = await payload.find({
+      collection: 'schools',
+      where: {
+        slug: {
+          equals: school,
+        },
+      },
+    })
+
+    if (schoolQuery.docs.length > 0) {
+      const schoolData = schoolQuery.docs[0]
+      const limitCheck = await checkParentLimit(schoolData.id, payload)
+      canRegister = limitCheck.canAdd
+      limitMessage = limitCheck.message
+    }
+  } catch (error) {
+    console.error('Error checking parent limit:', error)
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center py-8">
@@ -32,23 +46,9 @@ export default function ParentLoginPage() {
           </div>
         </div>
         <div>
-          <form action={formAction} className="space-y-4">
-            <input type="hidden" name="school" value={school} />
-            <div className="space-y-2">
-              <label htmlFor="email">Email</label>
-              <Input id="email" name="email" type="email" placeholder="mario.rossi@example.com" required />
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="password">Password</label>
-              <Input id="password" name="password" type="password" required />
-            </div>
-            {state?.error && (
-              <div className="text-sm text-red-500 font-medium text-center">
-                {state.error}
-              </div>
-            )}
-            <SubmitButton />
-            <div className="text-center text-sm">
+          <LoginForm school={school} />
+          {canRegister && (
+            <div className="text-center text-sm mt-4">
               <span className="text-muted-foreground">Non hai un account? </span>
               <a
                 href={`/${school}/parents/register`}
@@ -57,7 +57,7 @@ export default function ParentLoginPage() {
                 Registrati
               </a>
             </div>
-          </form>
+          )}
         </div>
       </SpotlightCard>
     </div>

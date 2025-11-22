@@ -62,6 +62,16 @@ export async function registerParent(prevState: unknown, formData: FormData) {
 
     const schoolId = schoolQuery.docs[0].id
 
+    // Check parent limit for the school
+    const { checkParentLimit } = await import('@/lib/check-parent-limit')
+    const limitCheck = await checkParentLimit(schoolId, payload)
+    
+    if (!limitCheck.canAdd) {
+      return {
+        error: limitCheck.message || 'Impossibile completare la registrazione',
+      }
+    }
+
     // Verifica che l'email non sia già registrata come utente
     const existingUser = await payload.find({
       collection: 'users',
