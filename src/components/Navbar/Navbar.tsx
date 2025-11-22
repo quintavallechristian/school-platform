@@ -25,31 +25,6 @@ export default async function Navbar({
   schoolId?: string | number
   school?: School
 }) {
-  // Carica le pagine che devono apparire nella navbar
-  const payloadConfig = await config
-  const payload = await getPayload({ config: payloadConfig })
-
-  const pagesData = schoolId
-    ? await payload.find({
-        collection: 'pages',
-        where: {
-          and: [{ showInNavbar: { equals: true } }, { school: { equals: schoolId } }],
-        },
-        sort: 'navbarOrder',
-        limit: 20,
-      })
-    : await payload.find({
-        collection: 'pages',
-        where: {
-          showInNavbar: {
-            equals: true,
-          },
-        },
-        sort: 'navbarOrder',
-        limit: 20,
-      })
-
-  const navbarPages = pagesData.docs as Page[]
 
   // Menu items statici - filtrati in base alle impostazioni della scuola
   const staticMenuItems = [
@@ -75,11 +50,6 @@ export default async function Navbar({
 
   const menuItems = [
     ...staticMenuItems.map(({ label, href }) => ({ label, href })),
-    // Aggiungi le pagine dal CMS
-    ...navbarPages.map((page) => ({
-      label: page.title,
-      href: `${baseHref}/pagine/${page.slug}`,
-    })),
   ]
 
   return (
