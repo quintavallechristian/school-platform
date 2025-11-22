@@ -783,6 +783,45 @@ export const Pages: CollectionConfig = {
             },
           ],
         },
+        // Blocco Lista Piano Offerta Formativa
+        {
+          slug: 'educationalOfferingList',
+          labels: {
+            singular: 'Lista Piano Offerta Formativa',
+            plural: 'Liste Piano Offerta Formativa',
+          },
+          fields: [
+            {
+              name: 'title',
+              type: 'text',
+              label: 'Titolo della sezione (opzionale)',
+              admin: {
+                description: 'Es: "Il Nostro Piano Offerta Formativa", "Offerta Formativa"',
+              },
+            },
+            {
+              name: 'limit',
+              type: 'number',
+              label: 'Numero di piani da mostrare',
+              defaultValue: 6,
+              min: 1,
+              max: 12,
+              required: true,
+              admin: {
+                description: 'Quanti piani offerta formativa mostrare (max 12)',
+              },
+            },
+            {
+              name: 'showViewAll',
+              type: 'checkbox',
+              label: 'Mostra pulsante "Vedi tutti"',
+              defaultValue: true,
+              admin: {
+                description: 'Mostra un pulsante per andare alla pagina piano offerta formativa completa',
+              },
+            },
+          ],
+        },
         // Blocco Comunicazioni
         {
           slug: 'communications',

@@ -107,6 +107,23 @@ export async function getSchoolProjects(schoolId: string | number, limit = 10, p
 }
 
 /**
+ * Ottiene tutti i piani offerta formativa di una scuola
+ */
+export async function getSchoolEducationalOfferings(schoolId: string | number, limit = 10, page = 1) {
+  const payload = await getPayload({ config: configPromise })
+
+  return await payload.find({
+    collection: 'educational-offerings',
+    where: {
+      school: { equals: schoolId },
+    },
+    sort: '-createdAt',
+    limit,
+    page,
+  })
+}
+
+/**
  * Ottiene le comunicazioni attive di una scuola
  */
 export async function getSchoolCommunications(
@@ -504,6 +521,57 @@ export async function getSchoolProjectById(schoolId: string | number, projectId:
 }
 
 /**
+ * Ottiene un piano offerta formativa specifico di una scuola per ID
+ */
+export async function getSchoolEducationalOffering(schoolId: string | number, offeringId: string | number) {
+  const payload = await getPayload({ config: configPromise })
+
+  try {
+    const offering = await payload.findByID({
+      collection: 'educational-offerings',
+      id: offeringId,
+    })
+
+    // Verifica che il piano offerta formativa appartenga alla scuola
+    const offeringSchoolId =
+      offering.school && typeof offering.school === 'object' ? offering.school.id : offering.school
+
+    if (offering && offeringSchoolId === schoolId) {
+      return offering
+    }
+
+    return null
+  } catch (_error) {
+    return null
+  }
+}
+
+/**
+ * Ottiene un piano offerta formativa specifico di una scuola per ID (alias per compatibilità)
+ */
+export async function getSchoolEducationalOfferingById(schoolId: string | number, offeringId: string | number) {
+  return getSchoolEducationalOffering(schoolId, offeringId)
+}
+
+/**
+ * Ottiene il piano offerta formativa attivo di una scuola
+ */
+export async function getSchoolActiveEducationalOffering(schoolId: string | number) {
+  const payload = await getPayload({ config: configPromise })
+
+  const result = await payload.find({
+    collection: 'educational-offerings',
+    where: {
+      and: [{ school: { equals: schoolId } }, { isActive: { equals: true } }],
+    },
+    limit: 1,
+    sort: '-createdAt',
+  })
+
+  return result.docs[0] || null
+}
+
+/**
  * Verifica se una feature è abilitata per una scuola
  */
 export function isFeatureEnabled(
@@ -512,6 +580,7 @@ export function isFeatureEnabled(
     | 'blog'
     | 'events'
     | 'projects'
+    | 'educationalOfferings'
     | 'communications'
     | 'calendar'
     | 'menu'
@@ -529,6 +598,7 @@ export function isFeatureEnabled(
     blog: school.featureVisibility.showBlog,
     events: school.featureVisibility.showEvents,
     projects: school.featureVisibility.showProjects,
+    educationalOfferings: school.featureVisibility.showEducationalOfferings,
     communications: school.featureVisibility.showCommunications,
     calendar: school.featureVisibility.showCalendar,
     menu: school.featureVisibility.showMenu,
@@ -549,6 +619,7 @@ export function getEnabledFeatures(school: School): string[] {
     'blog',
     'events',
     'projects',
+    'educationalOfferings',
     'communications',
     'calendar',
     'menu',

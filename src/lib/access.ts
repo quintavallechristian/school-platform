@@ -275,6 +275,7 @@ export const isFeatureEnabledForUser = async ({
     | 'showBlog'
     | 'showEvents'
     | 'showProjects'
+    | 'showEducationalOfferings'
     | 'showCalendar'
     | 'showMenu'
     | 'showDocuments'

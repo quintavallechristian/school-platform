@@ -31,6 +31,7 @@ export const planDetails = [
       'Calendario scolastico',
       'Gestione comunicazioni',
       'Gestione Progetti',
+      'Piano Offerta Formativa',
       'Menu settimanale',
       'Area riservata genitori - 300 famiglie',
       // 'Personalizzazione completa',

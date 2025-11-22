@@ -13,6 +13,7 @@ import { Media } from './collections/Media'
 import { Articles } from './collections/Articles'
 import { Events } from './collections/Events'
 import { Projects } from './collections/Projects'
+import { EducationalOfferings } from './collections/EducationalOfferings'
 import { Teachers } from './collections/Teachers'
 import { Menu } from './collections/Menu'
 import { Communications } from './collections/Communications'
@@ -54,6 +55,7 @@ export default buildConfig({
     Teachers,
     Events,
     Projects,
+    EducationalOfferings,
     CalendarDays,
     Menu,
     // Comunicazioni scuola-famiglia

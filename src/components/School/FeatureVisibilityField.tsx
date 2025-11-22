@@ -22,6 +22,7 @@ const FeatureVisibilityField: GroupFieldClientComponent = ({ path }) => {
     ],
     professional: [
       { name: 'showProjects', label: 'Progetti (PRO)' },
+      { name: 'showEducationalOfferings', label: 'Piano Offerta Formativa (PRO)' },
       { name: 'showCalendar', label: 'Calendario (PRO)' },
       { name: 'showMenu', label: 'Mensa (PRO)' },
       { name: 'showParentsArea', label: 'Area Riservata Genitori (PRO)' },

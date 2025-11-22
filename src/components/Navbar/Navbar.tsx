@@ -29,6 +29,11 @@ export default async function Navbar({
     { label: 'Blog', href: `${baseHref}/blog`, feature: 'blog' as const },
     { label: 'Eventi', href: `${baseHref}/eventi`, feature: 'events' as const },
     { label: 'Progetti', href: `${baseHref}/progetti`, feature: 'projects' as const },
+    {
+      label: 'Piano Offerta Formativa',
+      href: `${baseHref}/piano-offerta-formativa`,
+      feature: 'educationalOfferings' as const,
+    },
     { label: 'Calendario', href: `${baseHref}/calendario`, feature: 'calendar' as const },
     {
       label: 'Comunicazioni',

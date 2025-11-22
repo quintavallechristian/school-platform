@@ -75,6 +75,7 @@ export interface Config {
     teachers: Teacher;
     events: Event;
     projects: Project;
+    'educational-offerings': EducationalOffering;
     'calendar-days': CalendarDay;
     menu: Menu;
     documents: Document;
@@ -105,6 +106,7 @@ export interface Config {
     teachers: TeachersSelect<false> | TeachersSelect<true>;
     events: EventsSelect<false> | EventsSelect<true>;
     projects: ProjectsSelect<false> | ProjectsSelect<true>;
+    'educational-offerings': EducationalOfferingsSelect<false> | EducationalOfferingsSelect<true>;
     'calendar-days': CalendarDaysSelect<false> | CalendarDaysSelect<true>;
     menu: MenuSelect<false> | MenuSelect<true>;
     documents: DocumentsSelect<false> | DocumentsSelect<true>;
@@ -238,6 +240,7 @@ export interface School {
     showBlog?: boolean | null;
     showEvents?: boolean | null;
     showProjects?: boolean | null;
+    showEducationalOfferings?: boolean | null;
     showCalendar?: boolean | null;
     showMenu?: boolean | null;
     showDocuments?: boolean | null;
@@ -1125,6 +1128,48 @@ export interface Project {
   gradientOverlay?: boolean | null;
   /**
    * Collega una galleria di immagini a questo progetto (opzionale)
+   */
+  gallery?: (string | null) | Gallery;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "educational-offerings".
+ */
+export interface EducationalOffering {
+  id: string;
+  /**
+   * Scuola a cui appartiene questo piano offerta formativa
+   */
+  school?: (string | null) | School;
+  /**
+   * Se attivo, questo piano offerta formativa sarà visibile come principale
+   */
+  isActive?: boolean | null;
+  title: string;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  cover?: (string | null) | Media;
+  /**
+   * Se abilitato, aggiunge un overlay gradiente sopra l'immagine di copertina per migliorare la leggibilità del testo nell'hero
+   */
+  gradientOverlay?: boolean | null;
+  /**
+   * Collega una galleria di immagini a questo piano offerta formativa (opzionale)
    */
   gallery?: (string | null) | Gallery;
   updatedAt: string;
@@ -2051,6 +2096,23 @@ export interface Page {
           }
         | {
             /**
+             * Es: "Il Nostro Piano Offerta Formativa", "Offerta Formativa"
+             */
+            title?: string | null;
+            /**
+             * Quanti piani offerta formativa mostrare (max 12)
+             */
+            limit: number;
+            /**
+             * Mostra un pulsante per andare alla pagina piano offerta formativa completa
+             */
+            showViewAll?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'educationalOfferingList';
+          }
+        | {
+            /**
              * Es: "Comunicazioni Importanti", "Avvisi"
              */
             title?: string | null;
@@ -2161,6 +2223,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'projects';
         value: string | Project;
+      } | null)
+    | ({
+        relationTo: 'educational-offerings';
+        value: string | EducationalOffering;
       } | null)
     | ({
         relationTo: 'calendar-days';
@@ -2307,6 +2373,7 @@ export interface SchoolsSelect<T extends boolean = true> {
         showBlog?: T;
         showEvents?: T;
         showProjects?: T;
+        showEducationalOfferings?: T;
         showCalendar?: T;
         showMenu?: T;
         showDocuments?: T;
@@ -2631,6 +2698,21 @@ export interface EventsSelect<T extends boolean = true> {
  */
 export interface ProjectsSelect<T extends boolean = true> {
   school?: T;
+  title?: T;
+  description?: T;
+  cover?: T;
+  gradientOverlay?: T;
+  gallery?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "educational-offerings_select".
+ */
+export interface EducationalOfferingsSelect<T extends boolean = true> {
+  school?: T;
+  isActive?: T;
   title?: T;
   description?: T;
   cover?: T;
@@ -3213,6 +3295,15 @@ export interface PagesSelect<T extends boolean = true> {
               blockName?: T;
             };
         projectList?:
+          | T
+          | {
+              title?: T;
+              limit?: T;
+              showViewAll?: T;
+              id?: T;
+              blockName?: T;
+            };
+        educationalOfferingList?:
           | T
           | {
               title?: T;

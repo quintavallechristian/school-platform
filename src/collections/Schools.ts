@@ -374,6 +374,12 @@ export const Schools: CollectionConfig = {
                   defaultValue: false,
                 },
                 {
+                  name: 'showEducationalOfferings',
+                  type: 'checkbox',
+                  label: 'Mostra Piano Offerta Formativa',
+                  defaultValue: false,
+                },
+                {
                   name: 'showCalendar',
                   type: 'checkbox',
                   label: 'Mostra Calendario',
