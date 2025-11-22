@@ -26,6 +26,7 @@ export const Documents: CollectionConfig = {
           clientProps: {
             requiredPlan: 'professional',
             featureName: 'Documenti',
+            featureFlag: 'showDocuments',
           },
         },
       ],

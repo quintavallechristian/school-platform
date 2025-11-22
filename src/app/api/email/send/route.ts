@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Brevo from '@getbrevo/brevo';
+import { sendEmail } from '@/lib/email-service';
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,27 +12,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Configura il client Brevo
-    const apiInstance = new Brevo.TransactionalEmailsApi();
-    apiInstance.setApiKey(
-      Brevo.TransactionalEmailsApiApiKeys.apiKey,
-      process.env.BREVO_API_KEY as string
-    );
+    // Send email using centralized service
+    await sendEmail(to, subject, html);
 
-    // Prepara la email
-    const sendSmtpEmail = new Brevo.SendSmtpEmail();
-    sendSmtpEmail.to = [{ email: to }];
-    sendSmtpEmail.sender = {
-      email: process.env.BREVO_SENDER_EMAIL ?? 'no-reply@tua-app.com',
-      name: process.env.BREVO_SENDER_NAME ?? 'La Mia App',
-    };
-    sendSmtpEmail.subject = subject;
-    sendSmtpEmail.htmlContent = html;
-
-    // Invia l'email
-    const response = await apiInstance.sendTransacEmail(sendSmtpEmail);
-
-    return NextResponse.json({ success: true, response });
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error sending email:', error);
     return NextResponse.json(

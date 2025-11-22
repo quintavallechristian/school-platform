@@ -19,10 +19,20 @@ export const ChiSiamo: CollectionConfig = {
     group: 'Scuola',
     description: 'Configura i contenuti della pagina Chi Siamo',
     defaultColumns: ['name', 'school', 'isActive'],
-    // Note: admin.hidden non supporta funzioni async correttamente
-    // Per ora mostriamo sempre la collezione, il controllo dei feature flags
-    // verrà fatto tramite access control
     hidden: false,
+    components: {
+      beforeList: [
+        {
+          path: '@/components/UpgradeMessage',
+          clientProps: {
+            requiredPlan: 'starter',
+            featureName: 'Chi Siamo',
+            featureFlag: 'showChiSiamo',
+          },
+        },
+      ],
+    },
+
   },
   access: {
     read: tenantRead,

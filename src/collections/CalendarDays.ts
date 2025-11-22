@@ -25,6 +25,7 @@ export const CalendarDays: CollectionConfig = {
           clientProps: {
             requiredPlan: 'professional',
             featureName: 'Calendario',
+            featureFlag: 'showCalendar',
           },
         },
       ],

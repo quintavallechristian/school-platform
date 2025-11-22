@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="it">
+  <body style="margin:0;padding:0;background:#f9fafb;font-family:sans-serif;">
+    <div style="max-width:600px;margin:0 auto;padding:20px;">
+      <div style="text-align:center;padding:30px 0 20px 0;">
+        <h1 style="margin:0;font-size:24px;color:#1f2937;">🏫 {{schoolName}}</h1>
+        <p style="margin:5px 0 0;color:#6b7280;font-size:14px;">Comunicazioni di Servizio</p>
+      </div>
+
+      <div style="background:white;border-radius:12px;border:1px solid #e5e7eb;">
+        <div style="background:{{priorityColor}};padding:12px 20px;">
+          <span style="color:white;font-weight:600;font-size:13px;">
+            {{priorityEmoji}}
+            Priorità: {{priorityLabel}}
+          </span>
+        </div>
+
+        <div style="padding:30px;">
+          <h2 style="margin:0 0 20px;font-size:22px;color:#1f2937;">{{title}}</h2>
+
+          <p style="color:#4b5563;font-size:15px;line-height:1.6;">
+            È stata pubblicata una nuova comunicazione importante.
+          </p>
+
+          <div style="text-align:center;margin:30px 0;">
+            <a href="{{communicationsUrl}}"
+              style="background:#2563eb;color:white;padding:14px 32px;text-decoration:none;border-radius:8px;font-weight:600;">
+              📄 Visualizza Comunicazioni
+            </a>
+          </div>
+
+          <p style="color:#6b7280;font-size:13px;margin-top:20px;">
+            Pubblicato il {{publishedDate}}
+          </p>
+        </div>
+      </div>
+
+      <div style="text-align:center;padding:20px;">
+        <p style="color:#9ca3af;font-size:12px;">
+          Hai ricevuto questa email perché sei iscritto alle notifiche.
+        </p>
+        <a href="{{unsubscribeUrl}}" style="font-size:12px;color:#6b7280;text-decoration:underline;">
+          Annulla iscrizione
+        </a>
+      </div>
+    </div>
+  </body>
+</html>

@@ -20,6 +20,18 @@ export const Events: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'date', 'location', 'school'],
     group: 'Scuola',
+    components: {
+      beforeList: [
+        {
+          path: '@/components/UpgradeMessage',
+          clientProps: {
+            requiredPlan: 'starter',
+            featureName: 'Eventi',
+            featureFlag: 'showEvents',
+          },
+        },
+      ],
+    },
   },
   access: {
     read: tenantRead,

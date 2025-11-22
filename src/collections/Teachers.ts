@@ -18,6 +18,18 @@ export const Teachers: CollectionConfig = {
     useAsTitle: 'name',
     defaultColumns: ['name', 'subject', 'school'],
     group: 'Scuola',
+    components: {
+      beforeList: [
+        {
+          path: '@/components/UpgradeMessage',
+          clientProps: {
+            requiredPlan: 'starter',
+            featureName: 'Chi Siamo',
+            featureFlag: 'showChiSiamo',
+          },
+        },
+      ],
+    },
   },
   access: {
     read: tenantRead,

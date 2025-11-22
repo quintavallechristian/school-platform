@@ -18,6 +18,18 @@ export const Articles: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'publishedAt', 'school'],
     group: 'Contenuti',
+    components: {
+      beforeList: [
+        {
+          path: '@/components/UpgradeMessage',
+          clientProps: {
+            requiredPlan: 'starter',
+            featureName: 'Articoli',
+            featureFlag: 'showArticles',
+          },
+        },
+      ],
+    },
   },
   access: {
     read: tenantRead,

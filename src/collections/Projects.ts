@@ -25,6 +25,7 @@ export const Projects: CollectionConfig = {
           clientProps: {
             requiredPlan: 'professional',
             featureName: 'Progetti',
+            featureFlag: 'showProjects',
           },
         },
       ],

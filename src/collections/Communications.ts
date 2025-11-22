@@ -1,5 +1,5 @@
 import { CollectionConfig } from 'payload'
-import * as Brevo from '@getbrevo/brevo'
+import { sendCommunicationEmail, getPriorityConfig, CommunicationPriority } from '../lib/email-service'
 import {
   tenantRead,
   tenantCreate,
@@ -8,19 +8,6 @@ import {
   assignSchoolBeforeChange,
   getSchoolField,
 } from '../lib/access'
-
-// Inizializza Brevo solo se API key presente
-let brevo: Brevo.TransactionalEmailsApi | null = null
-if (process.env.BREVO_API_KEY) {
-  brevo = new Brevo.TransactionalEmailsApi()
-  brevo.setApiKey(
-    Brevo.TransactionalEmailsApiApiKeys.apiKey,
-    process.env.BREVO_API_KEY
-  )
-}
-
-// Type for communication priority
-type CommunicationPriority = 'low' | 'normal' | 'high' | 'urgent'
 
 export const Communications: CollectionConfig = {
   slug: 'communications',
@@ -40,6 +27,7 @@ export const Communications: CollectionConfig = {
           clientProps: {
             requiredPlan: 'professional',
             featureName: 'Comunicazioni',
+            featureFlag: 'showCommunications',
           },
         },
       ],
@@ -57,7 +45,6 @@ export const Communications: CollectionConfig = {
       async ({ doc, operation, req }) => {
         if (operation !== 'create') return
         if (!doc.isActive) return
-        if (!brevo) return
 
         try {
           // Trova iscritti della stessa scuola
@@ -82,95 +69,44 @@ export const Communications: CollectionConfig = {
           )
 
           const priority = doc.priority as CommunicationPriority
+          const priorityInfo = getPriorityConfig(priority)
 
-          const priorityEmoji: Record<CommunicationPriority, string> = {
-            low: 'ℹ️',
-            normal: '🔔',
-            high: '⚠️',
-            urgent: '🚨',
-          }
+          const publishedDate = new Date(doc.publishedAt).toLocaleDateString('it-IT', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+          })
 
-          const priorityLabels: Record<CommunicationPriority, string> = {
-            low: 'Bassa',
-            normal: 'Normale',
-            high: 'Alta',
-            urgent: 'URGENTE',
-          }
+          // Fetch school data to get domain and name
+          const schoolId = typeof doc.school === 'string' ? doc.school : doc.school.id
+          const school = await req.payload.findByID({
+            collection: 'schools',
+            id: schoolId,
+          })
 
-          const priorityColors: Record<CommunicationPriority, string> = {
-            low: '#3b82f6',
-            normal: '#6b7280',
-            high: '#f97316',
-            urgent: '#ef4444',
-          }
-
-          const emailHtml = (unsubscribeUrl: string) => `
-            <!DOCTYPE html>
-            <html lang="it">
-              <body style="margin:0;padding:0;background:#f9fafb;font-family:sans-serif;">
-                <div style="max-width:600px;margin:0 auto;padding:20px;">
-                  <div style="text-align:center;padding:30px 0 20px 0;">
-                    <h1 style="margin:0;font-size:24px;color:#1f2937;">🏫 Scuola</h1>
-                    <p style="margin:5px 0 0;color:#6b7280;font-size:14px;">Comunicazioni di Servizio</p>
-                  </div>
-
-                  <div style="background:white;border-radius:12px;border:1px solid #e5e7eb;">
-                    <div style="background:${priorityColors[priority]};padding:12px 20px;">
-                      <span style="color:white;font-weight:600;font-size:13px;">
-                        ${priorityEmoji[priority]}
-                        Priorità: ${priorityLabels[priority]}
-                      </span>
-                    </div>
-
-                    <div style="padding:30px;">
-                      <h2 style="margin:0 0 20px;font-size:22px;color:#1f2937;">${doc.title}</h2>
-
-                      <p style="color:#4b5563;font-size:15px;line-height:1.6;">
-                        È stata pubblicata una nuova comunicazione importante.
-                      </p>
-
-                      <div style="text-align:center;margin:30px 0;">
-                        <a href="${process.env.NEXT_PUBLIC_SERVER_URL}/comunicazioni"
-                          style="background:#2563eb;color:white;padding:14px 32px;text-decoration:none;border-radius:8px;font-weight:600;">
-                          📄 Visualizza Comunicazioni
-                        </a>
-                      </div>
-
-                      <p style="color:#6b7280;font-size:13px;margin-top:20px;">
-                        Pubblicato il ${new Date(doc.publishedAt).toLocaleDateString('it-IT', {
-                          day: '2-digit',
-                          month: 'long',
-                          year: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div style="text-align:center;padding:20px;">
-                    <p style="color:#9ca3af;font-size:12px;">
-                      Hai ricevuto questa email perché sei iscritto alle notifiche.
-                    </p>
-                    <a href="${unsubscribeUrl}" style="font-size:12px;color:#6b7280;text-decoration:underline;">
-                      Annulla iscrizione
-                    </a>
-                  </div>
-                </div>
-              </body>
-            </html>
-          `
+          const schoolDomain = school.slug || 'scuola'
+          const schoolName = school.name || 'Scuola'
 
           // Invia a tutti gli iscritti
           const sendPromises = subscribers.docs.map(async (subscriber) => {
             const unsubscribeUrl = `${process.env.NEXT_PUBLIC_SERVER_URL}/api/unsubscribe?token=${subscriber.unsubscribeToken}`
 
-            return brevo!.sendTransacEmail({
-              sender: { name: process.env.BREVO_SENDER_NAME!, email: process.env.BREVO_SENDER_EMAIL! },
-              to: [{ email: subscriber.email }],
-              subject: `${priorityEmoji[priority]} Nuova comunicazione: ${doc.title}`,
-              htmlContent: emailHtml(unsubscribeUrl),
-            })
+            return sendCommunicationEmail(
+              subscriber.email,
+              {
+                priorityColor: priorityInfo.color,
+                priorityEmoji: priorityInfo.emoji,
+                priorityLabel: priorityInfo.label,
+                title: doc.title,
+                publishedDate,
+                communicationsUrl: `${process.env.NEXT_PUBLIC_SERVER_URL}/${schoolDomain}/comunicazioni`,
+                unsubscribeUrl,
+                schoolName,
+              },
+              `${priorityInfo.emoji} Nuova comunicazione: ${doc.title}`
+            )
           })
 
           await Promise.allSettled(sendPromises)

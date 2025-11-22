@@ -81,6 +81,7 @@ export const Menu: CollectionConfig = {
           clientProps: {
             requiredPlan: 'professional',
             featureName: 'Menù Mensa',
+            featureFlag: 'showMenu',
           },
         },
       ],

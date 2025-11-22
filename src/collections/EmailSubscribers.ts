@@ -18,6 +18,18 @@ export const EmailSubscribers: CollectionConfig = {
     defaultColumns: ['email', 'isActive', 'subscribedAt', 'school'],
     description: 'Gestisci gli iscritti alle notifiche email delle comunicazioni',
     group: 'Comunicazioni scuola-famiglia',
+    components: {
+      beforeList: [
+        {
+          path: '@/components/UpgradeMessage',
+          clientProps: {
+            requiredPlan: 'professional',
+            featureName: 'Comunicazioni',
+            featureFlag: 'showCommunications',
+          },
+        },
+      ],
+    },
   },
   access: {
     read: tenantRead,

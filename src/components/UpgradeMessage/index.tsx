@@ -7,55 +7,82 @@ import Link from 'next/link'
 interface UpgradeMessageProps {
   requiredPlan: 'professional' | 'enterprise'
   featureName: string
+  featureFlag?: string // Nome del campo nella scuola che controlla se la funzionalità è abilitata (es. 'showParentsArea')
 }
 
-export const UpgradeMessage: React.FC<UpgradeMessageProps> = ({ requiredPlan, featureName }) => {
+type MessageType = 'none' | 'upgrade' | 'disabled'
+
+export const UpgradeMessage: React.FC<UpgradeMessageProps> = ({ 
+  requiredPlan, 
+  featureName,
+  featureFlag 
+}) => {
   const { user } = useAuth()
-  const [shouldShow, setShouldShow] = useState(false)
+  const [messageType, setMessageType] = useState<MessageType>('none')
   const [currentPlan, setCurrentPlan] = useState<string>('')
+  const [schoolId, setSchoolId] = useState<string>('')
 
   useEffect(() => {
-    const checkPlan = async () => {
+    const checkPlanAndFeature = async () => {
+      console.log('Controllando piano e funzionalità')
       if (!user || !user.schools || user.schools.length === 0) {
         return
       }
 
       // Se l'utente è super-admin, non mostrare il messaggio
       if (user.role === 'super-admin') {
-        setShouldShow(false)
+        setMessageType('none')
         return
       }
 
       try {
         // Ottieni la scuola dell'utente
-        const schoolId = typeof user.schools[0] === 'string' 
+        const currentSchoolId = typeof user.schools[0] === 'string' 
           ? user.schools[0] 
           : user.schools[0].id
 
-        const response = await fetch(`/api/schools/${schoolId}`)
+        setSchoolId(currentSchoolId)
+
+        const response = await fetch(`/api/schools/${currentSchoolId}`)
         const school = await response.json()
 
         const plan = school?.subscription?.plan || 'starter'
         setCurrentPlan(plan)
 
-        // Mostra il messaggio solo se il piano corrente è inferiore a quello richiesto
+        // Controlla il piano
         const planHierarchy = { starter: 0, professional: 1, enterprise: 2 }
         const currentPlanLevel = planHierarchy[plan as keyof typeof planHierarchy] || 0
         const requiredPlanLevel = planHierarchy[requiredPlan]
 
+        // Se il piano non è adeguato, mostra il messaggio di upgrade
+        if (currentPlanLevel < requiredPlanLevel) {
+          setMessageType('upgrade')
+          return
+        }
 
-        setShouldShow(currentPlanLevel < requiredPlanLevel)
+        // Se il piano è adeguato ma c'è un featureFlag da controllare
+        if (featureFlag) {
+          const isFeatureEnabled = school?.featureVisibility?.[featureFlag]
+          
+          // Se la funzionalità è disabilitata, mostra il messaggio di abilitazione
+          if (!isFeatureEnabled) {
+            setMessageType('disabled')
+            return
+          }
+        }
+
+        // Altrimenti non mostrare nessun messaggio
+        setMessageType('none')
       } catch (error) {
-        console.error('Error checking plan:', error)
+        console.error('Error checking plan and feature:', error)
       }
     }
-
-    checkPlan()
-  }, [user, requiredPlan])
+    checkPlanAndFeature()
+  }, [user, requiredPlan, featureFlag])
 
   useEffect(() => {
     // Nascondi il pulsante "Create New" usando JavaScript DOM manipulation
-    if (shouldShow) {
+    if (messageType !== 'none') {
       const hideButton = () => {
         // Cerca il pulsante "Crea Nuovo" in vari modi
         const buttons = document.querySelectorAll('a, button')
@@ -86,9 +113,9 @@ export const UpgradeMessage: React.FC<UpgradeMessageProps> = ({ requiredPlan, fe
         observer.disconnect()
       }
     }
-  }, [shouldShow])
+  }, [messageType])
 
-  if (!shouldShow) {
+  if (messageType === 'none') {
     return null
   }
 
@@ -97,46 +124,88 @@ export const UpgradeMessage: React.FC<UpgradeMessageProps> = ({ requiredPlan, fe
     enterprise: 'Enterprise',
   }
 
-  return (
-    <div
-      style={{
+  // Messaggio per piano inadeguato
+  if (messageType === 'upgrade') {
+    return (
+      <div
+        style={{
+          padding: '2rem',
+          margin: '2rem 4rem',
+          backgroundColor: '#FEF3C7',
+          border: '2px solid #F59E0B',
+          borderRadius: '8px',
+          textAlign: 'center',
+        }}
+      >
+        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔒</div>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#92400E' }}>
+          Funzionalità non disponibile
+        </h2>
+        <p style={{ fontSize: '1rem', color: '#78350F', marginBottom: '1rem' }}>
+          La funzionalità <strong>{featureName}</strong> richiede il piano <strong>{planNames[requiredPlan]}</strong>.
+        </p>
+        <p style={{ fontSize: '0.875rem', color: '#78350F', marginBottom: '1.5rem' }}>
+          Il tuo piano attuale: <strong>{currentPlan.charAt(0).toUpperCase() + currentPlan.slice(1)}</strong>
+        </p>
+        <Link
+          href="/admin/collections/schools"
+          style={{
+            display: 'inline-block',
+            padding: '0.75rem 1.5rem',
+            backgroundColor: '#F59E0B',
+            color: 'white',
+            borderRadius: '6px',
+            textDecoration: 'none',
+            fontWeight: '600',
+            transition: 'background-color 0.2s',
+          }}
+          onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#D97706')}
+          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#F59E0B')}
+        >
+          Aggiorna al piano {planNames[requiredPlan]}
+        </Link>
+      </div>
+    )
+  }
+  else if(messageType === 'disabled') {
+    return (
+      <div
+        style={{
         padding: '2rem',
         margin: '2rem 4rem',
-        backgroundColor: '#FEF3C7',
-        border: '2px solid #F59E0B',
+        backgroundColor: '#DBEAFE',
+        border: '2px solid #3B82F6',
         borderRadius: '8px',
         textAlign: 'center',
       }}
     >
-      <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔒</div>
-      <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#92400E' }}>
-        Funzionalità non disponibile
+      <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚙️</div>
+      <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#1E40AF' }}>
+        Funzionalità disabilitata
       </h2>
-      <p style={{ fontSize: '1rem', color: '#78350F', marginBottom: '1rem' }}>
-        La funzionalità <strong>{featureName}</strong> richiede il piano <strong>{planNames[requiredPlan]}</strong>.
-      </p>
-      <p style={{ fontSize: '0.875rem', color: '#78350F', marginBottom: '1.5rem' }}>
-        Il tuo piano attuale: <strong>{currentPlan.charAt(0).toUpperCase() + currentPlan.slice(1)}</strong>
+      <p style={{ fontSize: '1rem', color: '#1E3A8A', marginBottom: '1.5rem' }}>
+        Abilitala nelle impostazioni scuola per poterla usare.
       </p>
       <Link
-        href="/admin/collections/schools"
+        href={`/admin/collections/schools/${schoolId}`}
         style={{
           display: 'inline-block',
           padding: '0.75rem 1.5rem',
-          backgroundColor: '#F59E0B',
+          backgroundColor: '#3B82F6',
           color: 'white',
           borderRadius: '6px',
           textDecoration: 'none',
           fontWeight: '600',
           transition: 'background-color 0.2s',
         }}
-        onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#D97706')}
-        onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#F59E0B')}
+        onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#2563EB')}
+        onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#3B82F6')}
       >
-        Aggiorna al piano {planNames[requiredPlan]}
+        Vai alle impostazioni scuola
       </Link>
     </div>
   )
+}
 }
 
 export default UpgradeMessage

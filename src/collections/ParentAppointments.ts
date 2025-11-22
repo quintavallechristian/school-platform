@@ -21,6 +21,7 @@ export const ParentAppointments: CollectionConfig = {
           clientProps: {
             requiredPlan: 'professional',
             featureName: 'Area Genitori',
+            featureFlag: 'showParentsArea',
           },
         },
       ],

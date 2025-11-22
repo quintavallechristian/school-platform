@@ -110,6 +110,17 @@ export function PricingSection() {
           ))}
         </div>
 
+        <div className="text-center mt-16 mb-8">
+          <p className="text-lg text-muted-foreground mb-4">
+            Hai altre esigenze? Contattaci per capire come soddisfarle
+          </p>
+          <Link href="/contact">
+            <Button variant="outline" size="lg">
+              Contattaci
+            </Button>
+          </Link>
+        </div>
+
         <p className="text-center text-sm text-muted-foreground mt-12">
           Tutti i piani includono aggiornamenti gratuiti e supporto tecnico. <br />
           Puoi annullare in qualsiasi momento senza costi aggiuntivi.

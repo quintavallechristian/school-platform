@@ -23,6 +23,7 @@ export const ChildUpdates: CollectionConfig = {
           clientProps: {
             requiredPlan: 'professional',
             featureName: 'Area Genitori',
+            featureFlag: 'showParentsArea',
           },
         },
       ],
