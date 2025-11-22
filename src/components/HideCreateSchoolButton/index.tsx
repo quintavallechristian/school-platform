@@ -105,54 +105,7 @@ export const HideCreateSchoolButton: React.FC = () => {
     return null
   }
 
-  return (
-    <div
-      style={{
-        padding: '2rem',
-        margin: '0 0 2rem 0',
-        backgroundColor: '#FEF3C7',
-        border: '2px solid #F59E0B',
-        borderRadius: '8px',
-        textAlign: 'center',
-      }}
-    >
-      <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔒</div>
-      <h2
-        style={{
-          fontSize: '1.5rem',
-          fontWeight: 'bold',
-          marginBottom: '0.5rem',
-          color: '#92400E',
-        }}
-      >
-        Creazione scuole non disponibile
-      </h2>
-      <p style={{ fontSize: '1rem', color: '#78350F', marginBottom: '1rem' }}>
-        Per creare nuove scuole devi avere almeno una scuola con piano{' '}
-        <strong>Enterprise</strong>.
-      </p>
-      <p style={{ fontSize: '0.875rem', color: '#78350F', marginBottom: '1.5rem' }}>
-        Aggiorna il piano di una delle tue scuole per sbloccare questa funzionalità.
-      </p>
-      <Link
-        href="/admin/collections/schools"
-        style={{
-          display: 'inline-block',
-          padding: '0.75rem 1.5rem',
-          backgroundColor: '#F59E0B',
-          color: 'white',
-          borderRadius: '6px',
-          textDecoration: 'none',
-          fontWeight: '600',
-          transition: 'background-color 0.2s',
-        }}
-        onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#D97706')}
-        onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#F59E0B')}
-      >
-        Gestisci le tue scuole
-      </Link>
-    </div>
-  )
+  return '';
 }
 
 export default HideCreateSchoolButton

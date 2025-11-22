@@ -534,7 +534,7 @@ export const Schools: CollectionConfig = {
 
             if (!hasEnterprisePlan) {
               throw new Error(
-                'Per creare nuove scuole devi avere almeno una scuola con piano Enterprise.',
+                'È richiesto il piano Enterprise per gestire più di una scuola.',
               )
             }
           }
