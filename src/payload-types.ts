@@ -1549,22 +1549,10 @@ export interface Communication {
     [k: string]: unknown;
   };
   priority: 'low' | 'normal' | 'high' | 'urgent';
-  /**
-   * Solo le comunicazioni attive vengono mostrate e inviano notifiche
-   */
   isActive?: boolean | null;
   publishedAt: string;
-  /**
-   * Dopo questa data la comunicazione non verrà più mostrata
-   */
   expiresAt?: string | null;
-  /**
-   * Collega un articolo per maggiori dettagli (opzionale)
-   */
   linkedArticle?: (string | null) | Article;
-  /**
-   * Collega un evento per maggiori dettagli (opzionale)
-   */
   linkedEvent?: (string | null) | Event;
   updatedAt: string;
   createdAt: string;

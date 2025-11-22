@@ -20,6 +20,7 @@
     "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts"
   },
   "dependencies": {
+    "@getbrevo/brevo": "^3.0.1",
     "@payloadcms/db-mongodb": "3.62.1",
     "@payloadcms/next": "3.62.1",
     "@payloadcms/richtext-lexical": "^3.62.1",
