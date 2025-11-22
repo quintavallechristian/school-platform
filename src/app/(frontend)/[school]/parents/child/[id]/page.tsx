@@ -73,18 +73,9 @@ export default async function ChildDetailPage({
   const appointments = await payload.find({
     collection: 'parent-appointments',
     where: {
-      and: [
-        {
-          child: {
-            equals: id,
-          },
-        },
-        {
-          parent: {
-            equals: user.id,
-          },
-        },
-      ],
+      child: {
+        equals: id,
+      },
     },
     sort: '-date',
     limit: 20,

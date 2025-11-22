@@ -752,9 +752,9 @@ export interface Article {
 export interface User {
   id: string;
   /**
-   * Super Admin: accesso globale | School Admin: gestisce la propria scuola | Editor: può modificare contenuti | Viewer: solo lettura | Genitore: area riservata
+   * Amministratore: gestisce la propria scuola | Editor: può modificare contenuti | Genitore: area riservata
    */
-  role?: ('super-admin' | 'school-admin' | 'editor' | 'viewer' | 'parent') | null;
+  role?: ('super-admin' | 'school-admin' | 'editor' | 'parent') | null;
   /**
    * Scuole di appartenenza
    */
