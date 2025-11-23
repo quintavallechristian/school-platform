@@ -231,7 +231,7 @@ Ogni scuola può avere un piano:
 | Piano | Utenti | Storage | Custom Domain |
 |-------|--------|---------|---------------|
 | Free | 5 | 1 GB | ❌ |
-| Basic | 10 | 5 GB | Subdomain |
+| Starter | 10 | 5 GB | Subdomain |
 | Premium | 25 | 20 GB | ✅ |
 | Enterprise | Unlimited | Custom | ✅ Multiple |
 

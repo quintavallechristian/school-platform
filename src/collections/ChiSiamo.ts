@@ -6,6 +6,7 @@ import {
   tenantDelete,
   tenantRead,
   tenantUpdate,
+  filterBySchool,
 } from '../lib/access'
 import { shapeDividerFields } from '../lib/blocks'
 
@@ -120,6 +121,7 @@ export const ChiSiamo: CollectionConfig = {
             description: "Immagine opzionale per lo sfondo dell'hero",
             condition: (data, siblingData) => siblingData?.showHero === true,
           },
+          filterOptions: filterBySchool,
         },
         {
           name: 'parallax',

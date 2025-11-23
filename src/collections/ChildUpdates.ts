@@ -4,6 +4,7 @@ import {
   tenantDelete,
   assignSchoolBeforeChange,
   getSchoolField,
+  filterBySchool,
 } from '../lib/access'
 
 export const ChildUpdates: CollectionConfig = {
@@ -161,6 +162,7 @@ export const ChildUpdates: CollectionConfig = {
       admin: {
         description: 'Foto delle attività svolte',
       },
+      filterOptions: filterBySchool,
     },
     {
       name: 'publishedAt',

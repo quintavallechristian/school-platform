@@ -1466,29 +1466,31 @@ export interface Document {
   /**
    * Aggiungi uno o più documenti per questa sezione
    */
-  files: {
-    /**
-     * PDF, DOC, XLS, o altri documenti
-     */
-    file: string | Media;
-    /**
-     * Nome descrittivo del documento
-     */
-    title: string;
-    /**
-     * Breve descrizione del contenuto (opzionale)
-     */
-    description?: string | null;
-    /**
-     * Es: "v1.2", "Anno Scolastico 2024/25"
-     */
-    version?: string | null;
-    /**
-     * Se attivo, questo documento verrà mostrato nella sezione "In evidenza"
-     */
-    featured?: boolean | null;
-    id?: string | null;
-  }[];
+  files?:
+    | {
+        /**
+         * PDF, DOC, XLS, o altri documenti
+         */
+        file: string | Media;
+        /**
+         * Nome descrittivo del documento
+         */
+        title: string;
+        /**
+         * Breve descrizione del contenuto (opzionale)
+         */
+        description?: string | null;
+        /**
+         * Es: "v1.2", "Anno Scolastico 2024/25"
+         */
+        version?: string | null;
+        /**
+         * Se attivo, questo documento verrà mostrato nella sezione "In evidenza"
+         */
+        featured?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
   /**
    * Numero per ordinare le sezioni (più basso = prima)
    */

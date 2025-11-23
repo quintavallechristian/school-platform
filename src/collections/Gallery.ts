@@ -6,6 +6,7 @@ import {
   tenantDelete,
   assignSchoolBeforeChange,
   getSchoolField,
+  filterBySchool,
 } from '../lib/access'
 
 export const Gallery: CollectionConfig = {
@@ -63,6 +64,7 @@ export const Gallery: CollectionConfig = {
           relationTo: 'media',
           required: true,
           label: 'Immagine',
+          filterOptions: filterBySchool,
         },
         {
           name: 'caption',

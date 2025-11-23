@@ -56,6 +56,35 @@ export const publicRead: Access = () => {
 }
 
 /**
+ * Permette lettura pubblica per utenti non autenticati (frontend)
+ * Per utenti autenticati (admin panel), filtra in base alla scuola
+ */
+export const mediaRead: Access = ({ req: { user } }) => {
+  // Se l'utente non è loggato (frontend), permetti tutto
+  if (!user) return true
+
+  // Super-admin può vedere tutto
+  if (user.role === 'super-admin') {
+    return true
+  }
+
+  // Altri utenti vedono solo i contenuti delle loro scuole
+  if (user.schools && user.schools.length > 0) {
+    // Estrai gli ID delle scuole (potrebbero essere oggetti o stringhe)
+    const schoolIds = user.schools.map((school) =>
+      typeof school === 'string' ? school : school.id,
+    )
+    return {
+      school: {
+        in: schoolIds,
+      },
+    }
+  }
+
+  return false
+}
+
+/**
  * Permette creazione solo se l'utente ha i permessi
  * School-admin ed editor possono creare contenuti
  */
@@ -197,7 +226,7 @@ export const assignSchoolBeforeChange = ({
 export const filterBySchool = ({
   user,
 }: {
-  user?: { role?: string; schools?: string[] | { id: string }[] }
+  user: any
 }) => {
   if (!user) return false
 
@@ -249,7 +278,7 @@ export const getSchoolField = (
     if (user.role === 'super-admin') return true
 
     if (user.schools && user.schools.length > 0) {
-      const schoolIds = user.schools.map((school) =>
+      const schoolIds = user.schools.map((school: any) =>
         typeof school === 'string' ? school : school.id,
     )
       return {

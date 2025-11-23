@@ -6,6 +6,7 @@ import {
   tenantDelete,
   assignSchoolBeforeChange,
   getSchoolField,
+  filterBySchool,
 } from '../lib/access'
 
 // Configurazione riutilizzabile per i shape dividers
@@ -140,6 +141,7 @@ export const Pages: CollectionConfig = {
             description: "Immagine opzionale per lo sfondo dell'hero",
             condition: (data, siblingData) => siblingData?.showHero === true,
           },
+          filterOptions: filterBySchool,
         },
         {
           name: 'parallax',
@@ -253,6 +255,7 @@ export const Pages: CollectionConfig = {
               admin: {
                 description: "Immagine opzionale per lo sfondo dell'hero",
               },
+              filterOptions: filterBySchool,
             },
             {
               name: 'parallax',
@@ -472,6 +475,7 @@ export const Pages: CollectionConfig = {
               type: 'upload',
               relationTo: 'media',
               label: 'Immagine di sfondo (opzionale)',
+              filterOptions: filterBySchool,
             },
             {
               name: 'buttons',
@@ -568,6 +572,7 @@ export const Pages: CollectionConfig = {
                   type: 'upload',
                   relationTo: 'media',
                   label: 'Immagine',
+                  filterOptions: filterBySchool,
                 },
                 {
                   name: 'link',
@@ -614,6 +619,7 @@ export const Pages: CollectionConfig = {
                   admin: {
                     description: 'PDF, DOC, XLS, o altri documenti',
                   },
+                  filterOptions: filterBySchool,
                 },
                 {
                   name: 'title',

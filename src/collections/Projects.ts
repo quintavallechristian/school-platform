@@ -6,6 +6,7 @@ import {
   tenantDelete,
   assignSchoolBeforeChange,
   getSchoolField,
+  filterBySchool,
 } from '../lib/access'
 
 export const Projects: CollectionConfig = {
@@ -44,7 +45,13 @@ export const Projects: CollectionConfig = {
     getSchoolField('Scuola a cui appartiene questo progetto'),
     { name: 'title', type: 'text', label: 'Titolo', required: true },
     { name: 'description', type: 'richText', label: 'Descrizione' },
-    { name: 'cover', type: 'upload', relationTo: 'media', label: 'Copertina' },
+    {
+      name: 'cover',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Copertina',
+      filterOptions: filterBySchool,
+    },
     {
       name: 'gradientOverlay',
       type: 'checkbox',

@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-
+import { filterBySchool } from '../lib/access'
 export const Schools: CollectionConfig = {
   slug: 'schools',
   labels: {
@@ -113,6 +113,7 @@ export const Schools: CollectionConfig = {
               type: 'upload',
               relationTo: 'media',
               label: 'Logo',
+              filterOptions: filterBySchool,
               admin: {
                 description: 'Logo della scuola',
               },

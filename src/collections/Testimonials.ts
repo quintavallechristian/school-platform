@@ -6,6 +6,7 @@ import {
   tenantDelete,
   getSchoolField,
   assignSchoolBeforeChange,
+  filterBySchool,
 } from '@/lib/access'
 
 export const Testimonials: CollectionConfig = {
@@ -73,6 +74,7 @@ export const Testimonials: CollectionConfig = {
       type: 'upload',
       relationTo: 'media',
       label: 'Foto',
+      filterOptions: filterBySchool,
       admin: {
         description: "Foto dell'autore (opzionale)",
       },

@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import {
-  publicRead,
+  mediaRead,
   tenantCreate,
   tenantUpdate,
   tenantDelete,
@@ -13,7 +13,7 @@ export const Media: CollectionConfig = {
     group: 'Contenuti',
   },
   access: {
-    read: publicRead,
+    read: mediaRead,
     create: tenantCreate,
     update: tenantUpdate,
     delete: tenantDelete,

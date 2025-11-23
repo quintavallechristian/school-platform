@@ -6,6 +6,7 @@ import {
   tenantDelete,
   assignSchoolBeforeChange,
   getSchoolField,
+  filterBySchool,
 } from '../lib/access'
 
 export const EducationalOfferings: CollectionConfig = {
@@ -54,7 +55,13 @@ export const EducationalOfferings: CollectionConfig = {
     },
     { name: 'title', type: 'text', label: 'Titolo', required: true },
     { name: 'description', type: 'richText', label: 'Descrizione' },
-    { name: 'cover', type: 'upload', relationTo: 'media', label: 'Copertina' },
+    {
+      name: 'cover',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Copertina',
+      filterOptions: filterBySchool,
+    },
     {
       name: 'gradientOverlay',
       type: 'checkbox',

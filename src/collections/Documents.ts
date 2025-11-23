@@ -24,7 +24,7 @@ export const Documents: CollectionConfig = {
         {
           path: '@/components/UpgradeMessage',
           clientProps: {
-            requiredPlan: 'professional',
+            requiredPlan: 'starter',
             featureName: 'Documenti',
             featureFlag: 'showDocuments',
           },
@@ -77,6 +77,18 @@ export const Documents: CollectionConfig = {
           admin: {
             description: 'PDF, DOC, XLS, o altri documenti',
           },
+          filterOptions: ({ data }) => {
+            // Filtra i media per mostrare solo quelli della scuola selezionata
+            if (data?.school) {
+              return {
+                school: {
+                  equals: typeof data.school === 'string' ? data.school : data.school.id,
+                },
+              }
+            }
+            // Se non c'è scuola selezionata, restituisci false
+            return false
+          },
         },
         {
           name: 'title',
@@ -115,6 +127,10 @@ export const Documents: CollectionConfig = {
       ],
       admin: {
         description: 'Aggiungi uno o più documenti per questa sezione',
+        condition: (data) => {
+          // Mostra la sezione file solo se è stata selezionata una scuola
+          return !!data.school
+        },
       },
     },
     {

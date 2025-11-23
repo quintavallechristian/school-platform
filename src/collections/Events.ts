@@ -6,6 +6,7 @@ import {
   tenantDelete,
   assignSchoolBeforeChange,
   getSchoolField,
+  filterBySchool,
 } from '../lib/access'
 import { richTextToPlainText } from '../lib/richTextUtils'
 
@@ -183,7 +184,13 @@ export const Events: CollectionConfig = {
         description: 'Costo dell\'evento (es. "15€" o "Gratuito")',
       },
     },
-    { name: 'cover', type: 'upload', relationTo: 'media', label: 'Copertina' },
+    {
+      name: 'cover',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Copertina',
+      filterOptions: filterBySchool,
+    },
     {
       name: 'gradientOverlay',
       type: 'checkbox',

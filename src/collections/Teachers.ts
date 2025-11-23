@@ -6,6 +6,7 @@ import {
   tenantDelete,
   assignSchoolBeforeChange,
   getSchoolField,
+  filterBySchool,
 } from '../lib/access'
 
 export const Teachers: CollectionConfig = {
@@ -23,8 +24,8 @@ export const Teachers: CollectionConfig = {
         {
           path: '@/components/UpgradeMessage',
           clientProps: {
-            requiredPlan: 'starter',
-            featureName: 'Chi Siamo',
+            requiredPlan: 'professional',
+            featureName: 'Insegnanti',
             featureFlag: 'showChiSiamo',
           },
         },
@@ -52,6 +53,12 @@ export const Teachers: CollectionConfig = {
     { name: 'subject', type: 'text', label: 'Materia' },
     { name: 'email', type: 'email', label: 'Email' },
     { name: 'bio', type: 'textarea', label: 'Biografia' },
-    { name: 'photo', type: 'upload', relationTo: 'media', label: 'Foto' },
+    {
+      name: 'photo',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Foto',
+      filterOptions: filterBySchool,
+    },
   ],
 }
