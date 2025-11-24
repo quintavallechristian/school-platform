@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { getCurrentSchool, getSchoolTeachers } from '@/lib/school'
+import { Breadcrumbs } from '@/components/Breadcrumbs/Breadcrumbs'
 
 type PageProps = {
   params: Promise<{ school: string }>
@@ -27,6 +28,8 @@ export default async function InsegnantiPage({ params }: PageProps) {
             Conosci il team di {school.name}
           </p>
         </header>
+        
+        <Breadcrumbs />
 
         {/* Teachers Grid */}
         {teachers.docs.length > 0 ? (
@@ -41,7 +44,7 @@ export default async function InsegnantiPage({ params }: PageProps) {
                   <div className="relative h-64 w-full overflow-hidden">
                     <Image
                       src={teacher.photo.url}
-                      alt={teacher.name}
+                      alt={teacher.photo.alt || teacher.name}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-300"
                     />

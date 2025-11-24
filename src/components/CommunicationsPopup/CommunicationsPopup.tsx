@@ -102,31 +102,43 @@ export function CommunicationsPopup({ communications, schoolSlug }: Communicatio
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 animate-in fade-in duration-200" />
 
       {/* Modal */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div 
+        className="fixed inset-0 z-50 flex items-center justify-center p-4"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="communication-title"
+      >
         <SpotlightCard
           spotlightColor={config.spotlightColor}
           bgClassName="bg-linear-to-br from-white to-slate-100 dark:from-gray-900 dark:to-gray-800"
-          className="w-full max-w-2xl shadow-2xl"
+          className="w-full max-w-2xl shadow-2xl outline-none"
+          tabIndex={-1}
+          ref={(el: HTMLDivElement | null) => {
+            // Focus automatico quando il dialog si apre
+            if (el && isOpen) {
+              el.focus()
+            }
+          }}
         >
           {/* Header */}
           <div className="flex items-center gap-4 pb-4 border-b dark:border-gray-700">
             <div className={`shrink-0 ${config.color}`}>
-              <Icon className="h-6 w-6" />
+              <Icon className="h-6 w-6" aria-hidden="true" />
             </div>
             <div className="flex-1">
-              <h2 className="text-2xl font-bold">{visibleComm.title}</h2>
+              <h2 id="communication-title" className="text-2xl font-bold">{visibleComm.title}</h2>
             </div>
             <button
               onClick={handleDismiss}
-              className="shrink-0 rounded-lg p-1 hover:bg-accent transition-colors"
-              aria-label="Chiudi"
+              className="shrink-0 rounded-lg p-1 hover:bg-accent transition-colors focus-visible:ring-2 focus-visible:ring-primary"
+              aria-label="Chiudi comunicazione"
             >
               <X className="h-5 w-5" />
             </button>
           </div>
 
           {/* Content */}
-          <div className="py-6 max-h-[60vh] overflow-y-auto">
+          <div className="py-6 max-h-[60vh] overflow-y-auto" tabIndex={0}>
             <div className="prose prose-sm dark:prose-invert max-w-none">
               <RichTextRenderer content={visibleComm.content} />
             </div>
@@ -155,7 +167,7 @@ export function CommunicationsPopup({ communications, schoolSlug }: Communicatio
                   onClick={handleDismiss}
                 >
                   <Button className="flex gap-2 items-center">
-                    Leggi l&apos;articolo <ArrowRight className="h-4 w-4" />
+                    Leggi l&apos;articolo <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </Button>
                 </Link>
               ) : linkedEvent ? (
@@ -168,13 +180,13 @@ export function CommunicationsPopup({ communications, schoolSlug }: Communicatio
                   onClick={handleDismiss}
                 >
                   <Button className="flex gap-2 items-center">
-                    Vedi l&apos;evento <ArrowRight className="h-4 w-4" />
+                    Vedi l&apos;evento <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </Button>
                 </Link>
               ) : null
             ) : (
               <Button onClick={handleDismiss} className="flex gap-2 items-center">
-                Ho capito <ArrowRight className="h-4 w-4" />
+                Ho capito <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Button>
             )}
           </div>

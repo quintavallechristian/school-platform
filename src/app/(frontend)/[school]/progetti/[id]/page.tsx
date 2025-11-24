@@ -8,6 +8,7 @@ import GalleryView from '@/components/GalleryView/GalleryView'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 import { RichTextRenderer } from '@/components/RichTextRenderer/RichTextRenderer'
+import { Breadcrumbs } from '@/components/Breadcrumbs/Breadcrumbs'
 
 export default async function ProjectPage({
   params,
@@ -46,20 +47,11 @@ export default async function ProjectPage({
           />
         </header>
 
+        <Breadcrumbs />
+
         <div className="py-8 px-8">
           <div className="max-w-4xl mx-auto">
-            {/* Breadcrumb */}
-            <nav className="mb-8 text-sm">
-              <Link href={`/${schoolSlug}`} className="text-primary hover:underline">
-                Home
-              </Link>
-              {' / '}
-              <Link href={`/${schoolSlug}/progetti`} className="text-primary hover:underline">
-                Progetti
-              </Link>
-              {' / '}
-              <span className="text-muted-foreground">{project.title}</span>
-            </nav>
+
 
             {/* Content */}
             {project.description ? (

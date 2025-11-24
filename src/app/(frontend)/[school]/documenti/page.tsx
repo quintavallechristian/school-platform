@@ -1,6 +1,7 @@
 import { notFound, redirect } from 'next/navigation'
 import { getCurrentSchool, isFeatureEnabled } from '@/lib/school'
 import Hero from '@/components/Hero/Hero'
+import { Breadcrumbs } from '@/components/Breadcrumbs/Breadcrumbs'
 import { Button } from '@/components/ui/button'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
@@ -77,6 +78,7 @@ export default async function DocumentiPage({ params }: { params: Promise<{ scho
         title="Documenti"
         subtitle={`Area documenti di ${school.name} - Modulistica, regolamenti e risorse scaricabili`}
       />
+      <Breadcrumbs />
 
       <div className="container mx-auto px-4 py-12">
         {/* Sezione documenti in evidenza */}

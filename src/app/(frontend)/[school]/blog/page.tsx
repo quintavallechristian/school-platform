@@ -5,6 +5,7 @@ import { getCurrentSchool, getSchoolArticles, isFeatureEnabled } from '@/lib/sch
 import Hero from '@/components/Hero/Hero'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import { Button } from '@/components/ui/button'
+import { Breadcrumbs } from '@/components/Breadcrumbs/Breadcrumbs'
 
 export default async function BlogPage({ params }: { params: Promise<{ school: string }> }) {
   const { school: schoolSlug } = await params
@@ -27,6 +28,7 @@ export default async function BlogPage({ params }: { params: Promise<{ school: s
         title="Blog & Notizie"
         subtitle={`Tutte le notizie e gli aggiornamenti di ${school.name}`}
       />
+      <Breadcrumbs />
 
       <div className="container mx-auto px-4 py-12">
         {articles.length > 0 ? (
@@ -38,7 +40,7 @@ export default async function BlogPage({ params }: { params: Promise<{ school: s
                     <div className="relative h-56 w-full overflow-hidden">
                       <Image
                         src={article.cover.url}
-                        alt={article.title}
+                        alt={article.cover.alt || article.title}
                         fill
                         className="object-cover hover:scale-105 transition-transform duration-300 rounded-t-2xl"
                       />

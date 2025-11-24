@@ -58,7 +58,7 @@ export default async function ProjectListBlock({ block, schoolId, schoolSlug }: 
                   <div className="relative h-48 w-full overflow-hidden">
                     <Image
                       src={project.cover.url}
-                      alt={project.title}
+                      alt={project.cover.alt || project.title}
                       fill
                       className="object-cover hover:scale-105 transition-transform duration-300 rounded-t-2xl"
                     />

@@ -52,7 +52,7 @@ export default async function TeacherListBlock({ block, schoolId, schoolSlug }: 
                 <div className="relative h-64 w-full overflow-hidden">
                   <Image
                     src={teacher.photo.url}
-                    alt={teacher.name}
+                    alt={teacher.photo.alt || teacher.name}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-300"
                   />

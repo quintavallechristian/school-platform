@@ -8,6 +8,7 @@ import GalleryView from '@/components/GalleryView/GalleryView'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 import { RichTextRenderer } from '@/components/RichTextRenderer/RichTextRenderer'
+import { Breadcrumbs } from '@/components/Breadcrumbs/Breadcrumbs'
 
 export default async function EventPage({
   params,
@@ -53,20 +54,11 @@ export default async function EventPage({
           />
         </header>
 
+        <Breadcrumbs />
+
         <div className="py-8 px-8">
           <div className="max-w-4xl mx-auto">
-            {/* Breadcrumb */}
-            <nav className="mb-8 text-sm">
-              <Link href={`/${schoolSlug}`} className="text-primary hover:underline">
-                Home
-              </Link>
-              {' / '}
-              <Link href={`/${schoolSlug}/eventi`} className="text-primary hover:underline">
-                Eventi
-              </Link>
-              {' / '}
-              <span className="text-muted-foreground">{event.title}</span>
-            </nav>
+
 
             {/* Event Status Badge */}
             <div className="mb-6">

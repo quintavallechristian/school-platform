@@ -6,6 +6,7 @@ import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import type { Project } from '@/payload-types'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
+import { Breadcrumbs } from '@/components/Breadcrumbs/Breadcrumbs'
 
 export default async function ProjectsPage({ params }: { params: Promise<{ school: string }> }) {
   const { school: schoolSlug } = await params
@@ -28,6 +29,7 @@ export default async function ProjectsPage({ params }: { params: Promise<{ schoo
         title="Progetti della scuola"
         subtitle={`Scopri tutti i progetti e le attività di ${school.name}`}
       />
+      <Breadcrumbs />
 
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-8">
@@ -40,7 +42,7 @@ export default async function ProjectsPage({ params }: { params: Promise<{ schoo
                       <div className="relative h-48 w-full overflow-hidden">
                         <Image
                           src={project.cover.url}
-                          alt={project.title}
+                          alt={project.cover.alt || project.title}
                           fill
                           className="object-cover hover:scale-105 transition-transform duration-300 rounded-t-2xl"
                         />

@@ -61,7 +61,7 @@ export default async function ArticleListBlock({ block, schoolId, schoolSlug }: 
                     <div className="relative h-56 w-full overflow-hidden">
                       <Image
                         src={typedArticle.cover.url}
-                        alt={typedArticle.title}
+                        alt={typedArticle.cover.alt || typedArticle.title}
                         fill
                         className="object-cover hover:scale-105 transition-transform duration-300 rounded-t-2xl"
                       />
