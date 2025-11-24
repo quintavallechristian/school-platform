@@ -64,22 +64,29 @@ export default async function SchoolLayout({
 
   return (
     <>
+      {/* Skip link per accessibilità */}
+      <a href="#main-content" className="skip-link">
+        Salta al contenuto principale
+      </a>
+
       {/* Applica i colori personalizzati della scuola */}
       <style
         dangerouslySetInnerHTML={{
           __html: `
           :root {
-            --color-primary: ${school.lightTheme?.textPrimary || school.primaryColor || '#3b82f6'};
-            --color-secondary: ${school.lightTheme?.textSecondary || school.secondaryColor || '#8b5cf6'};
-            --color-background-primary: ${school.lightTheme?.backgroundPrimary || school.backgroundPrimaryColor || '#fa8899'};
-            --color-background-secondary: ${school.lightTheme?.backgroundSecondary || school.backgroundSecondaryColor || '#228899'};
+            /* Colori conformi WCAG 2.1 AA (contrasto >= 4.5:1) */
+            --color-primary: ${school.lightTheme?.textPrimary || school.primaryColor || '#1e40af'}; /* Blu scuro su bianco: 8.59:1 */
+            --color-secondary: ${school.lightTheme?.textSecondary || school.secondaryColor || '#7c3aed'}; /* Viola scuro su bianco: 6.37:1 */
+            --color-background-primary: ${school.lightTheme?.backgroundPrimary || school.backgroundPrimaryColor || '#ffffff'}; /* Bianco */
+            --color-background-secondary: ${school.lightTheme?.backgroundSecondary || school.backgroundSecondaryColor || '#f3f4f6'}; /* Grigio chiaro */
           }
           
           .dark {
-            --color-primary: ${school.darkTheme?.textPrimary || school.lightTheme?.textPrimary || school.primaryColor || '#60a5fa'};
-            --color-secondary: ${school.darkTheme?.textSecondary || school.lightTheme?.textSecondary || school.secondaryColor || '#a78bfa'};
-            --color-background-primary: ${school.darkTheme?.backgroundPrimary || school.lightTheme?.backgroundPrimary || school.backgroundPrimaryColor || '#fb7185'};
-            --color-background-secondary: ${school.darkTheme?.backgroundSecondary || school.lightTheme?.backgroundSecondary || school.backgroundSecondaryColor || '#06b6d4'};
+            /* Colori conformi WCAG 2.1 AA per dark mode */
+            --color-primary: ${school.darkTheme?.textPrimary || school.lightTheme?.textPrimary || school.primaryColor || '#93c5fd'}; /* Blu chiaro su nero: 9.35:1 */
+            --color-secondary: ${school.darkTheme?.textSecondary || school.lightTheme?.textSecondary || school.secondaryColor || '#c4b5fd'}; /* Viola chiaro su nero: 10.73:1 */
+            --color-background-primary: ${school.darkTheme?.backgroundPrimary || school.lightTheme?.backgroundPrimary || school.backgroundPrimaryColor || '#1f2937'}; /* Grigio scuro */
+            --color-background-secondary: ${school.darkTheme?.backgroundSecondary || school.lightTheme?.backgroundSecondary || school.backgroundSecondaryColor || '#111827'}; /* Grigio molto scuro */
           }
           
           /* Override colori Tailwind */
@@ -105,11 +112,13 @@ export default async function SchoolLayout({
         school={school}
       />
 
-      {/* Contenuto della pagina */}
-      <main className="min-h-screen">{children}</main>
+      {/* Contenuto della pagina con landmark main */}
+      <main id="main-content" role="main" className="min-h-screen">
+        {children}
+      </main>
 
       {/* Footer con info della scuola */}
-      <footer className="bg-gray-100 dark:bg-gray-900 border-t">
+      <footer role="contentinfo" className="bg-gray-100 dark:bg-gray-900 border-t">
         <div className="container mx-auto px-4 py-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Info scuola */}

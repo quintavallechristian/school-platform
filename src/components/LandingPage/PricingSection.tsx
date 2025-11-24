@@ -39,7 +39,7 @@ export function PricingSection() {
               variant={billingPeriod === 'yearly' ? 'default' : 'ghost'}
             >
               Annuale
-              <span className="ml-2 text-xs bg-emerald-500 text-white px-2 py-1 rounded-full">
+              <span className="ml-2 text-xs bg-emerald-700 text-white px-2 py-1 rounded-full">
                 Risparmia fino al 20%
               </span>
             </Button>

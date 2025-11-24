@@ -67,6 +67,7 @@ export default async function ProjectListBlock({ block, schoolId, schoolSlug }: 
 
                 <div className="p-6">
                   <h3 className="text-2xl font-bold mb-4">{project.title}</h3>
+                  ciao
                   <Button className="w-fit">Vedi progetto</Button>
                 </div>
               </Link>

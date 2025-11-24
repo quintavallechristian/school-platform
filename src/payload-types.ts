@@ -186,11 +186,11 @@ export interface School {
    */
   lightTheme?: {
     /**
-     * Colore principale del testo (tema chiaro)
+     * Colore principale del testo (tema chiaro). Deve avere contrasto >= 4.5:1 con lo sfondo per WCAG AA.
      */
     textPrimary?: string | null;
     /**
-     * Colore secondario del testo (tema chiaro)
+     * Colore secondario del testo (tema chiaro). Deve avere contrasto >= 4.5:1 con lo sfondo per WCAG AA.
      */
     textSecondary?: string | null;
     /**
@@ -207,11 +207,11 @@ export interface School {
    */
   darkTheme?: {
     /**
-     * Colore principale del testo (tema scuro)
+     * Colore principale del testo (tema scuro). Deve avere contrasto >= 4.5:1 con lo sfondo per WCAG AA.
      */
     textPrimary?: string | null;
     /**
-     * Colore secondario del testo (tema scuro)
+     * Colore secondario del testo (tema scuro). Deve avere contrasto >= 4.5:1 con lo sfondo per WCAG AA.
      */
     textSecondary?: string | null;
     /**

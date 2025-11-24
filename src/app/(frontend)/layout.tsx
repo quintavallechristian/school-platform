@@ -17,7 +17,7 @@ export default async function RootLayout({
 }>) {
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="it" suppressHydrationWarning>
       <head></head>
       <body>
         <ThemeProvider
@@ -30,7 +30,23 @@ export default async function RootLayout({
             <MyAurora />
           </div>
           {children}
-          <Toaster />
+          <Toaster 
+            position="top-right"
+            toastOptions={{
+              // Accessibilità WCAG 2.1 AA
+              unstyled: false,
+              classNames: {
+                toast: 'group toast',
+                title: 'toast-title',
+                description: 'toast-description',
+                actionButton: 'toast-action',
+                cancelButton: 'toast-cancel',
+              },
+            }}
+            // Configurazione ARIA per screen reader
+            richColors
+            closeButton
+          />
         </ThemeProvider>
       </body>
     </html>

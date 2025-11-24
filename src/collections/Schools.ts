@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { filterBySchool } from '../lib/access'
+import { getContrastRatio } from '../lib/accessibility'
 export const Schools: CollectionConfig = {
   slug: 'schools',
   labels: {
@@ -138,10 +139,10 @@ export const Schools: CollectionConfig = {
                       name: 'textPrimary',
                       type: 'text',
                       label: 'Colore Testo Primario',
-                      defaultValue: '#3b82f6',
+                      defaultValue: '#1e40af',
                       admin: {
                         width: '50%',
-                        description: 'Colore principale del testo (tema chiaro)',
+                        description: 'Colore principale del testo (tema chiaro). Deve avere contrasto >= 4.5:1 con lo sfondo per WCAG AA.',
                         components: {
                           Field: '@/components/ColorPicker/ColorPickerField',
                         },
@@ -151,10 +152,10 @@ export const Schools: CollectionConfig = {
                       name: 'textSecondary',
                       type: 'text',
                       label: 'Colore Testo Secondario',
-                      defaultValue: '#8b5cf6',
+                      defaultValue: '#7c3aed',
                       admin: {
                         width: '50%',
-                        description: 'Colore secondario del testo (tema chiaro)',
+                        description: 'Colore secondario del testo (tema chiaro). Deve avere contrasto >= 4.5:1 con lo sfondo per WCAG AA.',
                         components: {
                           Field: '@/components/ColorPicker/ColorPickerField',
                         },
@@ -169,7 +170,7 @@ export const Schools: CollectionConfig = {
                       name: 'backgroundPrimary',
                       type: 'text',
                       label: 'Colore Sfondo Primario',
-                      defaultValue: '#fa8899',
+                      defaultValue: '#ffffff',
                       admin: {
                         width: '50%',
                         description: 'Colore di sfondo primario (tema chiaro)',
@@ -182,7 +183,7 @@ export const Schools: CollectionConfig = {
                       name: 'backgroundSecondary',
                       type: 'text',
                       label: 'Colore Sfondo Secondario',
-                      defaultValue: '#228899',
+                      defaultValue: '#f3f4f6',
                       admin: {
                         width: '50%',
                         description: 'Colore di sfondo secondario (tema chiaro)',
@@ -210,10 +211,10 @@ export const Schools: CollectionConfig = {
                       name: 'textPrimary',
                       type: 'text',
                       label: 'Colore Testo Primario',
-                      defaultValue: '#60a5fa',
+                      defaultValue: '#93c5fd',
                       admin: {
                         width: '50%',
-                        description: 'Colore principale del testo (tema scuro)',
+                        description: 'Colore principale del testo (tema scuro). Deve avere contrasto >= 4.5:1 con lo sfondo per WCAG AA.',
                         components: {
                           Field: '@/components/ColorPicker/ColorPickerField',
                         },
@@ -223,10 +224,10 @@ export const Schools: CollectionConfig = {
                       name: 'textSecondary',
                       type: 'text',
                       label: 'Colore Testo Secondario',
-                      defaultValue: '#a78bfa',
+                      defaultValue: '#c4b5fd',
                       admin: {
                         width: '50%',
-                        description: 'Colore secondario del testo (tema scuro)',
+                        description: 'Colore secondario del testo (tema scuro). Deve avere contrasto >= 4.5:1 con lo sfondo per WCAG AA.',
                         components: {
                           Field: '@/components/ColorPicker/ColorPickerField',
                         },
@@ -241,7 +242,7 @@ export const Schools: CollectionConfig = {
                       name: 'backgroundPrimary',
                       type: 'text',
                       label: 'Colore Sfondo Primario',
-                      defaultValue: '#fb7185',
+                      defaultValue: '#1f2937',
                       admin: {
                         width: '50%',
                         description: 'Colore di sfondo primario (tema scuro)',
@@ -254,7 +255,7 @@ export const Schools: CollectionConfig = {
                       name: 'backgroundSecondary',
                       type: 'text',
                       label: 'Colore Sfondo Secondario',
-                      defaultValue: '#06b6d4',
+                      defaultValue: '#111827',
                       admin: {
                         width: '50%',
                         description: 'Colore di sfondo secondario (tema scuro)',
@@ -504,18 +505,15 @@ export const Schools: CollectionConfig = {
   ],
   hooks: {
     beforeChange: [
-      async ({ req, operation }) => {
-        // Solo durante la creazione di nuove scuole
+      async ({ req, operation, data }) => {
+        // Validazione piano Enterprise per creazione scuole
         if (operation === 'create' && req.user) {
           const user = req.user
 
           // Super-admin può sempre creare scuole
           if (user.role === 'super-admin') {
-            return
-          }
-
-          // School-admin deve avere almeno una scuola con piano enterprise
-          if (user.role === 'school-admin') {
+            // Continua con la validazione colori
+          } else if (user.role === 'school-admin') {
             if (!user.schools || user.schools.length === 0) {
               throw new Error('Non hai scuole assegnate. Contatta un super-admin.')
             }
@@ -545,6 +543,99 @@ export const Schools: CollectionConfig = {
               )
             }
           }
+        }
+
+        // Validazione accessibilità colori (warning, non blocca il salvataggio)
+        const warnings: string[] = []
+
+        // Valida Light Theme
+        if (data.lightTheme) {
+          const textPrimary = data.lightTheme.textPrimary
+          const bgPrimary = data.lightTheme.backgroundPrimary || '#ffffff'
+
+          if (textPrimary && bgPrimary) {
+            try {
+              const ratio = getContrastRatio(textPrimary, bgPrimary)
+              if (ratio < 4.5) {
+                warnings.push(
+                  `⚠️ ACCESSIBILITÀ: Il contrasto tra testo primario (${textPrimary}) e sfondo primario (${bgPrimary}) nel tema chiaro è ${ratio.toFixed(2)}:1. ` +
+                  `Il minimo raccomandato per WCAG 2.1 AA è 4.5:1. ` +
+                  `Questo potrebbe rendere il testo difficile da leggere per persone con disabilità visive.`
+                )
+              }
+            } catch (_error) {
+              // Ignora errori di formato colore
+            }
+          }
+
+          const textSecondary = data.lightTheme.textSecondary
+          const bgSecondary = data.lightTheme.backgroundSecondary || '#ffffff'
+
+          if (textSecondary && bgSecondary) {
+            try {
+              const ratio = getContrastRatio(textSecondary, bgSecondary)
+              if (ratio < 4.5) {
+                warnings.push(
+                  `⚠️ ACCESSIBILITÀ: Il contrasto tra testo secondario (${textSecondary}) e sfondo secondario (${bgSecondary}) nel tema chiaro è ${ratio.toFixed(2)}:1. ` +
+                  `Il minimo raccomandato per WCAG 2.1 AA è 4.5:1.`
+                )
+              }
+            } catch (_error) {
+              // Ignora errori di formato colore
+            }
+          }
+        }
+
+        // Valida Dark Theme
+        if (data.darkTheme) {
+          const textPrimary = data.darkTheme.textPrimary
+          const bgPrimary = data.darkTheme.backgroundPrimary || '#000000'
+
+          if (textPrimary && bgPrimary) {
+            try {
+              const ratio = getContrastRatio(textPrimary, bgPrimary)
+              if (ratio < 4.5) {
+                warnings.push(
+                  `⚠️ ACCESSIBILITÀ: Il contrasto tra testo primario (${textPrimary}) e sfondo primario (${bgPrimary}) nel tema scuro è ${ratio.toFixed(2)}:1. ` +
+                  `Il minimo raccomandato per WCAG 2.1 AA è 4.5:1.`
+                )
+              }
+            } catch (_error) {
+              // Ignora errori di formato colore
+            }
+          }
+
+          const textSecondary = data.darkTheme.textSecondary
+          const bgSecondary = data.darkTheme.backgroundSecondary || '#000000'
+
+          if (textSecondary && bgSecondary) {
+            try {
+              const ratio = getContrastRatio(textSecondary, bgSecondary)
+              if (ratio < 4.5) {
+                warnings.push(
+                  `⚠️ ACCESSIBILITÀ: Il contrasto tra testo secondario (${textSecondary}) e sfondo secondario (${bgSecondary}) nel tema scuro è ${ratio.toFixed(2)}:1. ` +
+                  `Il minimo raccomandato per WCAG 2.1 AA è 4.5:1.`
+                )
+              }
+            } catch (_error) {
+              // Ignora errori di formato colore
+            }
+          }
+        }
+
+        // Mostra warning se ci sono problemi di accessibilità
+        if (warnings.length > 0) {
+          req.payload.logger.warn('\n' + warnings.join('\n\n'))
+          
+          // Aggiungi un messaggio visibile nell'admin
+          // Nota: Payload non supporta nativamente i warning non-bloccanti nell'UI,
+          // quindi logghiamo nel console del server
+          console.warn('\n=========================================')
+          console.warn('⚠️  WARNING ACCESSIBILITÀ COLORI')
+          console.warn('=========================================\n')
+          warnings.forEach(w => console.warn(w + '\n'))
+          console.warn('Il salvataggio continuerà, ma si consiglia di correggere questi problemi.')
+          console.warn('=========================================\n')
         }
       },
     ],

@@ -48,7 +48,7 @@ export default async function ProjectsPage({ params }: { params: Promise<{ schoo
                     )}
 
                     <div className="p-6">
-                      <h3 className="text-2xl font-bold mb-4">{project.title}</h3>
+                      <h2 className="text-2xl font-bold mb-4">{project.title}</h2>
                       <Button className="w-fit">Vedi progetto</Button>
                     </div>
                   </Link>

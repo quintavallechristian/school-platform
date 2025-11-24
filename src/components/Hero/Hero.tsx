@@ -47,46 +47,109 @@ export default function Hero({
     height?: number
   }
 }) {
-  // Colori di default
-  const defaultPrimaryColor = '#40ffaa'
-  const defaultSecondaryColor = '#4079ff'
-  const defaultBackgroundPrimaryColor = '#fa8899'
-  const defaultBackgroundSecondaryColor = '#228899'
+  // Colori di default conformi WCAG 2.1 AA (allineati con layout.tsx)
+  const defaultPrimaryColor = '#1e40af'        // Blu scuro (8.72:1 su bianco)
+  const defaultSecondaryColor = '#7c3aed'      // Viola scuro (6.37:1 su bianco)
+  const defaultBackgroundPrimaryColor = '#ffffff'   // Bianco
+  const defaultBackgroundSecondaryColor = '#f3f4f6' // Grigio chiaro
 
   const [textGradientStartColor, setTextGradientStartColor] = useState(defaultPrimaryColor)
-  const [_textGradientEndColor, _setTextGradientEndColor] = useState(defaultSecondaryColor)
+  const [textGradientEndColor, setTextGradientEndColor] = useState(defaultSecondaryColor)
   const [bgGradientStartColor, setBgGradientStartColor] = useState(defaultBackgroundPrimaryColor)
   const [bgGradientEndColor, setBgGradientEndColor] = useState(defaultBackgroundSecondaryColor)
   const [pageBackgroundColor, setPageBackgroundColor] = useState('#ffffff')
+  const [_isDarkMode, _setIsDarkMode] = useState(false)
   const [scrollY, setScrollY] = useState(0)
   const heroRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
-    // Leggi i colori dalle CSS variables
-    const rootStyles = getComputedStyle(document.documentElement)
+    // Funzione per aggiornare i colori
+    const updateColors = () => {
+      // Leggi i colori dalle CSS variables
+      const rootStyles = getComputedStyle(document.documentElement)
 
-    const primaryColor = rootStyles.getPropertyValue('--color-primary').trim()
-    const secondaryColor = rootStyles.getPropertyValue('--color-secondary').trim()
-    const bgPrimaryColor = rootStyles.getPropertyValue('--color-background-primary').trim()
-    const bgSecondaryColor = rootStyles.getPropertyValue('--color-background-secondary').trim()
+      const primaryColor = rootStyles.getPropertyValue('--color-primary').trim()
+      const secondaryColor = rootStyles.getPropertyValue('--color-secondary').trim()
+      const bgPrimaryColor = rootStyles.getPropertyValue('--color-background-primary').trim()
+      const bgSecondaryColor = rootStyles.getPropertyValue('--color-background-secondary').trim()
 
-    // Ottieni il colore di background effettivo dal body
-    const bodyBg = getComputedStyle(document.body).backgroundColor
+      // Ottieni il colore di background effettivo dal body
+      const bodyBg = getComputedStyle(document.body).backgroundColor
 
-    if (primaryColor && primaryColor.startsWith('#')) {
-      setTextGradientStartColor(primaryColor)
+      // Rileva se siamo in dark mode (preparato per uso futuro)
+      const isDark = document.documentElement.classList.contains('dark')
+      _setIsDarkMode(isDark)
+
+      // Funzione helper per convertire qualsiasi formato colore in hex
+      const normalizeColor = (color: string): string | null => {
+        if (!color) return null
+        
+        // Se è già hex, ritorna direttamente
+        if (color.startsWith('#')) return color
+        
+        // Altrimenti, usa un elemento temporaneo per convertire
+        const temp = document.createElement('div')
+        temp.style.color = color
+        document.body.appendChild(temp)
+        const computed = getComputedStyle(temp).color
+        document.body.removeChild(temp)
+        
+        // Converti rgb/rgba in hex
+        const match = computed.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)/)
+        if (match) {
+          const r = parseInt(match[1]).toString(16).padStart(2, '0')
+          const g = parseInt(match[2]).toString(16).padStart(2, '0')
+          const b = parseInt(match[3]).toString(16).padStart(2, '0')
+          return `#${r}${g}${b}`
+        }
+        
+        return null
+      }
+
+      const normalizedPrimary = normalizeColor(primaryColor)
+      const normalizedSecondary = normalizeColor(secondaryColor)
+      const normalizedBgPrimary = normalizeColor(bgPrimaryColor)
+      const normalizedBgSecondary = normalizeColor(bgSecondaryColor)
+
+      if (normalizedPrimary) {
+        setTextGradientStartColor(normalizedPrimary)
+      }
+      if (normalizedSecondary) {
+        setTextGradientEndColor(normalizedSecondary)
+      }
+      if (normalizedBgPrimary) {
+        setBgGradientStartColor(normalizedBgPrimary)
+      }
+      if (normalizedBgSecondary) {
+        setBgGradientEndColor(normalizedBgSecondary)
+      }
+      if (bodyBg) {
+        setPageBackgroundColor(bodyBg)
+      }
     }
-    if (secondaryColor && secondaryColor.startsWith('#')) {
-      _setTextGradientEndColor(secondaryColor)
-    }
-    if (bgPrimaryColor && bgPrimaryColor.startsWith('#')) {
-      setBgGradientStartColor(bgPrimaryColor)
-    }
-    if (bgSecondaryColor && bgSecondaryColor.startsWith('#')) {
-      setBgGradientEndColor(bgSecondaryColor)
-    }
-    if (bodyBg) {
-      setPageBackgroundColor(bodyBg)
+
+    // Aggiorna i colori al mount
+    updateColors()
+
+    // Osserva i cambiamenti alla classe 'dark' sull'elemento html
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'class') {
+          // Quando cambia la classe (dark mode toggle), aggiorna i colori
+          updateColors()
+        }
+      })
+    })
+
+    // Inizia ad osservare l'elemento html
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    })
+
+    // Cleanup: rimuovi l'observer quando il componente viene smontato
+    return () => {
+      observer.disconnect()
     }
   }, [])
 
@@ -108,13 +171,13 @@ export default function Hero({
     return () => window.removeEventListener('scroll', handleScroll)
   }, [parallax, backgroundImage])
 
-  // Crea i colori per il GradientText alternando primary e secondary
+  // Crea i colori per il GradientText usando i colori della scuola
   const textGradientColors = [
-    textGradientStartColor,
-    '#ffffff',
-    textGradientStartColor,
-    '#ffffff',
-    textGradientStartColor,
+    textGradientStartColor,  // Primary color
+    textGradientEndColor,    // Secondary color
+    textGradientStartColor,  // Primary color
+    textGradientEndColor,    // Secondary color
+    textGradientStartColor,  // Primary color
   ]
 
   // Prepara l'URL dell'immagine di sfondo

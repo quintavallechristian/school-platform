@@ -157,3 +157,86 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* ============================================
+   ACCESSIBILITY STYLES - WCAG 2.1 AA
+   ============================================ */
+
+/* Focus visibile per navigazione da tastiera */
+*:focus-visible {
+  outline: 3px solid hsl(var(--primary));
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Rimuovi outline solo quando non si usa la tastiera */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Skip link - nascosto fino a quando non riceve focus */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  padding: 0.75rem 1.5rem;
+  text-decoration: none;
+  font-weight: 600;
+  z-index: 9999;
+  border-radius: 0 0 0.5rem 0;
+  transition: top 0.2s ease-in-out;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Screen reader only - nasconde visivamente ma mantiene accessibile */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Supporto per riduzione movimento */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Supporto per alto contrasto */
+@media (prefers-contrast: high) {
+  :root {
+    --primary: oklch(0 0 0);
+    --primary-foreground: oklch(1 0 0);
+    --border: oklch(0 0 0);
+    --ring: oklch(0 0 0);
+  }
+  
+  .dark {
+    --primary: oklch(1 0 0);
+    --primary-foreground: oklch(0 0 0);
+    --background: oklch(0 0 0);
+    --foreground: oklch(1 0 0);
+    --border: oklch(1 0 0);
+  }
+  
+  /* Aumenta il contrasto di tutti i bordi */
+  * {
+    border-color: currentColor !important;
+  }
+}

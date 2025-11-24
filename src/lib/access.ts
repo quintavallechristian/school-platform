@@ -1,3 +1,4 @@
+import { School } from '@/payload-types'
 import type { Access, Field, PayloadRequest } from 'payload'
 
 /**
@@ -236,7 +237,7 @@ export const filterBySchool = ({
 
   if (user.schools && user.schools.length > 0) {
     // Estrai gli ID delle scuole (potrebbero essere oggetti o stringhe)
-    const schoolIds = user.schools.map((school) =>
+    const schoolIds = user.schools.map((school: string | School) =>
       typeof school === 'string' ? school : school.id,
     )
     return {

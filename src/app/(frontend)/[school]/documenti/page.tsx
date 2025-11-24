@@ -49,11 +49,13 @@ export default async function DocumentiPage({ params }: { params: Promise<{ scho
   // Raccogli tutti i documenti in evidenza da tutte le sezioni
   const featuredDocuments: Array<{
     file: Media
-    fileItem: Document['files'][number]
+    fileItem: NonNullable<Document['files']>[number]
     sectionTitle: string
   }> = []
 
   documentSections.forEach((section) => {
+    if (!section.files) return
+    
     section.files.forEach((fileItem) => {
       if (fileItem.featured) {
         const file =
@@ -130,7 +132,7 @@ export default async function DocumentiPage({ params }: { params: Promise<{ scho
 
                 {/* Grid di card per i documenti */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {section.files.map((fileItem, idx) => {
+                  {section.files?.map((fileItem, idx) => {
                     const file =
                       typeof fileItem.file === 'object' && fileItem.file !== null
                         ? fileItem.file
@@ -152,7 +154,7 @@ export default async function DocumentiPage({ params }: { params: Promise<{ scho
                             )}
                           </div>
 
-                          <Button asChild size={'sm'}>
+                          <Button asChild size={'sm'} aria-label="Scarica documento">
                             <a href={file.url || '#'} download>
                               <Download className="h-4 w-4" />
                             </a>

@@ -56,37 +56,39 @@ export default async function Navbar({
 
   return (
     <NavbarWrapper>
-      <div className="flex items-center justify-between p-4">
-        <div className="flex items-center gap-4">
-          <MobileGuestMenuButton menuItems={menuItems} />
-          <Link href={baseHref} className="flex items-center gap-2">
-            {schoolLogo ? (
-              <div className="relative h-8 w-8">
-                <Image
-                  src={schoolLogo}
-                  alt={schoolName || 'Logo'}
-                  fill
-                  className="object-contain"
-                />
-              </div>
-            ) : (
-              <DicesIcon className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
-            )}
-            <span className="text-xl font-bold">{schoolName || 'Scuole Infanzia'}</span>
-          </Link>
-        </div>
-        <GuestNavigationMenu menuItems={menuItems} />
-        <div className="flex items-center gap-4">
-          {school && isFeatureEnabled(school, 'parentsArea') && (
-            <Link href={`${baseHref}/parents/login`}>
-              <Button variant="outline" size="sm" className="hidden md:flex">
-                Area Genitori
-              </Button>
+      <nav role="navigation" aria-label="Navigazione principale">
+        <div className="flex items-center justify-between p-4">
+          <div className="flex items-center gap-4">
+            <MobileGuestMenuButton menuItems={menuItems} />
+            <Link href={baseHref} className="flex items-center gap-2">
+              {schoolLogo ? (
+                <div className="relative h-8 w-8">
+                  <Image
+                    src={schoolLogo}
+                    alt={`Logo ${schoolName || 'della scuola'}`}
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+              ) : (
+                <DicesIcon className="h-8 w-8 text-indigo-600 dark:text-indigo-400" aria-hidden="true" />
+              )}
+              <span className="text-xl font-bold">{schoolName || 'Scuole Infanzia'}</span>
             </Link>
-          )}
-          <ModeToggle />
+          </div>
+          <GuestNavigationMenu menuItems={menuItems} />
+          <div className="flex items-center gap-4">
+            {school && isFeatureEnabled(school, 'parentsArea') && (
+              <Link href={`${baseHref}/parents/login`}>
+                <Button variant="outline" size="sm" className="hidden md:flex">
+                  Area Genitori
+                </Button>
+              </Link>
+            )}
+            <ModeToggle />
+          </div>
         </div>
-      </div>
+      </nav>
     </NavbarWrapper>
   )
 }

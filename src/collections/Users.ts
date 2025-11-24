@@ -156,7 +156,7 @@ export const Users: CollectionConfig = {
         // Solo super-admin può modificare i ruoli
         update: ({ req: { user } }) => user?.role === 'super-admin',
       },
-      validate: async (value: string, options: any) => {
+      validate: async (value: any, options: any) => {
         const { data, req, operation } = options
         // Check parent limit when creating a new parent user
         if (operation === 'create' && value === 'parent') {
