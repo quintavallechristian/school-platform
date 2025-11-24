@@ -1,4 +1,6 @@
 import type { CollectionConfig } from 'payload'
+
+
 import {
   mediaRead,
   tenantCreate,
@@ -21,6 +23,10 @@ export const Media: CollectionConfig = {
   hooks: {
     beforeChange: [assignSchoolBeforeChange],
   },
+  upload: {
+    disableLocalStorage: true, // obbligatorio su Vercel
+  },
+
   fields: [
     {
       name: 'school',
@@ -41,5 +47,4 @@ export const Media: CollectionConfig = {
       required: true,
     },
   ],
-  upload: true,
 }

@@ -1,5 +1,6 @@
 // storage-adapter-import-placeholder
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
+import { s3Storage } from '@payloadcms/storage-s3'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { it } from '@payloadcms/translations/languages/it'
 import path from 'path'
@@ -33,6 +34,8 @@ import { ParentRegistrations } from './collections/ParentRegistrations'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+
+const isProd = process.env.NODE_ENV === 'production'
 
 export default buildConfig({
   admin: {
@@ -86,7 +89,20 @@ export default buildConfig({
     url: process.env.DATABASE_URI || '',
   }),
   sharp,
-  plugins: [
-    // storage-adapter-placeholder
-  ],
+  plugins: isProd ? [
+    s3Storage({
+      collections: {
+        media: true,
+      },
+      bucket: process.env.R2_BUCKET!,
+      config: {
+        endpoint: process.env.R2_ENDPOINT!,
+        region: 'auto',
+        credentials: {
+          accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+          secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+        },
+      },
+    }),
+  ]:[],
 })
