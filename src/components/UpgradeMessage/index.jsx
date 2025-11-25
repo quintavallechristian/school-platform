@@ -1,30 +1,34 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { useAuth } from '@payloadcms/ui'
 import Link from 'next/link'
 
-interface UpgradeMessageProps {
-  requiredPlan: 'professional' | 'enterprise'
-  featureName: string
-  featureFlag?: string // Nome del campo nella scuola che controlla se la funzionalità è abilitata (es. 'showParentsArea')
-}
+export const UpgradeMessage = ({ requiredPlan, featureName, featureFlag }) => {
+  const [messageType, setMessageType] = useState('none')
+  const [currentPlan, setCurrentPlan] = useState('')
+  const [schoolId, setSchoolId] = useState('')
+  const [user, setUser] = useState(null)
 
-type MessageType = 'none' | 'upgrade' | 'disabled'
-
-export const UpgradeMessage: React.FC<UpgradeMessageProps> = ({ 
-  requiredPlan, 
-  featureName,
-  featureFlag 
-}) => {
-  const { user } = useAuth()
-  const [messageType, setMessageType] = useState<MessageType>('none')
-  const [currentPlan, setCurrentPlan] = useState<string>('')
-  const [schoolId, setSchoolId] = useState<string>('')
+  // Ottieni l'utente corrente tramite API invece di useAuth
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch('/api/users/me', {
+          credentials: 'include',
+        })
+        if (response.ok) {
+          const data = await response.json()
+          setUser(data.user)
+        }
+      } catch (error) {
+        console.error('Error fetching user:', error)
+      }
+    }
+    fetchUser()
+  }, [])
 
   useEffect(() => {
     const checkPlanAndFeature = async () => {
-      console.log('Controllando piano e funzionalità')
       if (!user || !user.schools || user.schools.length === 0) {
         return
       }
@@ -51,7 +55,7 @@ export const UpgradeMessage: React.FC<UpgradeMessageProps> = ({
 
         // Controlla il piano
         const planHierarchy = { starter: 0, professional: 1, enterprise: 2 }
-        const currentPlanLevel = planHierarchy[plan as keyof typeof planHierarchy] || 0
+        const currentPlanLevel = planHierarchy[plan] || 0
         const requiredPlanLevel = planHierarchy[requiredPlan]
 
         // Se il piano non è adeguato, mostra il messaggio di upgrade
@@ -77,7 +81,10 @@ export const UpgradeMessage: React.FC<UpgradeMessageProps> = ({
         console.error('Error checking plan and feature:', error)
       }
     }
-    checkPlanAndFeature()
+    
+    if (user) {
+      checkPlanAndFeature()
+    }
   }, [user, requiredPlan, featureFlag])
 
   useEffect(() => {
@@ -94,7 +101,7 @@ export const UpgradeMessage: React.FC<UpgradeMessageProps> = ({
             text?.includes('crea nuovo') ||
             text?.includes('create new')
           ) {
-            ;(button as HTMLElement).style.display = 'none'
+            button.style.display = 'none'
           }
         })
       }
@@ -167,46 +174,48 @@ export const UpgradeMessage: React.FC<UpgradeMessageProps> = ({
       </div>
     )
   }
-  else if(messageType === 'disabled') {
+  
+  if (messageType === 'disabled') {
     return (
       <div
         style={{
-        padding: '2rem',
-        margin: '2rem 4rem',
-        backgroundColor: '#DBEAFE',
-        border: '2px solid #3B82F6',
-        borderRadius: '8px',
-        textAlign: 'center',
-      }}
-    >
-      <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚙️</div>
-      <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#1E40AF' }}>
-        Funzionalità disabilitata
-      </h2>
-      <p style={{ fontSize: '1rem', color: '#1E3A8A', marginBottom: '1.5rem' }}>
-        Abilitala nelle impostazioni scuola per poterla usare.
-      </p>
-      <Link
-        href={`/admin/collections/schools/${schoolId}`}
-        style={{
-          display: 'inline-block',
-          padding: '0.75rem 1.5rem',
-          backgroundColor: '#3B82F6',
-          color: 'white',
-          borderRadius: '6px',
-          textDecoration: 'none',
-          fontWeight: '600',
-          transition: 'background-color 0.2s',
+          padding: '2rem',
+          margin: '2rem 4rem',
+          backgroundColor: '#DBEAFE',
+          border: '2px solid #3B82F6',
+          borderRadius: '8px',
+          textAlign: 'center',
         }}
-        onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#2563EB')}
-        onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#3B82F6')}
       >
-        Vai alle impostazioni scuola
-      </Link>
-    </div>
-  )
-}
+        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚙️</div>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#1E40AF' }}>
+          Funzionalità disabilitata
+        </h2>
+        <p style={{ fontSize: '1rem', color: '#1E3A8A', marginBottom: '1.5rem' }}>
+          Abilitala nelle impostazioni scuola per poterla usare.
+        </p>
+        <Link
+          href={`/admin/collections/schools/${schoolId}`}
+          style={{
+            display: 'inline-block',
+            padding: '0.75rem 1.5rem',
+            backgroundColor: '#3B82F6',
+            color: 'white',
+            borderRadius: '6px',
+            textDecoration: 'none',
+            fontWeight: '600',
+            transition: 'background-color 0.2s',
+          }}
+          onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#2563EB')}
+          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#3B82F6')}
+        >
+          Vai alle impostazioni scuola
+        </Link>
+      </div>
+    )
+  }
+  
+  return null
 }
 
 export default UpgradeMessage
-

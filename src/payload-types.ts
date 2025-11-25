@@ -70,7 +70,6 @@ export interface Config {
     schools: School;
     homepage: Homepage;
     'privacy-policy': PrivacyPolicy;
-    'cookie-policy': CookiePolicy;
     'chi-siamo': ChiSiamo;
     teachers: Teacher;
     events: Event;
@@ -101,7 +100,6 @@ export interface Config {
     schools: SchoolsSelect<false> | SchoolsSelect<true>;
     homepage: HomepageSelect<false> | HomepageSelect<true>;
     'privacy-policy': PrivacyPolicySelect<false> | PrivacyPolicySelect<true>;
-    'cookie-policy': CookiePolicySelect<false> | CookiePolicySelect<true>;
     'chi-siamo': ChiSiamoSelect<false> | ChiSiamoSelect<true>;
     teachers: TeachersSelect<false> | TeachersSelect<true>;
     events: EventsSelect<false> | EventsSelect<true>;
@@ -889,47 +887,6 @@ export interface PrivacyPolicy {
   isActive?: boolean | null;
   /**
    * Dai un nome a questa versione della pagina Privacy Policy
-   */
-  name?: string | null;
-  /**
-   * Testo principale
-   */
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Configura i contenuti della pagina Cookie Policy
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "cookie-policy".
- */
-export interface CookiePolicy {
-  id: string;
-  /**
-   * Scuola a cui appartiene questa configurazione
-   */
-  school?: (string | null) | School;
-  /**
-   * Se disattivata, la testimonianza non sarà visibile nel frontend
-   */
-  isActive?: boolean | null;
-  /**
-   * Dai un nome a questa versione della pagina Cookie Policy
    */
   name?: string | null;
   /**
@@ -2207,10 +2164,6 @@ export interface PayloadLockedDocument {
         value: string | PrivacyPolicy;
       } | null)
     | ({
-        relationTo: 'cookie-policy';
-        value: string | CookiePolicy;
-      } | null)
-    | ({
         relationTo: 'chi-siamo';
         value: string | ChiSiamo;
       } | null)
@@ -2602,18 +2555,6 @@ export interface HomepageSelect<T extends boolean = true> {
  * via the `definition` "privacy-policy_select".
  */
 export interface PrivacyPolicySelect<T extends boolean = true> {
-  school?: T;
-  isActive?: T;
-  name?: T;
-  content?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "cookie-policy_select".
- */
-export interface CookiePolicySelect<T extends boolean = true> {
   school?: T;
   isActive?: T;
   name?: T;

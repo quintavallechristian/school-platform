@@ -26,7 +26,6 @@ import { Homepage } from './collections/Homepage'
 import { ChiSiamo } from './collections/ChiSiamo'
 import { CalendarDays } from './collections/CalendarDays'
 import { PrivacyPolicy } from './collections/PrivacyPolicy'
-import { CookiePolicy } from './collections/CookiePolicy'
 import { Children } from './collections/Children'
 import { ChildUpdates } from './collections/ChildUpdates'
 import { ParentAppointments } from './collections/ParentAppointments'
@@ -35,7 +34,7 @@ import { ParentRegistrations } from './collections/ParentRegistrations'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-const isProd = process.env.NODE_ENV === 'production'
+const isProduction = process.env.NODE_ENV === 'production'
 
 export default buildConfig({
   admin: {
@@ -52,7 +51,6 @@ export default buildConfig({
     Schools,
     Homepage,
     PrivacyPolicy,
-    CookiePolicy,
     // Contenuti
     ChiSiamo,
     Teachers,
@@ -89,7 +87,7 @@ export default buildConfig({
     url: process.env.DATABASE_URI || '',
   }),
   sharp,
-  plugins: isProd ? [
+  plugins: isProduction? [
     s3Storage({
       collections: {
         media: true,
@@ -104,5 +102,5 @@ export default buildConfig({
         },
       },
     }),
-  ]:[],
+  ] : [],
 })
