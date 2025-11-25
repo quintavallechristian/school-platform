@@ -9,7 +9,7 @@ export const Schools: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'name',
-    defaultColumns: ['name', 'domain', 'isActive', 'createdAt'],
+    defaultColumns: ['name', 'isActive', 'subscription.plan', 'createdAt'],
     group: 'Configurazione sito',
     components: {
       beforeList: [

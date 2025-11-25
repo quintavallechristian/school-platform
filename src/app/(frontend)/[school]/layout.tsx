@@ -202,7 +202,7 @@ export default async function SchoolLayout({
                   </Link>
                 </li>
                 <li>
-                  <Link href={`/${schoolSlug}/cookie-policy`} className="hover:text-primary">
+                  <Link href={`/cookie-policy`} className="hover:text-primary">
                     Cookie Policy
                   </Link>
                 </li>
