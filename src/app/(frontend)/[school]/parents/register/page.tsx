@@ -1,210 +1,170 @@
 'use client'
 
-import { useFormStatus } from 'react-dom'
-import { useActionState } from 'react'
-import { registerParent } from './action'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { useParams, useRouter } from 'next/navigation'
+import { Download, Shield, CheckCircle, FileText, Building2 } from 'lucide-react'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
+import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { useEffect } from 'react'
-import { UserPlus, User, Mail, Baby, School } from 'lucide-react'
-
-function SubmitButton() {
-  const { pending } = useFormStatus()
-
-  return (
-    <Button type="submit" className="w-full" disabled={pending}>
-      {pending ? 'Invio in corso...' : 'Invia Richiesta'}
-    </Button>
-  )
-}
+import { useParams } from 'next/navigation'
 
 export default function ParentRegisterPage() {
   const params = useParams()
-  const router = useRouter()
   const school = params.school as string
-  const [state, formAction] = useActionState(registerParent, null)
 
-  // Redirect to pending page on success
-  useEffect(() => {
-    if (state?.success) {
-      router.push(`/${school}/parents/register/pending`)
-    }
-  }, [state?.success, school, router])
+  const handleDownloadForm = () => {
+    // Apre il modulo in una nuova finestra per la stampa
+    window.open('/modulo-registrazione-genitore.pdf', '_blank')
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-24">
-      <SpotlightCard className="w-full max-w-2xl">
-        <div className="space-y-6">
+    <div className="min-h-screen flex items-center justify-center py-24 px-4">
+      <SpotlightCard className="w-full max-w-3xl">
+        <div className="space-y-8">
           {/* Header */}
-          <div className="space-y-2 text-center">
-            <div className="flex items-center justify-center gap-2">
-              <UserPlus className="h-8 w-8" />
-              <h1 className="text-3xl font-bold">Registrazione Genitore</h1>
+          <div className="text-center space-y-4">
+            <div className="flex items-center justify-center gap-3">
+              <Shield className="h-10 w-10 text-primary" />
+              <h1 className="text-4xl font-bold">Registrazione Genitore</h1>
             </div>
-            <p className="text-muted-foreground">
-              Compila il modulo per richiedere l&apos;accesso all&apos;area genitori
+            <p className="text-lg text-muted-foreground">
+              Accesso all&apos;area riservata genitori
             </p>
           </div>
 
-          {/* Form */}
-          <form action={formAction} className="space-y-6">
-            <input type="hidden" name="school" value={school} />
-
-            {/* Parent Information */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 border-b pb-2">
-                <User className="h-5 w-5" />
-                <h2 className="text-xl font-semibold">Dati Genitore</h2>
-              </div>
-              
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <label htmlFor="parentFirstName" className="text-sm font-medium">
-                    Nome *
-                  </label>
-                  <Input
-                    id="parentFirstName"
-                    name="parentFirstName"
-                    type="text"
-                    placeholder="Mario"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="parentLastName" className="text-sm font-medium">
-                    Cognome *
-                  </label>
-                  <Input
-                    id="parentLastName"
-                    name="parentLastName"
-                    type="text"
-                    placeholder="Rossi"
-                    required
-                  />
-                </div>
-              </div>
-
+          {/* Security Notice */}
+          <div className="p-6 bg-blue-50 dark:bg-blue-950/20 border-2 border-blue-200 dark:border-blue-900 rounded-lg">
+            <div className="flex items-start gap-4">
+              <Shield className="h-6 w-6 text-blue-600 dark:text-blue-400 shrink-0 mt-1" />
               <div className="space-y-2">
-                <label htmlFor="parentEmail" className="text-sm font-medium flex items-center gap-2">
-                  <Mail className="h-4 w-4" />
-                  Email *
-                </label>
-                <Input
-                  id="parentEmail"
-                  name="parentEmail"
-                  type="email"
-                  placeholder="mario.rossi@example.com"
-                  required
-                />
-                <p className="text-xs text-muted-foreground">
-                  Questa email sarà utilizzata per accedere all&apos;area genitori
+                <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100">
+                  Procedura di Registrazione Sicura
+                </h3>
+                <p className="text-sm text-blue-800 dark:text-blue-200 leading-relaxed">
+                  Per garantire la massima sicurezza dei bambini e verificare l&apos;identità dei
+                  genitori, la registrazione all&apos;area genitori avviene{' '}
+                  <strong>esclusivamente di persona presso la scuola</strong>.
                 </p>
               </div>
+            </div>
+          </div>
 
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <label htmlFor="password" className="text-sm font-medium">
-                    Password *
-                  </label>
-                  <Input
-                    id="password"
-                    name="password"
-                    type="password"
-                    placeholder="Almeno 8 caratteri"
-                    required
-                    minLength={8}
-                  />
+          {/* Process Steps */}
+          <div className="space-y-4">
+            <h2 className="text-2xl font-semibold text-center mb-6">Come procedere</h2>
+
+            <div className="grid gap-4">
+              {/* Step 1 */}
+              <div className="flex gap-4 p-5 bg-linear-to-r from-purple-50 to-blue-50 dark:from-purple-950/20 dark:to-blue-950/20 rounded-lg border border-purple-200 dark:border-purple-900">
+                <div className="shrink-0 w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-lg">
+                  1
                 </div>
-                <div className="space-y-2">
-                  <label htmlFor="confirmPassword" className="text-sm font-medium">
-                    Conferma Password *
-                  </label>
-                  <Input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type="password"
-                    placeholder="Ripeti la password"
-                    required
-                  />
+                <div className="flex-1">
+                  <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
+                    <Download className="h-5 w-5" />
+                    Scarica il modulo
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Scarica e stampa il modulo di registrazione cliccando sul pulsante qui sotto.
+                  </p>
+                  <Button onClick={handleDownloadForm} className="gap-2" size="sm">
+                    <FileText className="h-4 w-4" />
+                    Scarica Modulo (PDF)
+                  </Button>
+                </div>
+              </div>
+
+              {/* Step 2 */}
+              <div className="flex gap-4 p-5 bg-linear-to-r from-blue-50 to-cyan-50 dark:from-blue-950/20 dark:to-cyan-950/20 rounded-lg border border-blue-200 dark:border-blue-900">
+                <div className="shrink-0 w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-lg">
+                  2
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    Compila il modulo
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Compila tutti i campi richiesti con i tuoi dati e quelli del bambino/a. Firma il
+                    documento.
+                  </p>
+                </div>
+              </div>
+
+              {/* Step 3 */}
+              <div className="flex gap-4 p-5 bg-linear-to-r from-cyan-50 to-teal-50 dark:from-cyan-950/20 dark:to-teal-950/20 rounded-lg border border-cyan-200 dark:border-cyan-900">
+                <div className="shrink-0 w-10 h-10 rounded-full bg-cyan-600 text-white flex items-center justify-center font-bold text-lg">
+                  3
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
+                    <Building2 className="h-5 w-5" />
+                    Porta il modulo in segreteria
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Consegna il modulo compilato in segreteria insieme ad un{' '}
+                    <strong>documento d&apos;identità valido</strong>. Il personale verificherà
+                    l&apos;identità e la relazione con il bambino/a.
+                  </p>
+                </div>
+              </div>
+
+              {/* Step 4 */}
+              <div className="flex gap-4 p-5 bg-linear-to-r from-teal-50 to-green-50 dark:from-teal-950/20 dark:to-green-950/20 rounded-lg border border-teal-200 dark:border-teal-900">
+                <div className="shrink-0 w-10 h-10 rounded-full bg-green-600 text-white flex items-center justify-center font-bold text-lg">
+                  4
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
+                    <CheckCircle className="h-5 w-5" />
+                    Ricevi le credenziali
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Dopo la verifica, riceverai via email le credenziali per accedere all&apos;area
+                    riservata genitori.
+                  </p>
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* Child Information */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 border-b pb-2">
-                <Baby className="h-5 w-5" />
-                <h2 className="text-xl font-semibold">Dati Bambino</h2>
-              </div>
-              
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <label htmlFor="childFirstName" className="text-sm font-medium">
-                    Nome *
-                  </label>
-                  <Input
-                    id="childFirstName"
-                    name="childFirstName"
-                    type="text"
-                    placeholder="Luca"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="childLastName" className="text-sm font-medium">
-                    Cognome *
-                  </label>
-                  <Input
-                    id="childLastName"
-                    name="childLastName"
-                    type="text"
-                    placeholder="Rossi"
-                    required
-                  />
-                </div>
-              </div>
+          {/* Important Notes */}
+          <div className="p-6 bg-amber-50 dark:bg-amber-950/20 border-2 border-amber-200 dark:border-amber-900 rounded-lg">
+            <h3 className="font-semibold text-amber-900 dark:text-amber-100 mb-3 text-lg">
+              ⚠️ Note Importanti
+            </h3>
+            <ul className="space-y-2 text-sm text-amber-800 dark:text-amber-200">
+              <li className="flex gap-2">
+                <span className="font-bold">•</span>
+                <span>
+                  È necessario presentarsi <strong>di persona</strong> con un documento
+                  d&apos;identità valido
+                </span>
+              </li>
+              <li className="flex gap-2">
+                <span className="font-bold">•</span>
+                <span>Solo i genitori o tutori legali possono richiedere l&apos;accesso</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="font-bold">•</span>
+                <span>Il bambino/a deve essere già iscritto alla scuola</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="font-bold">•</span>
+                <span>
+                  L&apos;attivazione dell&apos;account può richiedere 1-2 giorni lavorativi
+                </span>
+              </li>
+            </ul>
+          </div>
 
-              <div className="space-y-2">
-                <label htmlFor="childClassroom" className="text-sm font-medium flex items-center gap-2">
-                  <School className="h-4 w-4" />
-                  Sezione/Classe *
-                </label>
-                <Input
-                  id="childClassroom"
-                  name="childClassroom"
-                  type="text"
-                  placeholder="Es: 1A, Sezione Azzurra"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Error Message */}
-            {state?.error && (
-              <div className="rounded-lg bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900 p-4">
-                <p className="text-sm text-red-600 dark:text-red-400 font-medium">
-                  {state.error}
-                </p>
-              </div>
-            )}
-
-            {/* Submit Button */}
-            <SubmitButton />
-
-            {/* Login Link */}
-            <div className="text-center text-sm">
-              <span className="text-muted-foreground">Hai già un account? </span>
-              <Link
-                href={`/${school}/parents/login`}
-                className="font-medium underline underline-offset-4 hover:text-primary"
-              >
-                Accedi
-              </Link>
-            </div>
-          </form>
+          {/* Already have account */}
+          <div className="text-center pt-6 border-t">
+            <p className="text-sm text-muted-foreground mb-3">Hai già un account?</p>
+            <Link href={`/${school}/parents/login`}>
+              <Button variant="outline" className="gap-2">
+                Accedi all&apos;Area Genitori
+              </Button>
+            </Link>
+          </div>
         </div>
       </SpotlightCard>
     </div>

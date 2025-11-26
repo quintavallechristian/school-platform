@@ -15,7 +15,7 @@ export const ChildUpdates: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'child', 'type', 'publishedAt'],
+    defaultColumns: ['title', 'parent', 'type', 'publishedAt'],
     group: 'Area genitori',
     components: {
       beforeList: [
@@ -34,26 +34,27 @@ export const ChildUpdates: CollectionConfig = {
     // Parents vedono solo gli updates dei propri figli
     read: ({ req: { user } }) => {
       if (!user) return false
-      
+
       // Super-admin vede tutto
       if (user.role === 'super-admin') return true
-      
-      // Parent vede solo updates dei propri figli
-      if (user.role === 'parent' && user.children && user.children.length > 0) {
-        const childrenIds = user.children.map((child) => 
-          typeof child === 'string' ? child : child.id
-        )
+
+      // Parent vede solo i propri updates
+      if (user.role === 'parent') {
         return {
-          child: {
-            in: childrenIds,
+          parent: {
+            equals: user.id,
           },
         } as any
       }
-      
+
       // School-admin ed editor vedono updates della loro scuola
-      if ((user.role === 'school-admin' || user.role === 'editor') && user.schools && user.schools.length > 0) {
+      if (
+        (user.role === 'school-admin' || user.role === 'editor') &&
+        user.schools &&
+        user.schools.length > 0
+      ) {
         const schoolIds = user.schools.map((school) =>
-          typeof school === 'string' ? school : school.id
+          typeof school === 'string' ? school : school.id,
         )
         return {
           school: {
@@ -61,18 +62,22 @@ export const ChildUpdates: CollectionConfig = {
           },
         } as any
       }
-      
+
       return false
     },
     create: tenantCreate, // School-admin ed editor possono creare
     update: ({ req: { user } }) => {
       if (!user) return false
       if (user.role === 'super-admin') return true
-      
+
       // Solo school-admin ed editor, non i genitori
-      if ((user.role === 'school-admin' || user.role === 'editor') && user.schools && user.schools.length > 0) {
+      if (
+        (user.role === 'school-admin' || user.role === 'editor') &&
+        user.schools &&
+        user.schools.length > 0
+      ) {
         const schoolIds = user.schools.map((school) =>
-          typeof school === 'string' ? school : school.id
+          typeof school === 'string' ? school : school.id,
         )
         return {
           school: {
@@ -80,7 +85,7 @@ export const ChildUpdates: CollectionConfig = {
           },
         }
       }
-      
+
       return false
     },
     delete: tenantDelete,
@@ -90,29 +95,39 @@ export const ChildUpdates: CollectionConfig = {
   },
   fields: [
     getSchoolField('Scuola a cui appartiene questo aggiornamento'),
-        {
-      name: 'child',
+    {
+      name: 'parent',
       type: 'relationship',
-      relationTo: 'children',
+      relationTo: 'users',
       required: true,
-      label: 'Bambino',
+      label: 'Genitore',
       admin: {
-        description: 'Il bambino a cui si riferisce questo aggiornamento',
+        description: 'Il genitore a cui si riferisce questo aggiornamento',
         condition: (data) => {
           // Mostra il campo solo se è stata selezionata una scuola
           return !!data.school
         },
       },
       filterOptions: ({ data }) => {
-        // Filtra i bambini per mostrare solo quelli della scuola selezionata
+        // Filtra i genitori per mostrare solo quelli della scuola selezionata con role parent
         if (data?.school) {
+          const schoolId = typeof data.school === 'string' ? data.school : data.school.id
           return {
-            school: {
-              equals: typeof data.school === 'string' ? data.school : data.school.id,
-            },
-          }
+            and: [
+              {
+                schools: {
+                  contains: schoolId,
+                },
+              },
+              {
+                role: {
+                  equals: 'parent',
+                },
+              },
+            ],
+          } as any
         }
-        // Se non c'è scuola selezionata, restituisci false per non mostrare nessun bambino
+        // Se non c'è scuola selezionata, restituisci false per non mostrare nessun genitore
         return false
       },
     },
@@ -174,23 +189,6 @@ export const ChildUpdates: CollectionConfig = {
         date: {
           displayFormat: 'dd/MM/yyyy HH:mm',
         },
-      },
-    },
-    {
-      name: 'author',
-      type: 'relationship',
-      relationTo: 'users',
-      label: 'Autore',
-      admin: {
-        description: 'Chi ha creato questo aggiornamento',
-        readOnly: true,
-      },
-      hooks: {
-        beforeChange: [
-          ({ req }) => {
-            return req.user?.id
-          },
-        ],
       },
     },
   ],

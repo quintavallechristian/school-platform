@@ -142,7 +142,8 @@ export const Schools: CollectionConfig = {
                       defaultValue: '#1e40af',
                       admin: {
                         width: '50%',
-                        description: 'Colore principale del testo (tema chiaro). Deve avere contrasto >= 4.5:1 con lo sfondo per WCAG AA.',
+                        description:
+                          'Colore principale del testo (tema chiaro). Deve avere contrasto >= 4.5:1 con lo sfondo per WCAG AA.',
                         components: {
                           Field: '@/components/ColorPicker/ColorPickerField',
                         },
@@ -155,7 +156,8 @@ export const Schools: CollectionConfig = {
                       defaultValue: '#7c3aed',
                       admin: {
                         width: '50%',
-                        description: 'Colore secondario del testo (tema chiaro). Deve avere contrasto >= 4.5:1 con lo sfondo per WCAG AA.',
+                        description:
+                          'Colore secondario del testo (tema chiaro). Deve avere contrasto >= 4.5:1 con lo sfondo per WCAG AA.',
                         components: {
                           Field: '@/components/ColorPicker/ColorPickerField',
                         },
@@ -214,7 +216,8 @@ export const Schools: CollectionConfig = {
                       defaultValue: '#93c5fd',
                       admin: {
                         width: '50%',
-                        description: 'Colore principale del testo (tema scuro). Deve avere contrasto >= 4.5:1 con lo sfondo per WCAG AA.',
+                        description:
+                          'Colore principale del testo (tema scuro). Deve avere contrasto >= 4.5:1 con lo sfondo per WCAG AA.',
                         components: {
                           Field: '@/components/ColorPicker/ColorPickerField',
                         },
@@ -227,7 +230,8 @@ export const Schools: CollectionConfig = {
                       defaultValue: '#c4b5fd',
                       admin: {
                         width: '50%',
-                        description: 'Colore secondario del testo (tema scuro). Deve avere contrasto >= 4.5:1 con lo sfondo per WCAG AA.',
+                        description:
+                          'Colore secondario del testo (tema scuro). Deve avere contrasto >= 4.5:1 con lo sfondo per WCAG AA.',
                         components: {
                           Field: '@/components/ColorPicker/ColorPickerField',
                         },
@@ -538,9 +542,7 @@ export const Schools: CollectionConfig = {
             )
 
             if (!hasEnterprisePlan) {
-              throw new Error(
-                'È richiesto il piano Enterprise per gestire più di una scuola.',
-              )
+              throw new Error('È richiesto il piano Enterprise per gestire più di una scuola.')
             }
           }
         }
@@ -559,8 +561,8 @@ export const Schools: CollectionConfig = {
               if (ratio < 4.5) {
                 warnings.push(
                   `⚠️ ACCESSIBILITÀ: Il contrasto tra testo primario (${textPrimary}) e sfondo primario (${bgPrimary}) nel tema chiaro è ${ratio.toFixed(2)}:1. ` +
-                  `Il minimo raccomandato per WCAG 2.1 AA è 4.5:1. ` +
-                  `Questo potrebbe rendere il testo difficile da leggere per persone con disabilità visive.`
+                    `Il minimo raccomandato per WCAG 2.1 AA è 4.5:1. ` +
+                    `Questo potrebbe rendere il testo difficile da leggere per persone con disabilità visive.`,
                 )
               }
             } catch (_error) {
@@ -577,7 +579,7 @@ export const Schools: CollectionConfig = {
               if (ratio < 4.5) {
                 warnings.push(
                   `⚠️ ACCESSIBILITÀ: Il contrasto tra testo secondario (${textSecondary}) e sfondo secondario (${bgSecondary}) nel tema chiaro è ${ratio.toFixed(2)}:1. ` +
-                  `Il minimo raccomandato per WCAG 2.1 AA è 4.5:1.`
+                    `Il minimo raccomandato per WCAG 2.1 AA è 4.5:1.`,
                 )
               }
             } catch (_error) {
@@ -597,7 +599,7 @@ export const Schools: CollectionConfig = {
               if (ratio < 4.5) {
                 warnings.push(
                   `⚠️ ACCESSIBILITÀ: Il contrasto tra testo primario (${textPrimary}) e sfondo primario (${bgPrimary}) nel tema scuro è ${ratio.toFixed(2)}:1. ` +
-                  `Il minimo raccomandato per WCAG 2.1 AA è 4.5:1.`
+                    `Il minimo raccomandato per WCAG 2.1 AA è 4.5:1.`,
                 )
               }
             } catch (_error) {
@@ -614,7 +616,7 @@ export const Schools: CollectionConfig = {
               if (ratio < 4.5) {
                 warnings.push(
                   `⚠️ ACCESSIBILITÀ: Il contrasto tra testo secondario (${textSecondary}) e sfondo secondario (${bgSecondary}) nel tema scuro è ${ratio.toFixed(2)}:1. ` +
-                  `Il minimo raccomandato per WCAG 2.1 AA è 4.5:1.`
+                    `Il minimo raccomandato per WCAG 2.1 AA è 4.5:1.`,
                 )
               }
             } catch (_error) {
@@ -626,14 +628,14 @@ export const Schools: CollectionConfig = {
         // Mostra warning se ci sono problemi di accessibilità
         if (warnings.length > 0) {
           req.payload.logger.warn('\n' + warnings.join('\n\n'))
-          
+
           // Aggiungi un messaggio visibile nell'admin
           // Nota: Payload non supporta nativamente i warning non-bloccanti nell'UI,
           // quindi logghiamo nel console del server
           console.warn('\n=========================================')
           console.warn('⚠️  WARNING ACCESSIBILITÀ COLORI')
           console.warn('=========================================\n')
-          warnings.forEach(w => console.warn(w + '\n'))
+          warnings.forEach((w) => console.warn(w + '\n'))
           console.warn('Il salvataggio continuerà, ma si consiglia di correggere questi problemi.')
           console.warn('=========================================\n')
         }

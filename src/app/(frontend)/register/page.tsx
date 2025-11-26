@@ -9,6 +9,9 @@ import { getPlanFromPrice, priceIdList } from '@/lib/plans'
 import { registerSchoolSchema } from '@/lib/validations/register'
 import { Suspense, useState } from 'react'
 import { z } from 'zod'
+import { PrivacyPolicyModal } from '@/components/PrivacyPolicy/PrivacyPolicyModal'
+import { TermsOfServiceModal } from '@/components/TermsOfService/TermsOfServiceModal'
+import { DpaModal } from '@/components/Dpa/DpaModal'
 
 async function handleCheckout(
   priceId: string,
@@ -134,7 +137,7 @@ function SignupContent() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-8">
+    <div className="min-h-screen flex items-center justify-center py-20">
       <div>
         <SpotlightCard>Stai attivando il piano {getPlanFromPrice(priceId!)}</SpotlightCard>
         <SpotlightCard className="mt-6">
@@ -266,6 +269,57 @@ function SignupContent() {
                   <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>
                 )}
               </div>
+            </div>
+            <div className="flex items-center space-x-2 mt-8">
+              <input
+                type="checkbox"
+                id="privacy"
+                name="privacy"
+                required
+                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <label htmlFor="privacy" className="text-sm text-gray-700 dark:text-gray-300">
+                Accetto la{' '}
+                <PrivacyPolicyModal>
+                  <span className="underline cursor-pointer text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                    privacy policy
+                  </span>
+                </PrivacyPolicyModal>
+              </label>
+            </div>
+            <div className="flex items-center space-x-2 mt-2">
+              <input
+                type="checkbox"
+                id="tos"
+                name="tos"
+                required
+                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <label htmlFor="tos" className="text-sm text-gray-700 dark:text-gray-300">
+                Accetto i{' '}
+                <TermsOfServiceModal>
+                  <span className="underline cursor-pointer text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                    termini e condizioni
+                  </span>
+                </TermsOfServiceModal>
+              </label>
+            </div>
+            <div className="flex items-center space-x-2 mt-2">
+              <input
+                type="checkbox"
+                id="dpa"
+                name="dpa"
+                required
+                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <label htmlFor="dpa" className="text-sm text-gray-700 dark:text-gray-300">
+                Accetto il{' '}
+                <DpaModal>
+                  <span className="underline cursor-pointer text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                    Data processing agreement
+                  </span>
+                </DpaModal>
+              </label>
             </div>
             <div className="flex flex-col gap-2 mt-4">
               <Button type="submit" className="w-full" disabled={isSubmitting}>

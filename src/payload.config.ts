@@ -26,10 +26,8 @@ import { Homepage } from './collections/Homepage'
 import { ChiSiamo } from './collections/ChiSiamo'
 import { CalendarDays } from './collections/CalendarDays'
 import { PrivacyPolicy } from './collections/PrivacyPolicy'
-import { Children } from './collections/Children'
 import { ChildUpdates } from './collections/ChildUpdates'
 import { ParentAppointments } from './collections/ParentAppointments'
-import { ParentRegistrations } from './collections/ParentRegistrations'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -65,7 +63,6 @@ export default buildConfig({
     Communications,
     EmailSubscribers,
     // Area genitori
-    ParentRegistrations,
     ChildUpdates,
     ParentAppointments,
     // Blog
@@ -74,9 +71,7 @@ export default buildConfig({
     Media,
     Gallery,
     // Utenti
-    Children,
     Users,
-
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
@@ -87,20 +82,22 @@ export default buildConfig({
     url: process.env.DATABASE_URI || '',
   }),
   sharp,
-  plugins: isProduction? [
-    s3Storage({
-      collections: {
-        media: true,
-      },
-      bucket: process.env.R2_BUCKET!,
-      config: {
-        endpoint: process.env.R2_ENDPOINT!,
-        region: 'auto',
-        credentials: {
-          accessKeyId: process.env.R2_ACCESS_KEY_ID!,
-          secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
-        },
-      },
-    }),
-  ] : [],
+  plugins: isProduction
+    ? [
+        s3Storage({
+          collections: {
+            media: true,
+          },
+          bucket: process.env.R2_BUCKET!,
+          config: {
+            endpoint: process.env.R2_ENDPOINT!,
+            region: 'auto',
+            credentials: {
+              accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+              secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+            },
+          },
+        }),
+      ]
+    : [],
 })

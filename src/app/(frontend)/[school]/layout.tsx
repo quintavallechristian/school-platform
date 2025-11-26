@@ -198,12 +198,22 @@ export default async function SchoolLayout({
               <ul className="space-y-2 mt-4 text-sm text-gray-600 dark:text-gray-400">
                 <li>
                   <Link href={`/${schoolSlug}/privacy-policy`} className="hover:text-primary">
-                    Privacy Policy
+                    Privacy Policy scuola
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/tos" className="hover:text-primary">
+                    Termini di Servizio
+                  </Link>
+                </li>
+                <li>
+                  <Link href={`/privacy-policy`} className="hover:text-primary">
+                    Privacy Policy scuoleinfanzia.eu
                   </Link>
                 </li>
                 <li>
                   <Link href={`/cookie-policy`} className="hover:text-primary">
-                    Cookie Policy
+                    Cookie Policy scuoleinfanzia.eu
                   </Link>
                 </li>
               </ul>

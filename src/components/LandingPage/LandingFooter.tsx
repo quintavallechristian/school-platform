@@ -36,7 +36,7 @@ export function LandingFooter() {
           <div>
             <h3 className="font-bold text-lg mb-4">School Platform</h3>
             <p className="text-sm text-muted-foreground mb-4">
-              La piattaforma digitale completa per scuole dell&apos;infanzia e primarie.
+              La piattaforma digitale completa per scuole dell&apos;infanzia.
             </p>
             <div className="flex gap-4">
               <a
@@ -128,35 +128,28 @@ export function LandingFooter() {
             <h3 className="font-bold mb-4">Legale</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="#" className="text-muted-foreground hover:text-foreground">
+                <Link
+                  href={`/privacy-policy`}
+                  className="text-muted-foreground hover:text-foreground"
+                >
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-muted-foreground hover:text-foreground">
+                <Link href="/tos" className="text-muted-foreground hover:text-foreground">
                   Termini di Servizio
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-muted-foreground hover:text-foreground">
+                <Link
+                  href={`/cookie-policy`}
+                  className="text-muted-foreground hover:text-foreground"
+                >
                   Cookie Policy
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="text-muted-foreground hover:text-foreground">
-                  GDPR
                 </Link>
               </li>
             </ul>
           </div>
-        </div>
-      </div>
-
-      {/* Bottom Bar */}
-      <div className="border-t py-6 px-8">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-          <p>© {currentYear} School Platform. Tutti i diritti riservati.</p>
-          <p>Made with ❤️ for education</p>
         </div>
       </div>
     </footer>

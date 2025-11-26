@@ -48,9 +48,9 @@ export default function Hero({
   }
 }) {
   // Colori di default conformi WCAG 2.1 AA (allineati con layout.tsx)
-  const defaultPrimaryColor = '#1e40af'        // Blu scuro (8.72:1 su bianco)
-  const defaultSecondaryColor = '#7c3aed'      // Viola scuro (6.37:1 su bianco)
-  const defaultBackgroundPrimaryColor = '#ffffff'   // Bianco
+  const defaultPrimaryColor = '#1e40af' // Blu scuro (8.72:1 su bianco)
+  const defaultSecondaryColor = '#7c3aed' // Viola scuro (6.37:1 su bianco)
+  const defaultBackgroundPrimaryColor = '#ffffff' // Bianco
   const defaultBackgroundSecondaryColor = '#f3f4f6' // Grigio chiaro
 
   const [textGradientStartColor, setTextGradientStartColor] = useState(defaultPrimaryColor)
@@ -68,10 +68,17 @@ export default function Hero({
       // Leggi i colori dalle CSS variables
       const rootStyles = getComputedStyle(document.documentElement)
 
-      const primaryColor = rootStyles.getPropertyValue('--color-primary').trim()
-      const secondaryColor = rootStyles.getPropertyValue('--color-secondary').trim()
-      const bgPrimaryColor = rootStyles.getPropertyValue('--color-background-primary').trim()
-      const bgSecondaryColor = rootStyles.getPropertyValue('--color-background-secondary').trim()
+      let primaryColor = rootStyles.getPropertyValue('--color-primary').trim()
+      if (!primaryColor) primaryColor = rootStyles.getPropertyValue('--primary').trim()
+
+      let secondaryColor = rootStyles.getPropertyValue('--color-secondary').trim()
+      if (!secondaryColor) secondaryColor = rootStyles.getPropertyValue('--secondary').trim()
+
+      let bgPrimaryColor = rootStyles.getPropertyValue('--color-background-primary').trim()
+      if (!bgPrimaryColor) bgPrimaryColor = rootStyles.getPropertyValue('--background').trim()
+
+      let bgSecondaryColor = rootStyles.getPropertyValue('--color-background-secondary').trim()
+      if (!bgSecondaryColor) bgSecondaryColor = rootStyles.getPropertyValue('--muted').trim()
 
       // Ottieni il colore di background effettivo dal body
       const bodyBg = getComputedStyle(document.body).backgroundColor
@@ -83,17 +90,17 @@ export default function Hero({
       // Funzione helper per convertire qualsiasi formato colore in hex
       const normalizeColor = (color: string): string | null => {
         if (!color) return null
-        
+
         // Se è già hex, ritorna direttamente
         if (color.startsWith('#')) return color
-        
+
         // Altrimenti, usa un elemento temporaneo per convertire
         const temp = document.createElement('div')
         temp.style.color = color
         document.body.appendChild(temp)
         const computed = getComputedStyle(temp).color
         document.body.removeChild(temp)
-        
+
         // Converti rgb/rgba in hex
         const match = computed.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)/)
         if (match) {
@@ -102,7 +109,7 @@ export default function Hero({
           const b = parseInt(match[3]).toString(16).padStart(2, '0')
           return `#${r}${g}${b}`
         }
-        
+
         return null
       }
 
@@ -173,11 +180,11 @@ export default function Hero({
 
   // Crea i colori per il GradientText usando i colori della scuola
   const textGradientColors = [
-    textGradientStartColor,  // Primary color
-    textGradientEndColor,    // Secondary color
-    textGradientStartColor,  // Primary color
-    textGradientEndColor,    // Secondary color
-    textGradientStartColor,  // Primary color
+    textGradientStartColor, // Primary color
+    textGradientEndColor, // Secondary color
+    textGradientStartColor, // Primary color
+    textGradientEndColor, // Secondary color
+    textGradientStartColor, // Primary color
   ]
 
   // Prepara l'URL dell'immagine di sfondo

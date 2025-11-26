@@ -1,8 +1,5 @@
 import { CollectionConfig, Access } from 'payload'
-import {
-  assignSchoolBeforeChange,
-  getSchoolField,
-} from '../lib/access'
+import { assignSchoolBeforeChange, getSchoolField } from '../lib/access'
 
 export const ParentAppointments: CollectionConfig = {
   slug: 'parent-appointments',
@@ -12,7 +9,7 @@ export const ParentAppointments: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'date', 'child', 'status'],
+    defaultColumns: ['title', 'date', 'parent', 'status'],
     group: 'Area genitori',
     components: {
       beforeList: [
@@ -31,26 +28,27 @@ export const ParentAppointments: CollectionConfig = {
     // Parents vedono solo i propri appuntamenti
     read: (({ req: { user } }) => {
       if (!user) return false
-      
+
       // Super-admin vede tutto
       if (user.role === 'super-admin') return true
-      
-      // Parent vede solo appuntamenti dei propri figli
-      if (user.role === 'parent' && user.children && user.children.length > 0) {
-        const childrenIds = user.children.map((child) => 
-          typeof child === 'string' ? child : child.id
-        )
+
+      // Parent vede solo i propri appuntamenti
+      if (user.role === 'parent') {
         return {
-          child: {
-            in: childrenIds,
+          parent: {
+            equals: user.id,
           },
         }
       }
-      
+
       // School-admin ed editor vedono appuntamenti della loro scuola
-      if ((user.role === 'school-admin' || user.role === 'editor') && user.schools && user.schools.length > 0) {
+      if (
+        (user.role === 'school-admin' || user.role === 'editor') &&
+        user.schools &&
+        user.schools.length > 0
+      ) {
         const schoolIds = user.schools.map((school) =>
-          typeof school === 'string' ? school : school.id
+          typeof school === 'string' ? school : school.id,
         )
         return {
           school: {
@@ -58,33 +56,36 @@ export const ParentAppointments: CollectionConfig = {
           },
         }
       }
-      
+
       return false
     }) as Access,
     create: ({ req: { user } }) => {
       // Solo school-admin ed editor possono creare appuntamenti
-      return user?.role === 'super-admin' || user?.role === 'school-admin' || user?.role === 'editor'
+      return (
+        user?.role === 'super-admin' || user?.role === 'school-admin' || user?.role === 'editor'
+      )
     },
     update: (({ req: { user } }) => {
       if (!user) return false
       if (user.role === 'super-admin') return true
-      
-      // Parent può cancellare appuntamenti dei propri figli (cambiare status)
-      if (user.role === 'parent' && user.children && user.children.length > 0) {
-        const childrenIds = user.children.map((child) => 
-          typeof child === 'string' ? child : child.id
-        )
+
+      // Parent può cancellare i propri appuntamenti (cambiare status)
+      if (user.role === 'parent') {
         return {
-          child: {
-            in: childrenIds,
+          parent: {
+            equals: user.id,
           },
         }
       }
-      
+
       // School-admin ed editor possono modificare appuntamenti della loro scuola
-      if ((user.role === 'school-admin' || user.role === 'editor') && user.schools && user.schools.length > 0) {
+      if (
+        (user.role === 'school-admin' || user.role === 'editor') &&
+        user.schools &&
+        user.schools.length > 0
+      ) {
         const schoolIds = user.schools.map((school) =>
-          typeof school === 'string' ? school : school.id
+          typeof school === 'string' ? school : school.id,
         )
         return {
           school: {
@@ -92,17 +93,17 @@ export const ParentAppointments: CollectionConfig = {
           },
         }
       }
-      
+
       return false
     }) as Access,
     delete: (({ req: { user } }) => {
       if (!user) return false
       if (user.role === 'super-admin') return true
-      
+
       // Solo school-admin può eliminare
       if (user.role === 'school-admin' && user.schools && user.schools.length > 0) {
         const schoolIds = user.schools.map((school) =>
-          typeof school === 'string' ? school : school.id
+          typeof school === 'string' ? school : school.id,
         )
         return {
           school: {
@@ -110,7 +111,7 @@ export const ParentAppointments: CollectionConfig = {
           },
         }
       }
-      
+
       return false
     }) as Access,
   },
@@ -119,29 +120,39 @@ export const ParentAppointments: CollectionConfig = {
   },
   fields: [
     getSchoolField('Scuola'),
-        {
-      name: 'child',
+    {
+      name: 'parent',
       type: 'relationship',
-      relationTo: 'children',
+      relationTo: 'users',
       required: true,
-      label: 'Bambino',
+      label: 'Genitore',
       admin: {
-        description: 'Il bambino per cui è l\'appuntamento',
+        description: "Il genitore per cui è l'appuntamento",
         condition: (data) => {
           // Mostra il campo solo se è stata selezionata una scuola
           return !!data.school
         },
       },
       filterOptions: ({ data }) => {
-        // Filtra i bambini per mostrare solo quelli della scuola selezionata
+        // Filtra i genitori per mostrare solo quelli della scuola selezionata con role parent
         if (data?.school) {
+          const schoolId = typeof data.school === 'string' ? data.school : data.school.id
           return {
-            school: {
-              equals: typeof data.school === 'string' ? data.school : data.school.id,
-            },
-          }
+            and: [
+              {
+                schools: {
+                  contains: schoolId,
+                },
+              },
+              {
+                role: {
+                  equals: 'parent',
+                },
+              },
+            ],
+          } as any
         }
-        // Se non c'è scuola selezionata, restituisci false per non mostrare nessun bambino
+        // Se non c'è scuola selezionata, restituisci false per non mostrare nessun genitore
         return false
       },
     },
@@ -151,7 +162,7 @@ export const ParentAppointments: CollectionConfig = {
       relationTo: 'teachers',
       label: 'Insegnante',
       admin: {
-        description: 'Insegnante presente all\'appuntamento (opzionale)',
+        description: "Insegnante presente all'appuntamento (opzionale)",
         condition: (data) => {
           // Mostra il campo solo se è stata selezionata una scuola
           return !!data.school
@@ -229,7 +240,9 @@ export const ParentAppointments: CollectionConfig = {
             return true
           }
           // School staff può modificare qualsiasi status
-          return user?.role === 'super-admin' || user?.role === 'school-admin' || user?.role === 'editor'
+          return (
+            user?.role === 'super-admin' || user?.role === 'school-admin' || user?.role === 'editor'
+          )
         },
       },
     },
@@ -238,7 +251,7 @@ export const ParentAppointments: CollectionConfig = {
       type: 'textarea',
       label: 'Note post-incontro',
       admin: {
-        description: 'Note compilate dopo l\'incontro',
+        description: "Note compilate dopo l'incontro",
       },
       access: {
         read: ({ req: { user } }) => {

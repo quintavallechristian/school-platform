@@ -23,16 +23,20 @@ export default function LoginForm({ school }: { school: string }) {
       <input type="hidden" name="school" value={school} />
       <div className="space-y-2">
         <label htmlFor="email">Email</label>
-        <Input id="email" name="email" type="email" placeholder="mario.rossi@example.com" required />
+        <Input
+          id="email"
+          name="email"
+          type="email"
+          placeholder="mario.rossi@example.com"
+          required
+        />
       </div>
       <div className="space-y-2">
         <label htmlFor="password">Password</label>
         <Input id="password" name="password" type="password" required />
       </div>
       {state?.error && (
-        <div className="text-sm text-red-500 font-medium text-center">
-          {state.error}
-        </div>
+        <div className="text-sm text-red-500 font-medium text-center">{state.error}</div>
       )}
       <SubmitButton />
     </form>

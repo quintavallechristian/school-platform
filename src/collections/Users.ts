@@ -210,32 +210,7 @@ export const Users: CollectionConfig = {
         return true
       },
     },
-    {
-      name: 'children',
-      type: 'relationship',
-      relationTo: 'children',
-      hasMany: true,
-      label: 'Figli',
-      admin: {
-        description: 'Bambini associati a questo genitore',
-        condition: (data, siblingData) => {
-          return siblingData?.role === 'parent'
-        },
-      },
-      access: {
-        read: ({ req: { user }, data }) => {
-          // Super-admin e school-admin possono sempre leggere
-          if (user?.role === 'super-admin' || user?.role === 'school-admin') return true
-          // Parent può vedere solo i propri figli
-          if (user?.role === 'parent' && data && data.id === user.id) return true
-          return false
-        },
-        update: ({ req: { user } }) => {
-          // Solo super-admin e school-admin possono assegnare figli
-          return user?.role === 'super-admin' || user?.role === 'school-admin'
-        },
-      },
-    },
+
     {
       name: 'firstName',
       type: 'text',
@@ -271,12 +246,7 @@ export const Users: CollectionConfig = {
           )
         }
 
-        // Normalizza anche children a ID
-        if (data.children && Array.isArray(data.children)) {
-          data.children = data.children.map((child) =>
-            typeof child === 'string' ? child : child.id
-          )
-        }
+
 
         // Se non è super-admin, non può assegnare il ruolo super-admin
         if (req.user?.role !== 'super-admin' && data.role === 'super-admin') {

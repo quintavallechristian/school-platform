@@ -22,7 +22,6 @@ export default async function Navbar({
   schoolId?: string | number
   school?: School
 }) {
-
   // Menu items statici - filtrati in base alle impostazioni della scuola
   const staticMenuItems = [
     { label: 'Chi Siamo', href: `${baseHref}/chi-siamo`, feature: 'chiSiamo' as const },
@@ -50,9 +49,7 @@ export default async function Navbar({
     return isFeatureEnabled(school, item.feature)
   })
 
-  const menuItems = [
-    ...staticMenuItems.map(({ label, href }) => ({ label, href })),
-  ]
+  const menuItems = [...staticMenuItems.map(({ label, href }) => ({ label, href }))]
 
   return (
     <NavbarWrapper>
@@ -71,7 +68,10 @@ export default async function Navbar({
                   />
                 </div>
               ) : (
-                <DicesIcon className="h-8 w-8 text-indigo-600 dark:text-indigo-400" aria-hidden="true" />
+                <DicesIcon
+                  className="h-8 w-8 text-indigo-600 dark:text-indigo-400"
+                  aria-hidden="true"
+                />
               )}
               <span className="text-xl font-bold">{schoolName || 'Scuole Infanzia'}</span>
             </Link>

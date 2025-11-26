@@ -81,14 +81,12 @@ export interface Config {
     testimonials: Testimonial;
     communications: Communication;
     'email-subscribers': EmailSubscriber;
-    'parent-registrations': ParentRegistration;
     'child-updates': ChildUpdate;
     'parent-appointments': ParentAppointment;
     articles: Article;
     pages: Page;
     media: Media;
     gallery: Gallery;
-    children: Child;
     users: User;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -111,14 +109,12 @@ export interface Config {
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
     communications: CommunicationsSelect<false> | CommunicationsSelect<true>;
     'email-subscribers': EmailSubscribersSelect<false> | EmailSubscribersSelect<true>;
-    'parent-registrations': ParentRegistrationsSelect<false> | ParentRegistrationsSelect<true>;
     'child-updates': ChildUpdatesSelect<false> | ChildUpdatesSelect<true>;
     'parent-appointments': ParentAppointmentsSelect<false> | ParentAppointmentsSelect<true>;
     articles: ArticlesSelect<false> | ArticlesSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     gallery: GallerySelect<false> | GallerySelect<true>;
-    children: ChildrenSelect<false> | ChildrenSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -762,10 +758,6 @@ export interface User {
    * Scuole di appartenenza
    */
   schools?: (string | School)[] | null;
-  /**
-   * Bambini associati a questo genitore
-   */
-  children?: (string | Child)[] | null;
   firstName?: string | null;
   lastName?: string | null;
   phone?: string | null;
@@ -786,36 +778,6 @@ export interface User {
       }[]
     | null;
   password?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "children".
- */
-export interface Child {
-  id: string;
-  /**
-   * Scuola a cui è iscritto il bambino
-   */
-  school?: (string | null) | School;
-  firstName: string;
-  lastName: string;
-  fullName?: string | null;
-  dateOfBirth?: string | null;
-  /**
-   * Es: "1A", "Sezione Azzurra", ecc.
-   */
-  classroom: string;
-  /**
-   * Foto del bambino
-   */
-  photo?: (string | null) | Media;
-  enrollmentDate?: string | null;
-  /**
-   * Note visibili solo alla scuola, non ai genitori
-   */
-  notes?: string | null;
-  updatedAt: string;
-  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1592,61 +1554,6 @@ export interface EmailSubscriber {
   createdAt: string;
 }
 /**
- * Gestisci le richieste di registrazione dei genitori in attesa di approvazione
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "parent-registrations".
- */
-export interface ParentRegistration {
-  id: string;
-  /**
-   * Scuola per cui il genitore sta richiedendo l'accesso
-   */
-  school?: (string | null) | School;
-  /**
-   * Stato della richiesta di registrazione
-   */
-  status: 'pending' | 'approved' | 'rejected';
-  parentFirstName: string;
-  parentLastName: string;
-  /**
-   * Verrà utilizzata come username per l'accesso
-   */
-  parentEmail: string;
-  /**
-   * Hash bcrypt della password scelta dal genitore
-   */
-  passwordHash?: string | null;
-  childFirstName: string;
-  childLastName: string;
-  /**
-   * Es: "1A", "Sezione Azzurra", ecc.
-   */
-  childClassroom: string;
-  /**
-   * ID dell'utente creato dopo l'approvazione
-   */
-  createdUserId?: string | null;
-  /**
-   * ID del bambino creato dopo l'approvazione
-   */
-  createdChildId?: string | null;
-  /**
-   * Utente che ha approvato la richiesta
-   */
-  approvedBy?: (string | null) | User;
-  /**
-   * Data e ora dell'approvazione
-   */
-  approvedAt?: string | null;
-  /**
-   * Motivo per cui la richiesta è stata rifiutata
-   */
-  rejectionReason?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "child-updates".
  */
@@ -1657,9 +1564,9 @@ export interface ChildUpdate {
    */
   school?: (string | null) | School;
   /**
-   * Il bambino a cui si riferisce questo aggiornamento
+   * Il genitore a cui si riferisce questo aggiornamento
    */
-  child?: (string | null) | Child;
+  parent?: (string | null) | User;
   title: string;
   content: {
     root: {
@@ -1682,10 +1589,6 @@ export interface ChildUpdate {
    */
   photos?: (string | Media)[] | null;
   publishedAt: string;
-  /**
-   * Chi ha creato questo aggiornamento
-   */
-  author?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
 }
@@ -1700,9 +1603,9 @@ export interface ParentAppointment {
    */
   school?: (string | null) | School;
   /**
-   * Il bambino per cui è l'appuntamento
+   * Il genitore per cui è l'appuntamento
    */
-  child?: (string | null) | Child;
+  parent?: (string | null) | User;
   /**
    * Insegnante presente all'appuntamento (opzionale)
    */
@@ -2208,10 +2111,6 @@ export interface PayloadLockedDocument {
         value: string | EmailSubscriber;
       } | null)
     | ({
-        relationTo: 'parent-registrations';
-        value: string | ParentRegistration;
-      } | null)
-    | ({
         relationTo: 'child-updates';
         value: string | ChildUpdate;
       } | null)
@@ -2234,10 +2133,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'gallery';
         value: string | Gallery;
-      } | null)
-    | ({
-        relationTo: 'children';
-        value: string | Child;
       } | null)
     | ({
         relationTo: 'users';
@@ -3015,39 +2910,16 @@ export interface EmailSubscribersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "parent-registrations_select".
- */
-export interface ParentRegistrationsSelect<T extends boolean = true> {
-  school?: T;
-  status?: T;
-  parentFirstName?: T;
-  parentLastName?: T;
-  parentEmail?: T;
-  passwordHash?: T;
-  childFirstName?: T;
-  childLastName?: T;
-  childClassroom?: T;
-  createdUserId?: T;
-  createdChildId?: T;
-  approvedBy?: T;
-  approvedAt?: T;
-  rejectionReason?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "child-updates_select".
  */
 export interface ChildUpdatesSelect<T extends boolean = true> {
   school?: T;
-  child?: T;
+  parent?: T;
   title?: T;
   content?: T;
   type?: T;
   photos?: T;
   publishedAt?: T;
-  author?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -3057,7 +2929,7 @@ export interface ChildUpdatesSelect<T extends boolean = true> {
  */
 export interface ParentAppointmentsSelect<T extends boolean = true> {
   school?: T;
-  child?: T;
+  parent?: T;
   teacher?: T;
   title?: T;
   description?: T;
@@ -3332,29 +3204,11 @@ export interface GallerySelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "children_select".
- */
-export interface ChildrenSelect<T extends boolean = true> {
-  school?: T;
-  firstName?: T;
-  lastName?: T;
-  fullName?: T;
-  dateOfBirth?: T;
-  classroom?: T;
-  photo?: T;
-  enrollmentDate?: T;
-  notes?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
   role?: T;
   schools?: T;
-  children?: T;
   firstName?: T;
   lastName?: T;
   phone?: T;
