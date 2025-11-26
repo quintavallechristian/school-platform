@@ -173,62 +173,130 @@ export default async function ParentsDashboardPage({
 
           {/* Sidebar: Appuntamenti */}
           <div className="space-y-8">
-            <div className="sticky top-8">
-              <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
-                <span className="bg-primary/10 p-2 rounded-lg text-primary">📅</span>
-                Prossimi Appuntamenti
-              </h2>
-
-              {appointments.docs.length === 0 ? (
-                <div className="bg-muted/30 p-8 rounded-2xl text-center border-2 border-dashed">
-                  <p className="text-muted-foreground font-medium">Nessun appuntamento</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {appointments.docs
-                    .filter((apt) => apt.status === 'scheduled')
-                    .map((appointment) => (
-                      <div
-                        key={appointment.id}
-                        className="group relative overflow-hidden rounded-xl bg-card border p-5 hover:shadow-lg transition-all duration-300"
-                      >
-                        <div className="absolute top-0 left-0 w-1 h-full bg-primary group-hover:w-2 transition-all duration-300" />
-                        <div className="pl-3">
-                          <h4 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors">
-                            {appointment.title}
-                          </h4>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
-                            <span>🗓</span>
-                            <span>
-                              {new Date(appointment.date).toLocaleDateString('it-IT', {
-                                day: 'numeric',
-                                month: 'long',
-                              })}
-                            </span>
-                            <span className="mx-1">•</span>
-                            <span>⏰</span>
-                            <span>
-                              {new Date(appointment.date).toLocaleTimeString('it-IT', {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                              })}
-                            </span>
+            <div className="sticky top-8 space-y-8">
+              {/* Pending Bookings */}
+              {appointments.docs.filter((apt) => apt.status === 'pending').length > 0 && (
+                <div>
+                  <h2 className="text-xl font-bold mb-4 flex items-center gap-3">
+                    <span className="bg-yellow-100 dark:bg-yellow-900/30 p-2 rounded-lg text-yellow-700 dark:text-yellow-300">
+                      ⏳
+                    </span>
+                    In attesa di conferma
+                  </h2>
+                  <div className="space-y-3">
+                    {appointments.docs
+                      .filter((apt) => apt.status === 'pending')
+                      .map((appointment) => (
+                        <div
+                          key={appointment.id}
+                          className="group relative overflow-hidden rounded-xl bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-800 p-4 hover:shadow-lg transition-all duration-300"
+                        >
+                          <div className="absolute top-0 left-0 w-1 h-full bg-yellow-500" />
+                          <div className="pl-3">
+                            <h4 className="font-bold text-sm mb-2">{appointment.title}</h4>
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+                              <span>🗓</span>
+                              <span>
+                                {new Date(appointment.date).toLocaleDateString('it-IT', {
+                                  day: 'numeric',
+                                  month: 'long',
+                                })}
+                              </span>
+                              {!appointment.timeSlot && (
+                                <>
+                                  <span className="mx-1">•</span>
+                                  <span>⏰</span>
+                                  <span>
+                                    {new Date(appointment.date).toLocaleTimeString('it-IT', {
+                                      hour: '2-digit',
+                                      minute: '2-digit',
+                                    })}
+                                  </span>
+                                </>
+                              )}
+                            </div>
+                            {appointment.timeSlot && (
+                              <p className="text-xs text-muted-foreground mb-2">
+                                ⏰ Fascia: {appointment.timeSlot}
+                              </p>
+                            )}
+                            <p className="text-xs text-yellow-700 dark:text-yellow-300 font-medium">
+                              In attesa di approvazione
+                            </p>
                           </div>
-                          {appointment.location && (
-                            <p className="text-sm text-muted-foreground mb-3 flex items-center gap-2">
-                              <span>📍</span> {appointment.location}
-                            </p>
-                          )}
-                          {appointment.description && (
-                            <p className="text-sm mt-3 pt-3 border-t text-muted-foreground/80 italic">
-                              {appointment.description}
-                            </p>
-                          )}
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                  </div>
                 </div>
               )}
+
+              {/* Scheduled Appointments */}
+              <div>
+                <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
+                  <span className="bg-primary/10 p-2 rounded-lg text-primary">📅</span>
+                  Appuntamenti Confermati
+                </h2>
+
+                {appointments.docs.filter((apt) => apt.status === 'scheduled').length === 0 ? (
+                  <div className="bg-muted/30 p-8 rounded-2xl text-center border-2 border-dashed">
+                    <p className="text-muted-foreground font-medium">Nessun appuntamento</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {appointments.docs
+                      .filter((apt) => apt.status === 'scheduled')
+                      .map((appointment) => (
+                        <div
+                          key={appointment.id}
+                          className="group relative overflow-hidden rounded-xl bg-card border p-5 hover:shadow-lg transition-all duration-300"
+                        >
+                          <div className="absolute top-0 left-0 w-1 h-full bg-primary group-hover:w-2 transition-all duration-300" />
+                          <div className="pl-3">
+                            <h4 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors">
+                              {appointment.title}
+                            </h4>
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
+                              <span>🗓</span>
+                              <span>
+                                {new Date(appointment.date).toLocaleDateString('it-IT', {
+                                  day: 'numeric',
+                                  month: 'long',
+                                })}
+                              </span>
+                              {!appointment.timeSlot && (
+                                <>
+                                  <span className="mx-1">•</span>
+                                  <span>⏰</span>
+                                  <span>
+                                    {new Date(appointment.date).toLocaleTimeString('it-IT', {
+                                      hour: '2-digit',
+                                      minute: '2-digit',
+                                    })}
+                                  </span>
+                                </>
+                              )}
+                            </div>
+                            {appointment.timeSlot && (
+                              <p className="text-sm text-muted-foreground mb-3 flex items-center gap-2">
+                                <span>⏰</span> Fascia: {appointment.timeSlot}
+                              </p>
+                            )}
+                            {appointment.location && (
+                              <p className="text-sm text-muted-foreground mb-3 flex items-center gap-2">
+                                <span>📍</span> {appointment.location}
+                              </p>
+                            )}
+                            {appointment.description && (
+                              <p className="text-sm mt-3 pt-3 border-t text-muted-foreground/80 italic">
+                                {appointment.description}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

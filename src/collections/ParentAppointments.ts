@@ -60,9 +60,13 @@ export const ParentAppointments: CollectionConfig = {
       return false
     }) as Access,
     create: ({ req: { user } }) => {
-      // Solo school-admin ed editor possono creare appuntamenti
+      // School-admin, editor E parent possono creare appuntamenti
+      // Parent può creare solo prenotazioni (bookings)
       return (
-        user?.role === 'super-admin' || user?.role === 'school-admin' || user?.role === 'editor'
+        user?.role === 'super-admin' ||
+        user?.role === 'school-admin' ||
+        user?.role === 'editor' ||
+        user?.role === 'parent'
       )
     },
     update: (({ req: { user } }) => {
@@ -157,6 +161,16 @@ export const ParentAppointments: CollectionConfig = {
       },
     },
     {
+      name: 'calendarEvent',
+      type: 'relationship',
+      relationTo: 'calendar-days',
+      label: 'Evento Calendario',
+      admin: {
+        description:
+          'Evento del calendario a cui si riferisce questo appuntamento (se è una prenotazione)',
+      },
+    },
+    {
       name: 'teacher',
       type: 'relationship',
       relationTo: 'teachers',
@@ -205,6 +219,14 @@ export const ParentAppointments: CollectionConfig = {
       },
     },
     {
+      name: 'timeSlot',
+      type: 'text',
+      label: 'Fascia oraria',
+      admin: {
+        description: 'Fascia oraria scelta (es. 09:00-09:30)',
+      },
+    },
+    {
       name: 'location',
       type: 'text',
       label: 'Luogo',
@@ -216,9 +238,13 @@ export const ParentAppointments: CollectionConfig = {
       name: 'status',
       type: 'select',
       required: true,
-      defaultValue: 'scheduled',
+      defaultValue: 'pending',
       label: 'Stato',
       options: [
+        {
+          label: 'In attesa di approvazione',
+          value: 'pending',
+        },
         {
           label: 'Programmato',
           value: 'scheduled',
@@ -230,6 +256,10 @@ export const ParentAppointments: CollectionConfig = {
         {
           label: 'Annullato',
           value: 'cancelled',
+        },
+        {
+          label: 'Rifiutato',
+          value: 'rejected',
         },
       ],
       access: {

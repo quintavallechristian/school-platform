@@ -1120,6 +1120,48 @@ export interface CalendarDay {
    * Lasciare vuoto se è un singolo giorno
    */
   endDate?: string | null;
+  /**
+   * Permetti ai genitori di prenotare appuntamenti per questo evento
+   */
+  isBookable?: boolean | null;
+  bookingSettings?: {
+    /**
+     * Numero massimo di genitori che possono prenotare (lasciare vuoto per illimitati)
+     */
+    maxCapacity?: number | null;
+    /**
+     * Data limite per le prenotazioni (opzionale)
+     */
+    bookingDeadline?: string | null;
+    /**
+     * Es: "Aula 2A", "Sala Riunioni"
+     */
+    location?: string | null;
+    /**
+     * Durata prevista di ogni appuntamento in minuti (es. 30)
+     */
+    duration?: number | null;
+    /**
+     * Se attivo, le prenotazioni devono essere approvate dallo school-admin
+     */
+    requiresApproval?: boolean | null;
+    /**
+     * Se attivo, i genitori potranno scegliere uno specifico slot orario per la prenotazione
+     */
+    useTimeSlots?: boolean | null;
+    /**
+     * Durata di ogni slot orario disponibile
+     */
+    slotDuration?: ('15' | '30' | '60') | null;
+    /**
+     * Orario di inizio disponibilità (formato HH:mm, es. 09:00)
+     */
+    startTime?: string | null;
+    /**
+     * Orario di fine disponibilità (formato HH:mm, es. 18:00)
+     */
+    endTime?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -1607,6 +1649,10 @@ export interface ParentAppointment {
    */
   parent?: (string | null) | User;
   /**
+   * Evento del calendario a cui si riferisce questo appuntamento (se è una prenotazione)
+   */
+  calendarEvent?: (string | null) | CalendarDay;
+  /**
    * Insegnante presente all'appuntamento (opzionale)
    */
   teacher?: (string | null) | Teacher;
@@ -1614,10 +1660,14 @@ export interface ParentAppointment {
   description?: string | null;
   date: string;
   /**
+   * Fascia oraria scelta (es. 09:00-09:30)
+   */
+  timeSlot?: string | null;
+  /**
    * Es: "Aula 2A", "Sala Riunioni"
    */
   location?: string | null;
-  status: 'scheduled' | 'completed' | 'cancelled';
+  status: 'pending' | 'scheduled' | 'completed' | 'cancelled' | 'rejected';
   /**
    * Note compilate dopo l'incontro
    */
@@ -2572,6 +2622,20 @@ export interface CalendarDaysSelect<T extends boolean = true> {
   linkedEvent?: T;
   startDate?: T;
   endDate?: T;
+  isBookable?: T;
+  bookingSettings?:
+    | T
+    | {
+        maxCapacity?: T;
+        bookingDeadline?: T;
+        location?: T;
+        duration?: T;
+        requiresApproval?: T;
+        useTimeSlots?: T;
+        slotDuration?: T;
+        startTime?: T;
+        endTime?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2930,10 +2994,12 @@ export interface ChildUpdatesSelect<T extends boolean = true> {
 export interface ParentAppointmentsSelect<T extends boolean = true> {
   school?: T;
   parent?: T;
+  calendarEvent?: T;
   teacher?: T;
   title?: T;
   description?: T;
   date?: T;
+  timeSlot?: T;
   location?: T;
   status?: T;
   notes?: T;
