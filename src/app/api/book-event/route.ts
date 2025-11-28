@@ -2,6 +2,7 @@ import { getPayloadHMR } from '@payloadcms/next/utilities'
 import config from '@payload-config'
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
+import { richTextToPlainText } from '@/lib/richTextUtils'
 
 export async function POST(req: Request) {
   try {
@@ -30,31 +31,31 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json()
-    const { calendarEventId, timeSlot } = body
+    const { eventId, timeSlot } = body
 
-    if (!calendarEventId) {
+    if (!eventId) {
       return NextResponse.json({ error: 'ID evento mancante' }, { status: 400 })
     }
 
-    // Fetch the calendar event
-    const calendarEvent = await payload.findByID({
-      collection: 'calendar-days',
-      id: calendarEventId,
+    // Fetch the event
+    const event = await payload.findByID({
+      collection: 'events',
+      id: eventId,
       depth: 0,
     })
 
-    if (!calendarEvent) {
+    if (!event) {
       return NextResponse.json({ error: 'Evento non trovato' }, { status: 404 })
     }
 
     // Check if the event is bookable
-    if (!calendarEvent.isBookable) {
+    if (!event.isBookable) {
       return NextResponse.json({ error: 'Questo evento non è prenotabile' }, { status: 400 })
     }
 
     // Check booking deadline if set
-    if (calendarEvent.bookingSettings?.bookingDeadline) {
-      const deadline = new Date(calendarEvent.bookingSettings.bookingDeadline)
+    if (event.bookingSettings?.bookingDeadline) {
+      const deadline = new Date(event.bookingSettings.bookingDeadline)
       if (new Date() > deadline) {
         return NextResponse.json(
           { error: 'Il termine per le prenotazioni è scaduto' },
@@ -64,7 +65,7 @@ export async function POST(req: Request) {
     }
 
     // If using time slots, validate the slot
-    if (calendarEvent.bookingSettings?.useTimeSlots) {
+    if (event.bookingSettings?.useTimeSlots) {
       if (!timeSlot) {
         return NextResponse.json({ error: 'Devi selezionare una fascia oraria' }, { status: 400 })
       }
@@ -75,8 +76,8 @@ export async function POST(req: Request) {
         where: {
           and: [
             {
-              calendarEvent: {
-                equals: calendarEventId,
+              event: {
+                equals: eventId,
               },
             },
             {
@@ -86,7 +87,7 @@ export async function POST(req: Request) {
             },
             {
               status: {
-                in: ['pending', 'scheduled'],
+                in: ['pending', 'confirmed'],
               },
             },
           ],
@@ -102,26 +103,26 @@ export async function POST(req: Request) {
     }
 
     // Check if max capacity is reached (for non-slot bookings)
-    if (!calendarEvent.bookingSettings?.useTimeSlots && calendarEvent.bookingSettings?.maxCapacity) {
+    if (!event.bookingSettings?.useTimeSlots && event.bookingSettings?.maxCapacity) {
       const existingBookings = await payload.find({
         collection: 'parent-appointments',
         where: {
           and: [
             {
-              calendarEvent: {
-                equals: calendarEventId,
+              event: {
+                equals: eventId,
               },
             },
             {
               status: {
-                in: ['pending', 'scheduled'],
+                in: ['pending', 'confirmed'],
               },
             },
           ],
         },
       })
 
-      if (existingBookings.docs.length >= calendarEvent.bookingSettings.maxCapacity) {
+      if (existingBookings.docs.length >= event.bookingSettings.maxCapacity) {
         return NextResponse.json({ error: 'Posti esauriti' }, { status: 400 })
       }
     }
@@ -132,8 +133,8 @@ export async function POST(req: Request) {
       where: {
         and: [
           {
-            calendarEvent: {
-              equals: calendarEventId,
+            event: {
+              equals: eventId,
             },
           },
           {
@@ -143,7 +144,7 @@ export async function POST(req: Request) {
           },
           {
             status: {
-              in: ['pending', 'scheduled'],
+              in: ['pending', 'confirmed'],
             },
           },
         ],
@@ -156,15 +157,20 @@ export async function POST(req: Request) {
 
     // Get the school from user
     const userSchools = user.schools as string[] | undefined
-    const schoolId = userSchools?.[0] || calendarEvent.school
+    const schoolId = userSchools?.[0] || event.school
 
     if (!schoolId) {
       return NextResponse.json({ error: 'Scuola non trovata' }, { status: 400 })
     }
 
     // Determine initial status based on requiresApproval setting
-    const requiresApproval = calendarEvent.bookingSettings?.requiresApproval !== false
-    const status = requiresApproval ? 'pending' : 'scheduled'
+    const requiresApproval = event.bookingSettings?.requiresApproval !== false
+    const status = requiresApproval ? 'pending' : 'confirmed'
+
+    // Convert rich text description to plain text
+    const plainTextDescription = event.description
+      ? richTextToPlainText(event.description)
+      : `Prenotazione evento: ${event.title}`
 
     // Create the appointment
     const appointment = await payload.create({
@@ -172,12 +178,12 @@ export async function POST(req: Request) {
       data: {
         school: schoolId as any,
         parent: user.id,
-        calendarEvent: calendarEventId,
-        title: `Prenotazione: ${calendarEvent.title}${timeSlot ? ` - ${timeSlot}` : ''}`,
-        description: calendarEvent.description || '',
-        date: calendarEvent.startDate,
+        event: eventId,
+        title: `Prenotazione: ${event.title}${timeSlot ? ` - ${timeSlot}` : ''}`,
+        description: plainTextDescription,
+        date: event.date,
         timeSlot: timeSlot || undefined,
-        location: calendarEvent.bookingSettings?.location || '',
+        location: event.location || '',
         status,
       },
     })

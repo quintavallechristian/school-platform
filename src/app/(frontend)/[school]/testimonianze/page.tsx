@@ -6,7 +6,11 @@ import type { Testimonial, Media } from '@/payload-types'
 import Image from 'next/image'
 import Hero from '@/components/Hero/Hero'
 
-export default async function TestimonianzePage({ params }: { params: Promise<{ school: string }> }) {
+export default async function TestimonianzePage({
+  params,
+}: {
+  params: Promise<{ school: string }>
+}) {
   const { school: schoolSlug } = await params
   const school = await getCurrentSchool(schoolSlug)
   if (!school) notFound()

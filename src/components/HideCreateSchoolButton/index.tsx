@@ -71,7 +71,7 @@ export const HideCreateSchoolButton: React.FC = () => {
         buttons.forEach((button) => {
           const text = button.textContent?.trim().toLowerCase()
           const href = button.getAttribute('href')
-          
+
           // Nascondi se contiene "crea nuovo" o se è il link alla creazione
           if (
             text?.includes('crea nuovo') ||
@@ -104,7 +104,7 @@ export const HideCreateSchoolButton: React.FC = () => {
     return null
   }
 
-  return '';
+  return ''
 }
 
 export default HideCreateSchoolButton

@@ -14,8 +14,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Verifica il token e ottieni l'utente
-    const { user } = await payload.auth({ 
-      headers: request.headers
+    const { user } = await payload.auth({
+      headers: request.headers,
     })
 
     if (!user) {

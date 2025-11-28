@@ -1,5 +1,9 @@
 import { CollectionConfig } from 'payload'
-import { sendCommunicationEmail, getPriorityConfig, CommunicationPriority } from '../lib/email-service'
+import {
+  sendCommunicationEmail,
+  getPriorityConfig,
+  CommunicationPriority,
+} from '../lib/email-service'
 import {
   tenantRead,
   tenantCreate,
@@ -51,10 +55,7 @@ export const Communications: CollectionConfig = {
           const subscribers = await req.payload.find({
             collection: 'email-subscribers',
             where: {
-              and: [
-                { isActive: { equals: true } },
-                { school: { equals: doc.school } },
-              ],
+              and: [{ isActive: { equals: true } }, { school: { equals: doc.school } }],
             },
             limit: 1000,
           })
@@ -64,9 +65,7 @@ export const Communications: CollectionConfig = {
             return
           }
 
-          console.log(
-            `Invio comunicazione a ${subscribers.docs.length} iscritti per: ${doc.title}`
-          )
+          console.log(`Invio comunicazione a ${subscribers.docs.length} iscritti per: ${doc.title}`)
 
           const priority = doc.priority as CommunicationPriority
           const priorityInfo = getPriorityConfig(priority)
@@ -105,7 +104,7 @@ export const Communications: CollectionConfig = {
                 unsubscribeUrl,
                 schoolName,
               },
-              `${priorityInfo.emoji} Nuova comunicazione: ${doc.title}`
+              `${priorityInfo.emoji} Nuova comunicazione: ${doc.title}`,
             )
           })
 

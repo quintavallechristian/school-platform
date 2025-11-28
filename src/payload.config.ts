@@ -52,11 +52,11 @@ export default buildConfig({
     // Contenuti
     ChiSiamo,
     Teachers,
-    Events,
     Projects,
     EducationalOfferings,
     CalendarDays,
     Menu,
+    Events,
     // Comunicazioni scuola-famiglia
     Documents,
     Testimonials,
@@ -82,22 +82,20 @@ export default buildConfig({
     url: process.env.DATABASE_URI || '',
   }),
   sharp,
-  plugins: isProduction
-    ? [
-        s3Storage({
-          collections: {
-            media: true,
-          },
-          bucket: process.env.R2_BUCKET!,
-          config: {
-            endpoint: process.env.R2_ENDPOINT!,
-            region: 'auto',
-            credentials: {
-              accessKeyId: process.env.R2_ACCESS_KEY_ID!,
-              secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
-            },
-          },
-        }),
-      ]
-    : [],
+  plugins: [
+    s3Storage({
+      collections: {
+        media: true,
+      },
+      bucket: process.env.R2_BUCKET!,
+      config: {
+        endpoint: process.env.R2_ENDPOINT!,
+        region: 'auto',
+        credentials: {
+          accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+          secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+        },
+      },
+    }),
+  ],
 })

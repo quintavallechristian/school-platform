@@ -72,11 +72,11 @@ export interface Config {
     'privacy-policy': PrivacyPolicy;
     'chi-siamo': ChiSiamo;
     teachers: Teacher;
-    events: Event;
     projects: Project;
     'educational-offerings': EducationalOffering;
     'calendar-days': CalendarDay;
     menu: Menu;
+    events: Event;
     documents: Document;
     testimonials: Testimonial;
     communications: Communication;
@@ -100,11 +100,11 @@ export interface Config {
     'privacy-policy': PrivacyPolicySelect<false> | PrivacyPolicySelect<true>;
     'chi-siamo': ChiSiamoSelect<false> | ChiSiamoSelect<true>;
     teachers: TeachersSelect<false> | TeachersSelect<true>;
-    events: EventsSelect<false> | EventsSelect<true>;
     projects: ProjectsSelect<false> | ProjectsSelect<true>;
     'educational-offerings': EducationalOfferingsSelect<false> | EducationalOfferingsSelect<true>;
     'calendar-days': CalendarDaysSelect<false> | CalendarDaysSelect<true>;
     menu: MenuSelect<false> | MenuSelect<true>;
+    events: EventsSelect<false> | EventsSelect<true>;
     documents: DocumentsSelect<false> | DocumentsSelect<true>;
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
     communications: CommunicationsSelect<false> | CommunicationsSelect<true>;
@@ -296,11 +296,11 @@ export interface Homepage {
    */
   isActive?: boolean | null;
   /**
-   * Dai un nome a questa homepage
+   * Puoi creare diverse homepage. Dagli un nome significativo per riconoscerla facilmente.
    */
   name?: string | null;
   /**
-   * Personalizza l'hero di default della pagina
+   * Personalizza la copertina di default della pagina
    */
   heroSettings?: {
     /**
@@ -312,7 +312,7 @@ export interface Homepage {
      */
     title?: string | null;
     /**
-     * Testo che appare sotto il titolo nell'hero
+     * Testo che appare sotto il titolo nella copertina
      */
     subtitle?: string | null;
     /**
@@ -320,7 +320,7 @@ export interface Homepage {
      */
     fullHeight?: boolean | null;
     /**
-     * Immagine opzionale per lo sfondo dell'hero
+     * Immagine opzionale per lo sfondo della copertina
      */
     backgroundImage?: (string | null) | Media;
     /**
@@ -328,7 +328,7 @@ export interface Homepage {
      */
     parallax?: boolean | null;
     /**
-     * Se abilitato, aggiunge un overlay gradiente sopra l'immagine per migliorare la leggibilità del testo
+     * Se abilitato, aggiunge uno sfondo sfumato sopra l'immagine per migliorare la leggibilità del testo
      */
     gradientOverlay?: boolean | null;
     /**
@@ -377,11 +377,11 @@ export interface Homepage {
              */
             subtitle?: string | null;
             /**
-             * Se attivo, l'hero occuperà l'intera altezza dello schermo
+             * Se attivo, la copertina occuperà l'intera altezza dello schermo
              */
             fullHeight?: boolean | null;
             /**
-             * Immagine opzionale per lo sfondo dell'hero
+             * Immagine opzionale per lo sfondo della copertina
              */
             backgroundImage?: (string | null) | Media;
             /**
@@ -389,7 +389,7 @@ export interface Homepage {
              */
             parallax?: boolean | null;
             /**
-             * Se abilitato, aggiunge un overlay gradiente sopra l'immagine per migliorare la leggibilità del testo
+             * Se abilitato, aggiunge uno sfondo sfumato sopra l'immagine per migliorare la leggibilità del testo
              */
             gradientOverlay?: boolean | null;
             buttons?:
@@ -401,7 +401,7 @@ export interface Homepage {
                 }[]
               | null;
             /**
-             * Aggiungi un divisore decorativo in cima all'hero
+             * Aggiungi un divisore decorativo in cima alla copertina
              */
             topDivider?: {
               enabled?: boolean | null;
@@ -430,7 +430,7 @@ export interface Homepage {
               invert?: boolean | null;
             };
             /**
-             * Aggiungi un divisore decorativo in fondo all'hero
+             * Aggiungi un divisore decorativo in fondo alla copertina
              */
             bottomDivider?: {
               enabled?: boolean | null;
@@ -716,7 +716,7 @@ export interface Article {
   title: string;
   cover?: (string | null) | Media;
   /**
-   * Se abilitato, aggiunge un overlay gradiente sopra l'immagine di copertina per migliorare la leggibilità del testo nell'hero
+   * Se abilitato, aggiunge uno sfondo sfumato sopra l'immagine di copertina per migliorare la leggibilità del testo nella copertina
    */
   gradientOverlay?: boolean | null;
   slug: string;
@@ -813,7 +813,7 @@ export interface Event {
   cost?: string | null;
   cover?: (string | null) | Media;
   /**
-   * Se abilitato, aggiunge un overlay gradiente sopra l'immagine di copertina per migliorare la leggibilità del testo nell'hero
+   * Se abilitato, aggiunge uno sfondo sfumato sopra l'immagine di copertina per migliorare la leggibilità del testo nella copertina
    */
   gradientOverlay?: boolean | null;
   /**
@@ -821,12 +821,44 @@ export interface Event {
    */
   gallery?: (string | null) | Gallery;
   /**
-   * Se abilitato, verrà creata automaticamente una entry nel calendario collegata a questo evento
+   * Permetti ai genitori di prenotare appuntamenti per questo evento
    */
+  isBookable?: boolean | null;
+  bookingSettings?: {
+    /**
+     * Numero massimo di genitori che possono prenotare (lasciare vuoto per illimitati)
+     */
+    maxCapacity?: number | null;
+    /**
+     * Data limite per le prenotazioni (opzionale)
+     */
+    bookingDeadline?: string | null;
+    /**
+     * Durata prevista di ogni appuntamento in minuti (es. 30)
+     */
+    duration?: number | null;
+    /**
+     * Se attivo, le prenotazioni devono essere approvate dallo school-admin
+     */
+    requiresApproval?: boolean | null;
+    /**
+     * Se attivo, i genitori potranno scegliere uno specifico slot orario per la prenotazione
+     */
+    useTimeSlots?: boolean | null;
+    /**
+     * Durata di ogni slot orario disponibile
+     */
+    slotDuration?: ('15' | '30' | '60') | null;
+    /**
+     * Orario di inizio disponibilità (formato HH:mm, es. 09:00)
+     */
+    startTime?: string | null;
+    /**
+     * Orario di fine disponibilità (formato HH:mm, es. 18:00)
+     */
+    endTime?: string | null;
+  };
   addToCalendar?: boolean | null;
-  /**
-   * Se abilitato, verrà creata automaticamente una comunicazione per notificare questo evento
-   */
   sendCommunication?: boolean | null;
   updatedAt: string;
   createdAt: string;
@@ -893,7 +925,7 @@ export interface ChiSiamo {
    */
   name?: string | null;
   /**
-   * Personalizza l'hero di default della pagina
+   * Personalizza la copertina di default della pagina
    */
   heroSettings?: {
     /**
@@ -905,7 +937,7 @@ export interface ChiSiamo {
      */
     title?: string | null;
     /**
-     * Testo che appare sotto il titolo nell'hero
+     * Testo che appare sotto il titolo nella copertina
      */
     subtitle?: string | null;
     /**
@@ -913,7 +945,7 @@ export interface ChiSiamo {
      */
     fullHeight?: boolean | null;
     /**
-     * Immagine opzionale per lo sfondo dell'hero
+     * Immagine opzionale per lo sfondo della copertina
      */
     backgroundImage?: (string | null) | Media;
     /**
@@ -921,7 +953,7 @@ export interface ChiSiamo {
      */
     parallax?: boolean | null;
     /**
-     * Se abilitato, aggiunge un overlay gradiente sopra l'immagine per migliorare la leggibilità del testo
+     * Se abilitato, aggiunge uno sfondo sfumato sopra l'immagine per migliorare la leggibilità del testo
      */
     gradientOverlay?: boolean | null;
     /**
@@ -1042,7 +1074,7 @@ export interface Project {
   } | null;
   cover?: (string | null) | Media;
   /**
-   * Se abilitato, aggiunge un overlay gradiente sopra l'immagine di copertina per migliorare la leggibilità del testo nell'hero
+   * Se abilitato, aggiunge uno sfondo sfumato sopra l'immagine di copertina per migliorare la leggibilità del testo nella copertina
    */
   gradientOverlay?: boolean | null;
   /**
@@ -1084,7 +1116,7 @@ export interface EducationalOffering {
   } | null;
   cover?: (string | null) | Media;
   /**
-   * Se abilitato, aggiunge un overlay gradiente sopra l'immagine di copertina per migliorare la leggibilità del testo nell'hero
+   * Se abilitato, aggiunge uno sfondo sfumato sopra l'immagine di copertina per migliorare la leggibilità del testo nella copertina
    */
   gradientOverlay?: boolean | null;
   /**
@@ -1108,10 +1140,6 @@ export interface CalendarDay {
   description?: string | null;
   type: 'holiday' | 'closure' | 'event' | 'trip';
   /**
-   * Costo dell'evento (es. "15€" o "Gratuito")
-   */
-  cost?: string | null;
-  /**
    * Collega un evento per maggiori dettagli
    */
   linkedEvent?: (string | null) | Event;
@@ -1120,48 +1148,6 @@ export interface CalendarDay {
    * Lasciare vuoto se è un singolo giorno
    */
   endDate?: string | null;
-  /**
-   * Permetti ai genitori di prenotare appuntamenti per questo evento
-   */
-  isBookable?: boolean | null;
-  bookingSettings?: {
-    /**
-     * Numero massimo di genitori che possono prenotare (lasciare vuoto per illimitati)
-     */
-    maxCapacity?: number | null;
-    /**
-     * Data limite per le prenotazioni (opzionale)
-     */
-    bookingDeadline?: string | null;
-    /**
-     * Es: "Aula 2A", "Sala Riunioni"
-     */
-    location?: string | null;
-    /**
-     * Durata prevista di ogni appuntamento in minuti (es. 30)
-     */
-    duration?: number | null;
-    /**
-     * Se attivo, le prenotazioni devono essere approvate dallo school-admin
-     */
-    requiresApproval?: boolean | null;
-    /**
-     * Se attivo, i genitori potranno scegliere uno specifico slot orario per la prenotazione
-     */
-    useTimeSlots?: boolean | null;
-    /**
-     * Durata di ogni slot orario disponibile
-     */
-    slotDuration?: ('15' | '30' | '60') | null;
-    /**
-     * Orario di inizio disponibilità (formato HH:mm, es. 09:00)
-     */
-    startTime?: string | null;
-    /**
-     * Orario di fine disponibilità (formato HH:mm, es. 18:00)
-     */
-    endTime?: string | null;
-  };
   updatedAt: string;
   createdAt: string;
 }
@@ -1649,9 +1635,9 @@ export interface ParentAppointment {
    */
   parent?: (string | null) | User;
   /**
-   * Evento del calendario a cui si riferisce questo appuntamento (se è una prenotazione)
+   * Evento a cui si riferisce questo appuntamento (se è una prenotazione)
    */
-  calendarEvent?: (string | null) | CalendarDay;
+  event?: (string | null) | Event;
   /**
    * Insegnante presente all'appuntamento (opzionale)
    */
@@ -1667,7 +1653,7 @@ export interface ParentAppointment {
    * Es: "Aula 2A", "Sala Riunioni"
    */
   location?: string | null;
-  status: 'pending' | 'scheduled' | 'completed' | 'cancelled' | 'rejected';
+  status: 'pending' | 'confirmed' | 'cancelled' | 'rejected';
   /**
    * Note compilate dopo l'incontro
    */
@@ -1676,6 +1662,8 @@ export interface ParentAppointment {
   createdAt: string;
 }
 /**
+ * In questa sezione puoi creare pagine personalizzate per la tua scuola, che vadano oltre le pagine di default. Puoi, per esempio, creare una pagina "La nostra storia" o "I nostri valori".
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages".
  */
@@ -1691,11 +1679,11 @@ export interface Page {
    */
   slug: string;
   /**
-   * Testo che appare sotto il titolo nell'hero (se l'hero è abilitato)
+   * Testo che appare sotto il titolo nella copertina (se la copertina è abilitato)
    */
   subtitle?: string | null;
   /**
-   * Personalizza l'hero di default della pagina
+   * Personalizza la copertina di default della pagina
    */
   heroSettings?: {
     /**
@@ -1707,7 +1695,7 @@ export interface Page {
      */
     fullHeight?: boolean | null;
     /**
-     * Immagine opzionale per lo sfondo dell'hero
+     * Immagine opzionale per lo sfondo della copertina
      */
     backgroundImage?: (string | null) | Media;
     /**
@@ -1715,7 +1703,7 @@ export interface Page {
      */
     parallax?: boolean | null;
     /**
-     * Se abilitato, aggiunge un overlay gradiente sopra l'immagine per migliorare la leggibilità del testo
+     * Se abilitato, aggiunge uno sfondo sfumato sopra l'immagine per migliorare la leggibilità del testo
      */
     gradientOverlay?: boolean | null;
   };
@@ -1781,11 +1769,11 @@ export interface Page {
              */
             subtitle?: string | null;
             /**
-             * Se attivo, l'hero occuperà l'intera altezza dello schermo
+             * Se attivo, la copertina occuperà l'intera altezza dello schermo
              */
             fullHeight?: boolean | null;
             /**
-             * Immagine opzionale per lo sfondo dell'hero
+             * Immagine opzionale per lo sfondo della copertina
              */
             backgroundImage?: (string | null) | Media;
             /**
@@ -1793,7 +1781,7 @@ export interface Page {
              */
             parallax?: boolean | null;
             /**
-             * Se abilitato, aggiunge un overlay gradiente sopra l'immagine per migliorare la leggibilità del testo
+             * Se abilitato, aggiunge uno sfondo sfumato sopra l'immagine per migliorare la leggibilità del testo
              */
             gradientOverlay?: boolean | null;
             buttons?:
@@ -1805,7 +1793,7 @@ export interface Page {
                 }[]
               | null;
             /**
-             * Aggiungi un divisore decorativo in cima all'hero
+             * Aggiungi un divisore decorativo in cima alla copertina
              */
             topDivider?: {
               enabled?: boolean | null;
@@ -2125,10 +2113,6 @@ export interface PayloadLockedDocument {
         value: string | Teacher;
       } | null)
     | ({
-        relationTo: 'events';
-        value: string | Event;
-      } | null)
-    | ({
         relationTo: 'projects';
         value: string | Project;
       } | null)
@@ -2143,6 +2127,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'menu';
         value: string | Menu;
+      } | null)
+    | ({
+        relationTo: 'events';
+        value: string | Event;
       } | null)
     | ({
         relationTo: 'documents';
@@ -2563,25 +2551,6 @@ export interface TeachersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "events_select".
- */
-export interface EventsSelect<T extends boolean = true> {
-  school?: T;
-  title?: T;
-  date?: T;
-  description?: T;
-  location?: T;
-  cost?: T;
-  cover?: T;
-  gradientOverlay?: T;
-  gallery?: T;
-  addToCalendar?: T;
-  sendCommunication?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "projects_select".
  */
 export interface ProjectsSelect<T extends boolean = true> {
@@ -2618,24 +2587,9 @@ export interface CalendarDaysSelect<T extends boolean = true> {
   title?: T;
   description?: T;
   type?: T;
-  cost?: T;
   linkedEvent?: T;
   startDate?: T;
   endDate?: T;
-  isBookable?: T;
-  bookingSettings?:
-    | T
-    | {
-        maxCapacity?: T;
-        bookingDeadline?: T;
-        location?: T;
-        duration?: T;
-        requiresApproval?: T;
-        useTimeSlots?: T;
-        slotDuration?: T;
-        startTime?: T;
-        endTime?: T;
-      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2895,6 +2849,38 @@ export interface MenuSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events_select".
+ */
+export interface EventsSelect<T extends boolean = true> {
+  school?: T;
+  title?: T;
+  date?: T;
+  description?: T;
+  location?: T;
+  cost?: T;
+  cover?: T;
+  gradientOverlay?: T;
+  gallery?: T;
+  isBookable?: T;
+  bookingSettings?:
+    | T
+    | {
+        maxCapacity?: T;
+        bookingDeadline?: T;
+        duration?: T;
+        requiresApproval?: T;
+        useTimeSlots?: T;
+        slotDuration?: T;
+        startTime?: T;
+        endTime?: T;
+      };
+  addToCalendar?: T;
+  sendCommunication?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "documents_select".
  */
 export interface DocumentsSelect<T extends boolean = true> {
@@ -2994,7 +2980,7 @@ export interface ChildUpdatesSelect<T extends boolean = true> {
 export interface ParentAppointmentsSelect<T extends boolean = true> {
   school?: T;
   parent?: T;
-  calendarEvent?: T;
+  event?: T;
   teacher?: T;
   title?: T;
   description?: T;

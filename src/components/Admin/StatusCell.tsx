@@ -34,7 +34,9 @@ export const StatusCell: React.FC<StatusCellProps> = ({ cellData }) => {
   }
 
   return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusStyle()}`}>
+    <span
+      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusStyle()}`}
+    >
       {getStatusLabel()}
     </span>
   )

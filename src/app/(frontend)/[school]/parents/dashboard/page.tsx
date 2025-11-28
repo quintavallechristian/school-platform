@@ -6,6 +6,10 @@ import Hero from '@/components/Hero/Hero'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import { RichTextRenderer } from '@/components/RichTextRenderer/RichTextRenderer'
 import Image from 'next/image'
+import { LogoutButton } from '@/components/Auth/LogoutButton'
+import Link from 'next/link'
+import { Event } from '@/payload-types'
+import { Button } from '@/components/ui/button'
 
 export default async function ParentsDashboardPage({
   params,
@@ -75,7 +79,9 @@ export default async function ParentsDashboardPage({
           height: 60,
           flip: true,
         }}
-      />
+      >
+        <LogoutButton schoolSlug={school} />
+      </Hero>
 
       <div className="container mx-auto px-4 py-12 max-w-7xl">
         <div className="grid gap-12 lg:grid-cols-3">
@@ -237,16 +243,16 @@ export default async function ParentsDashboardPage({
                   Appuntamenti Confermati
                 </h2>
 
-                {appointments.docs.filter((apt) => apt.status === 'scheduled').length === 0 ? (
+                {appointments.docs.filter((apt) => apt.status === 'confirmed').length === 0 ? (
                   <div className="bg-muted/30 p-8 rounded-2xl text-center border-2 border-dashed">
                     <p className="text-muted-foreground font-medium">Nessun appuntamento</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     {appointments.docs
-                      .filter((apt) => apt.status === 'scheduled')
+                      .filter((apt) => apt.status === 'confirmed')
                       .map((appointment) => (
-                        <div
+                        <SpotlightCard
                           key={appointment.id}
                           className="group relative overflow-hidden rounded-xl bg-card border p-5 hover:shadow-lg transition-all duration-300"
                         >
@@ -291,8 +297,13 @@ export default async function ParentsDashboardPage({
                                 {appointment.description}
                               </p>
                             )}
+                            <Link href={`/${school}/eventi/${(appointment?.event as Event)?.id}`}>
+                              <Button size="sm" className="mt-4">
+                                Vai all&apos;evento
+                              </Button>
+                            </Link>
                           </div>
-                        </div>
+                        </SpotlightCard>
                       ))}
                   </div>
                 )}

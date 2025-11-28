@@ -24,7 +24,7 @@ export const EducationalOfferings: CollectionConfig = {
         {
           path: '@/components/UpgradeMessage',
           clientProps: {
-            requiredPlan: 'professional',
+            requiredPlan: 'starter',
             featureName: 'Piano Offerta Formativa',
             featureFlag: 'showEducationalOfferings',
           },
@@ -69,7 +69,7 @@ export const EducationalOfferings: CollectionConfig = {
       defaultValue: false,
       admin: {
         description:
-          "Se abilitato, aggiunge un overlay gradiente sopra l'immagine di copertina per migliorare la leggibilità del testo nell'hero",
+          "Se abilitato, aggiunge uno sfondo sfumato sopra l'immagine di copertina per migliorare la leggibilità del testo nella copertina",
       },
     },
     {
@@ -78,7 +78,8 @@ export const EducationalOfferings: CollectionConfig = {
       relationTo: 'gallery',
       label: 'Galleria',
       admin: {
-        description: 'Collega una galleria di immagini a questo piano offerta formativa (opzionale)',
+        description:
+          'Collega una galleria di immagini a questo piano offerta formativa (opzionale)',
       },
     },
   ],

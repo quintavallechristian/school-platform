@@ -56,7 +56,7 @@ export default async function DocumentiPage({ params }: { params: Promise<{ scho
 
   documentSections.forEach((section) => {
     if (!section.files) return
-    
+
     section.files.forEach((fileItem) => {
       if (fileItem.featured) {
         const file =

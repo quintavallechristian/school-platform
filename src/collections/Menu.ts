@@ -79,7 +79,7 @@ export const Menu: CollectionConfig = {
         {
           path: '@/components/UpgradeMessage',
           clientProps: {
-            requiredPlan: 'professional',
+            requiredPlan: 'starter',
             featureName: 'Menù Mensa',
             featureFlag: 'showMenu',
           },

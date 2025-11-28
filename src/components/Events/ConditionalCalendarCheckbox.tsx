@@ -7,17 +7,18 @@ import React from 'react'
 export const ConditionalCalendarCheckbox = () => {
   // Ottieni il valore della scuola dal form
   const school = useFormFields(([fields]) => fields.school)
-  
+
   // Estrai l'ID della scuola
-  const schoolId = typeof school?.value === 'string' ? school.value : (school?.value as { id: string })?.id
-  
+  const schoolId =
+    typeof school?.value === 'string' ? school.value : (school?.value as { id: string })?.id
+
   const path = 'addToCalendar'
   const { value, setValue } = useField({ path })
 
-  const description = schoolId 
+  const description = schoolId
     ? 'Se abilitato, verrà creata automaticamente una entry nel calendario (se la feature è attiva per la tua scuola)'
     : 'Seleziona prima una scuola'
-  
+
   return (
     <div className="field-type checkbox">
       <CheckboxField

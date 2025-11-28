@@ -46,7 +46,8 @@ export const Homepage: CollectionConfig = {
       label: 'Nome',
       defaultValue: 'Home Page',
       admin: {
-        description: 'Dai un nome a questa homepage',
+        description:
+          'Puoi creare diverse homepage. Dagli un nome significativo per riconoscerla facilmente.',
       },
     },
     // Configurazione copertina
@@ -55,7 +56,7 @@ export const Homepage: CollectionConfig = {
       type: 'group',
       label: 'Configurazione copertina',
       admin: {
-        description: "Personalizza l'hero di default della pagina",
+        description: 'Personalizza la copertina di default della pagina',
       },
       fields: [
         {
@@ -83,7 +84,7 @@ export const Homepage: CollectionConfig = {
           type: 'text',
           label: 'Sottotitolo',
           admin: {
-            description: "Testo che appare sotto il titolo nell'hero",
+            description: 'Testo che appare sotto il titolo nella copertina',
             condition: (data, siblingData) => siblingData?.showHero === true,
           },
         },
@@ -103,7 +104,7 @@ export const Homepage: CollectionConfig = {
           relationTo: 'media',
           label: 'Immagine di sfondo',
           admin: {
-            description: "Immagine opzionale per lo sfondo dell'hero",
+            description: 'Immagine opzionale per lo sfondo della copertina',
             condition: (data, siblingData) => siblingData?.showHero === true,
           },
           filterOptions: filterBySchool,
@@ -127,7 +128,7 @@ export const Homepage: CollectionConfig = {
           defaultValue: false,
           admin: {
             description:
-              "Se abilitato, aggiunge un overlay gradiente sopra l'immagine per migliorare la leggibilità del testo",
+              "Se abilitato, aggiunge uno sfondo sfumato sopra l'immagine per migliorare la leggibilità del testo",
             condition: (data, siblingData) =>
               siblingData?.showHero === true && siblingData?.backgroundImage,
           },

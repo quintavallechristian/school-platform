@@ -103,26 +103,51 @@ export default async function MensaPage({ params }: { params: Promise<{ school: 
           )}
 
           <SpotlightCard className="px-0 py-0">
-            <table className="min-w-full border-collapse" role="table" aria-label="Menù settimanale">
+            <table
+              className="min-w-full border-collapse"
+              role="table"
+              aria-label="Menù settimanale"
+            >
               <caption className="sr-only">
-                Tabella del menù settimanale della mensa scolastica, organizzata per settimane e giorni
+                Tabella del menù settimanale della mensa scolastica, organizzata per settimane e
+                giorni
               </caption>
               <thead>
                 <tr className="bg-primary/10">
-                  <th scope="col" className="border border-border px-4 py-3 text-left font-semibold">
+                  <th
+                    scope="col"
+                    className="border border-border px-4 py-3 text-left font-semibold"
+                  >
                     Sett. del mese
                   </th>
-                  <th scope="col" className="border border-border px-4 py-3 text-left font-semibold">Lunedì</th>
-                  <th scope="col" className="border border-border px-4 py-3 text-left font-semibold">
+                  <th
+                    scope="col"
+                    className="border border-border px-4 py-3 text-left font-semibold"
+                  >
+                    Lunedì
+                  </th>
+                  <th
+                    scope="col"
+                    className="border border-border px-4 py-3 text-left font-semibold"
+                  >
                     Martedì
                   </th>
-                  <th scope="col" className="border border-border px-4 py-3 text-left font-semibold">
+                  <th
+                    scope="col"
+                    className="border border-border px-4 py-3 text-left font-semibold"
+                  >
                     Mercoledì
                   </th>
-                  <th scope="col" className="border border-border px-4 py-3 text-left font-semibold">
+                  <th
+                    scope="col"
+                    className="border border-border px-4 py-3 text-left font-semibold"
+                  >
                     Giovedì
                   </th>
-                  <th scope="col" className="border border-border px-4 py-3 text-left font-semibold">
+                  <th
+                    scope="col"
+                    className="border border-border px-4 py-3 text-left font-semibold"
+                  >
                     Venerdì
                   </th>
                 </tr>
@@ -131,7 +156,10 @@ export default async function MensaPage({ params }: { params: Promise<{ school: 
                 {weeks.length > 0 ? (
                   weeks.map((week) => (
                     <tr key={week.number} className="hover:bg-accent/50 transition-colors">
-                      <th scope="row" className="border border-border px-4 py-4 font-semibold align-top text-left">
+                      <th
+                        scope="row"
+                        className="border border-border px-4 py-4 font-semibold align-top text-left"
+                      >
                         {week.number}
                       </th>
                       <td className="border border-border px-4 py-4 align-top">

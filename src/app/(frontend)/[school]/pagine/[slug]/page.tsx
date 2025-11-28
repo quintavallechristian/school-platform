@@ -25,13 +25,13 @@ export default async function CustomPage({ params }: Props) {
     notFound()
   }
 
-  // Mostra l'hero di default solo se showHero è esplicitamente true o undefined (per retrocompatibilità)
+  // Mostra la copertina di default solo se showHero è esplicitamente true o undefined (per retrocompatibilità)
   // Se è esplicitamente false, non lo mostra
   const shouldShowDefaultHero =
     (page as PageType).heroSettings?.showHero === true ||
     (page as PageType).heroSettings?.showHero === undefined
 
-  // Determina se l'hero deve essere full-height (default: false)
+  // Determina se la copertina deve essere full-height (default: false)
   const heroFullHeight = (page as PageType).heroSettings?.fullHeight ?? false
 
   // Funzione per verificare se il contenuto Lexical ha del testo reale
@@ -77,7 +77,7 @@ export default async function CustomPage({ params }: Props) {
 
   const hasContent = hasRealContent(page.content)
 
-  // Prepara il divisore inferiore per l'hero di default
+  // Prepara il divisore inferiore per la copertina di default
   const bottomDivider =
     (page as PageType).heroBottomDivider?.enabled && (page as PageType).heroBottomDivider?.style
       ? {

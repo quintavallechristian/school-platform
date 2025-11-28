@@ -102,7 +102,7 @@ export function CommunicationsPopup({ communications, schoolSlug }: Communicatio
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 animate-in fade-in duration-200" />
 
       {/* Modal */}
-      <div 
+      <div
         className="fixed inset-0 z-50 flex items-center justify-center p-4"
         role="dialog"
         aria-modal="true"
@@ -126,7 +126,9 @@ export function CommunicationsPopup({ communications, schoolSlug }: Communicatio
               <Icon className="h-6 w-6" aria-hidden="true" />
             </div>
             <div className="flex-1">
-              <h2 id="communication-title" className="text-2xl font-bold">{visibleComm.title}</h2>
+              <h2 id="communication-title" className="text-2xl font-bold">
+                {visibleComm.title}
+              </h2>
             </div>
             <button
               onClick={handleDismiss}

@@ -109,7 +109,11 @@ export async function getSchoolProjects(schoolId: string | number, limit = 10, p
 /**
  * Ottiene tutti i piani offerta formativa di una scuola
  */
-export async function getSchoolEducationalOfferings(schoolId: string | number, limit = 10, page = 1) {
+export async function getSchoolEducationalOfferings(
+  schoolId: string | number,
+  limit = 10,
+  page = 1,
+) {
   const payload = await getPayload({ config: configPromise })
 
   return await payload.find({
@@ -171,7 +175,6 @@ export async function getSchoolActiveMenu(schoolId: string | number) {
 
   return result.docs[0] || null
 }
-
 
 /**
  * Ottiene gli insegnanti di una scuola
@@ -351,22 +354,6 @@ export async function getSchoolPrivacyPolicy(schoolId: string | number) {
 
   return result.docs[0] || null
 }
-/**
- * Ottiene la Collection CookiePolicy per una scuola
- */
-export async function getSchoolCookiePolicy(schoolId: string | number) {
-  const payload = await getPayload({ config: configPromise })
-
-  const result = await payload.find({
-    collection: 'cookie-policy',
-    where: {
-      and: [{ school: { equals: schoolId } }, { isActive: { equals: true } }],
-    },
-    limit: 1,
-  })
-
-  return result.docs[0] || null
-}
 
 /**
  * Ottiene un articolo specifico di una scuola per slug
@@ -523,7 +510,10 @@ export async function getSchoolProjectById(schoolId: string | number, projectId:
 /**
  * Ottiene un piano offerta formativa specifico di una scuola per ID
  */
-export async function getSchoolEducationalOffering(schoolId: string | number, offeringId: string | number) {
+export async function getSchoolEducationalOffering(
+  schoolId: string | number,
+  offeringId: string | number,
+) {
   const payload = await getPayload({ config: configPromise })
 
   try {
@@ -549,7 +539,10 @@ export async function getSchoolEducationalOffering(schoolId: string | number, of
 /**
  * Ottiene un piano offerta formativa specifico di una scuola per ID (alias per compatibilità)
  */
-export async function getSchoolEducationalOfferingById(schoolId: string | number, offeringId: string | number) {
+export async function getSchoolEducationalOfferingById(
+  schoolId: string | number,
+  offeringId: string | number,
+) {
   return getSchoolEducationalOffering(schoolId, offeringId)
 }
 

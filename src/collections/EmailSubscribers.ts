@@ -10,8 +10,8 @@ import {
 export const EmailSubscribers: CollectionConfig = {
   slug: 'email-subscribers',
   labels: {
-    singular: 'Iscritti',
-    plural: 'Iscritti',
+    singular: 'Iscritto alla newsletter',
+    plural: 'Iscritti alla newsletter',
   },
   admin: {
     useAsTitle: 'email',
@@ -23,7 +23,7 @@ export const EmailSubscribers: CollectionConfig = {
         {
           path: '@/components/UpgradeMessage',
           clientProps: {
-            requiredPlan: 'professional',
+            requiredPlan: 'enterprise',
             featureName: 'Comunicazioni',
             featureFlag: 'showCommunications',
           },
@@ -52,7 +52,7 @@ export const EmailSubscribers: CollectionConfig = {
       async ({ data, req, operation }) => {
         // Verifica che la combinazione email + school sia unica
         if (!data) return data
-        
+
         if (operation === 'create' && data.email && data.school) {
           const existing = await req.payload.find({
             collection: 'email-subscribers',

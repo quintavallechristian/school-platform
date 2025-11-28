@@ -1,6 +1,5 @@
 import type { CollectionConfig } from 'payload'
 
-
 import {
   mediaRead,
   tenantCreate,

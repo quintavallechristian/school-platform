@@ -11,15 +11,15 @@ import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
-  
+
   // Gestione hostname per proxy (ngrok) e porte
   let hostHeader = request.headers.get('x-forwarded-host') || request.headers.get('host') || ''
-  
+
   // Se ci sono più host (es. proxy chain), prendi il primo
   if (hostHeader.includes(',')) {
     hostHeader = hostHeader.split(',')[0].trim()
   }
-  
+
   const hostname = hostHeader.split(':')[0].toLowerCase()
   console.log('Middleware processing:', { hostname, pathname })
 
@@ -85,18 +85,6 @@ export function middleware(request: NextRequest) {
   return NextResponse.next()
 }
 
-
 export const config = {
   matcher: ['/((?!_next|api|admin|media|favicon.ico).*)'],
 }
-
-
-
-
-
-
-
-
-
-
-

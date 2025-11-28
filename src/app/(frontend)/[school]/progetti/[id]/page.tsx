@@ -51,8 +51,6 @@ export default async function ProjectPage({
 
         <div className="py-8 px-8">
           <div className="max-w-4xl mx-auto">
-
-
             {/* Content */}
             {project.description ? (
               <SpotlightCard>

@@ -155,8 +155,6 @@ export const tenantDelete: Access = ({ req: { user } }) => {
   return false
 }
 
-
-
 /**
  * Hook per assegnare automaticamente la scuola ai nuovi contenuti
  * Può essere usato sia come beforeValidate (consigliato per campi required)
@@ -190,7 +188,7 @@ export const assignSchoolBeforeChange = ({
       if (req.user.schools && req.user.schools.length > 0) {
         const firstSchool = req.user.schools[0]
         const schoolId = typeof firstSchool === 'string' ? firstSchool : firstSchool.id
-        
+
         // Modifica il dato e ritornalo
         data.school = schoolId
         return data
@@ -224,11 +222,7 @@ export const assignSchoolBeforeChange = ({
 /**
  * Filtra le opzioni delle select/relationship in base alla scuola
  */
-export const filterBySchool = ({
-  user,
-}: {
-  user: any
-}) => {
+export const filterBySchool = ({ user }: { user: any }) => {
   if (!user) return false
 
   if (user.role === 'super-admin') {
@@ -281,7 +275,7 @@ export const getSchoolField = (
     if (user.schools && user.schools.length > 0) {
       const schoolIds = user.schools.map((school: any) =>
         typeof school === 'string' ? school : school.id,
-    )
+      )
       return {
         id: {
           in: schoolIds,
@@ -330,8 +324,7 @@ export const isFeatureEnabledForUser = async ({
     const payload = await getPayload({ config: configPromise.default })
 
     // Ottieni la prima scuola dell'utente
-    const firstSchoolId =
-      typeof user.schools[0] === 'string' ? user.schools[0] : user.schools[0].id
+    const firstSchoolId = typeof user.schools[0] === 'string' ? user.schools[0] : user.schools[0].id
 
     const school = await payload.findByID({
       collection: 'schools',
@@ -359,4 +352,3 @@ export const isFeatureEnabledForUser = async ({
     return false // false = non nascondere (show)
   }
 }
-

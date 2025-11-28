@@ -1,8 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { sendUserCredentialsEmail } from '../lib/email-service'
 
-
-
 export const Users: CollectionConfig = {
   slug: 'users',
   labels: {
@@ -166,7 +164,8 @@ export const Users: CollectionConfig = {
               return 'Almeno una scuola deve essere assegnata al genitore'
             }
 
-            const schoolId = typeof data.schools[0] === 'string' ? data.schools[0] : data.schools[0].id
+            const schoolId =
+              typeof data.schools[0] === 'string' ? data.schools[0] : data.schools[0].id
             const { checkParentLimit } = await import('../lib/check-parent-limit')
             const limitCheck = await checkParentLimit(schoolId, req.payload)
 
@@ -242,11 +241,9 @@ export const Users: CollectionConfig = {
         // Normalizza sempre schools a ID (in caso di oggetti completi)
         if (data.schools && Array.isArray(data.schools)) {
           data.schools = data.schools.map((school) =>
-            typeof school === 'string' ? school : school.id
+            typeof school === 'string' ? school : school.id,
           )
         }
-
-
 
         // Se non è super-admin, non può assegnare il ruolo super-admin
         if (req.user?.role !== 'super-admin' && data.role === 'super-admin') {
@@ -277,8 +274,17 @@ export const Users: CollectionConfig = {
       },
     ],
     afterChange: [
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      async ({ doc, context, operation, req }: { doc: any; context: any; operation: string; req: any }) => {
+      async ({
+        doc,
+        context,
+        operation,
+        req,
+      }: {
+        doc: any
+        context: any
+        operation: string
+        req: any
+      }) => {
         // Invia email con credenziali solo per nuovi utenti
         if (operation !== 'create') return
         if (!context.userPassword) return
@@ -289,18 +295,18 @@ export const Users: CollectionConfig = {
         try {
           const roleLabels = {
             'school-admin': 'Amministratore',
-            'editor': 'Editor',
-            'parent': 'Genitore',
+            editor: 'Editor',
+            parent: 'Genitore',
           }
 
           // Recupera i nomi delle scuole e lo slug per i genitori
           let schoolNames: string[] = []
           let schoolSlug: string | undefined
           if (doc.schools && doc.schools.length > 0) {
-            const schoolIds = doc.schools.map((school: any) => 
-              typeof school === 'string' ? school : school.id
+            const schoolIds = doc.schools.map((school: any) =>
+              typeof school === 'string' ? school : school.id,
             )
-            
+
             const schools = await req.payload.find({
               collection: 'schools',
               where: {
@@ -309,7 +315,7 @@ export const Users: CollectionConfig = {
                 },
               },
             })
-            
+
             schoolNames = schools.docs.map((school: any) => school.name)
             // Per i genitori, usa lo slug della prima scuola
             if (doc.role === 'parent' && schools.docs.length > 0) {
@@ -326,10 +332,11 @@ export const Users: CollectionConfig = {
           }
 
           // Crea la lista delle scuole per l'email
-          const schoolsList = schoolNames.length > 0 
-            ? `<p style="margin:0 0 10px;color:#6b7280;font-size:13px;font-weight:600;">SCUOLA/E</p>
+          const schoolsList =
+            schoolNames.length > 0
+              ? `<p style="margin:0 0 10px;color:#6b7280;font-size:13px;font-weight:600;">SCUOLA/E</p>
                <p style="margin:0 0 20px;color:#1f2937;font-size:15px;">${schoolNames.join(', ')}</p>`
-            : ''
+              : ''
 
           await sendUserCredentialsEmail(doc.email, {
             roleLabel: roleLabels[doc.role as keyof typeof roleLabels],

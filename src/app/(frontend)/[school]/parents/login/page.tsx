@@ -4,17 +4,12 @@ import config from '@payload-config'
 import { checkParentLimit } from '@/lib/check-parent-limit'
 import LoginForm from './LoginForm'
 
-export default async function ParentLoginPage({
-  params,
-}: {
-  params: Promise<{ school: string }>
-}) {
+export default async function ParentLoginPage({ params }: { params: Promise<{ school: string }> }) {
   const { school } = await params
   const payload = await getPayload({ config })
 
   // Get school data to check parent limit
   let canRegister = false
-  let limitMessage: string | undefined
 
   try {
     const schoolQuery = await payload.find({
@@ -30,7 +25,6 @@ export default async function ParentLoginPage({
       const schoolData = schoolQuery.docs[0]
       const limitCheck = await checkParentLimit(schoolData.id, payload)
       canRegister = limitCheck.canAdd
-      limitMessage = limitCheck.message
     }
   } catch (error) {
     console.error('Error checking parent limit:', error)
@@ -41,9 +35,7 @@ export default async function ParentLoginPage({
       <SpotlightCard className="w-full max-w-md">
         <div className="space-y-1">
           <h2 className="text-2xl font-bold text-center">Area Genitori</h2>
-          <div className="text-center">
-            Inserisci le tue credenziali per accedere
-          </div>
+          <div className="text-center">Inserisci le tue credenziali per accedere</div>
         </div>
         <div>
           <LoginForm school={school} />

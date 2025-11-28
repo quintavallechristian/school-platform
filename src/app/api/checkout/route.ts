@@ -8,15 +8,12 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 export async function POST(req: Request) {
   try {
     const payload = await getPayload({ config })
-    
+
     // 1. Security Check: Authenticate User
     const { user } = await payload.auth({ headers: req.headers })
-    
+
     if (!user) {
-      return NextResponse.json(
-        { error: 'Non autorizzato. Effettua il login.' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Non autorizzato. Effettua il login.' }, { status: 401 })
     }
 
     const { priceId, schoolId, schoolSlug, userId } = await req.json()
@@ -25,10 +22,7 @@ export async function POST(req: Request) {
     // Ensure the user initiating the checkout is the same as the one in the body,
     // OR the user is a super-admin.
     if (user.id !== userId && user.role !== 'super-admin') {
-       return NextResponse.json(
-        { error: 'Non autorizzato.' },
-        { status: 403 }
-      )
+      return NextResponse.json({ error: 'Non autorizzato.' }, { status: 403 })
     }
 
     const trialEnd = Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60 // 30 giorni
@@ -58,7 +52,7 @@ export async function POST(req: Request) {
     console.error('Checkout error:', error)
     return NextResponse.json(
       { error: 'Errore durante la creazione della sessione di checkout.' },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

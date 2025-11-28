@@ -6,10 +6,7 @@ import { join } from 'path'
 let brevo: Brevo.TransactionalEmailsApi | null = null
 if (process.env.BREVO_API_KEY) {
   brevo = new Brevo.TransactionalEmailsApi()
-  brevo.setApiKey(
-    Brevo.TransactionalEmailsApiApiKeys.apiKey,
-    process.env.BREVO_API_KEY
-  )
+  brevo.setApiKey(Brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY)
 }
 
 // Type definitions
@@ -38,13 +35,13 @@ interface CommunicationData {
 function renderTemplate(templateName: string, data: Record<string, string>): string {
   const templatePath = join(process.cwd(), 'src', 'lib', 'email-templates', `${templateName}.html`)
   let template = readFileSync(templatePath, 'utf-8')
-  
+
   // Replace all placeholders with actual data
-  Object.keys(data).forEach(key => {
+  Object.keys(data).forEach((key) => {
     const placeholder = `{{${key}}}`
     template = template.replace(new RegExp(placeholder, 'g'), data[key] || '')
   })
-  
+
   return template
 }
 
@@ -75,7 +72,7 @@ const priorityConfig = {
  */
 export async function sendUserCredentialsEmail(
   to: string,
-  data: UserCredentialsData
+  data: UserCredentialsData,
 ): Promise<void> {
   if (!brevo) {
     console.warn('Brevo not initialized, skipping email')
@@ -87,7 +84,7 @@ export async function sendUserCredentialsEmail(
   await brevo.sendTransacEmail({
     sender: {
       name: process.env.BREVO_SENDER_NAME || 'Scuola',
-      email: process.env.BREVO_SENDER_EMAIL || 'no-reply@scuola.it'
+      email: process.env.BREVO_SENDER_EMAIL || 'no-reply@scuola.it',
     },
     to: [{ email: to }],
     subject: '🎉 Benvenuto! Ecco le tue credenziali di accesso',
@@ -103,19 +100,22 @@ export async function sendUserCredentialsEmail(
 export async function sendCommunicationEmail(
   to: string,
   data: CommunicationData,
-  subject: string
+  subject: string,
 ): Promise<void> {
   if (!brevo) {
     console.warn('Brevo not initialized, skipping email')
     return
   }
 
-  const htmlContent = renderTemplate('communication-notification', data as unknown as Record<string, string>)
+  const htmlContent = renderTemplate(
+    'communication-notification',
+    data as unknown as Record<string, string>,
+  )
 
   await brevo.sendTransacEmail({
     sender: {
       name: process.env.BREVO_SENDER_NAME || 'Scuola',
-      email: process.env.BREVO_SENDER_EMAIL || 'no-reply@scuola.it'
+      email: process.env.BREVO_SENDER_EMAIL || 'no-reply@scuola.it',
     },
     to: [{ email: to }],
     subject,
@@ -126,11 +126,7 @@ export async function sendCommunicationEmail(
 /**
  * Generic email sender with custom HTML content
  */
-export async function sendEmail(
-  to: string,
-  subject: string,
-  htmlContent: string
-): Promise<void> {
+export async function sendEmail(to: string, subject: string, htmlContent: string): Promise<void> {
   if (!brevo) {
     throw new Error('Brevo not initialized')
   }
@@ -138,7 +134,7 @@ export async function sendEmail(
   await brevo.sendTransacEmail({
     sender: {
       name: process.env.BREVO_SENDER_NAME || 'Scuola',
-      email: process.env.BREVO_SENDER_EMAIL || 'no-reply@scuola.it'
+      email: process.env.BREVO_SENDER_EMAIL || 'no-reply@scuola.it',
     },
     to: [{ email: to }],
     subject,

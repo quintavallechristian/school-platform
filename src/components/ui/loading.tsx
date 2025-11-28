@@ -55,10 +55,7 @@ export function LoadingSpinner({
       aria-busy="true"
       className={cn('flex items-center justify-center gap-2', className)}
     >
-      <Loader2
-        className={cn('animate-spin text-primary', sizeClasses[size])}
-        aria-hidden="true"
-      />
+      <Loader2 className={cn('animate-spin text-primary', sizeClasses[size])} aria-hidden="true" />
       <span className={cn(!showLabel && 'sr-only')}>{label}</span>
     </div>
   )
@@ -163,21 +160,14 @@ export interface ProgressBarProps {
   className?: string
 }
 
-export function ProgressBar({
-  value,
-  label,
-  showPercentage = true,
-  className,
-}: ProgressBarProps) {
+export function ProgressBar({ value, label, showPercentage = true, className }: ProgressBarProps) {
   const percentage = Math.min(100, Math.max(0, value))
 
   return (
     <div className={cn('space-y-2', className)}>
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium">{label}</span>
-        {showPercentage && (
-          <span className="text-sm text-muted-foreground">{percentage}%</span>
-        )}
+        {showPercentage && <span className="text-sm text-muted-foreground">{percentage}%</span>}
       </div>
       <div
         role="progressbar"

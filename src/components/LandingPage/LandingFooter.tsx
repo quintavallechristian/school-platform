@@ -5,8 +5,6 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
 export function LandingFooter() {
-  const currentYear = new Date().getFullYear()
-
   return (
     <footer className="border-t bg-muted/30">
       {/* CTA Section */}

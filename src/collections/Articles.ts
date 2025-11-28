@@ -26,7 +26,7 @@ export const Articles: CollectionConfig = {
           clientProps: {
             requiredPlan: 'starter',
             featureName: 'Articoli',
-            featureFlag: 'showArticles',
+            featureFlag: 'showBlog',
           },
         },
       ],
@@ -62,7 +62,7 @@ export const Articles: CollectionConfig = {
       defaultValue: false,
       admin: {
         description:
-          "Se abilitato, aggiunge un overlay gradiente sopra l'immagine di copertina per migliorare la leggibilità del testo nell'hero",
+          "Se abilitato, aggiunge uno sfondo sfumato sopra l'immagine di copertina per migliorare la leggibilità del testo nella copertina",
       },
     },
     {

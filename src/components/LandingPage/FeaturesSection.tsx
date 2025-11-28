@@ -2,14 +2,7 @@
 
 import React from 'react'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
-import {
-  Bell,
-  Calendar,
-  FileText,
-  UtensilsCrossed,
-  Users,
-  Palette,
-} from 'lucide-react'
+import { Bell, Calendar, FileText, UtensilsCrossed, Users, Palette } from 'lucide-react'
 
 const features = [
   {

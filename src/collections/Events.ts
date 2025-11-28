@@ -10,7 +10,6 @@ import {
 } from '../lib/access'
 import { richTextToPlainText } from '../lib/richTextUtils'
 
-
 export const Events: CollectionConfig = {
   slug: 'events',
   labels: {
@@ -26,7 +25,7 @@ export const Events: CollectionConfig = {
         {
           path: '@/components/UpgradeMessage',
           clientProps: {
-            requiredPlan: 'starter',
+            requiredPlan: 'professional',
             featureName: 'Eventi',
             featureFlag: 'showEvents',
           },
@@ -77,7 +76,6 @@ export const Events: CollectionConfig = {
                     title: doc.title,
                     description: plainTextDescription,
                     type: 'event',
-                    cost: doc.cost || undefined,
                     startDate: doc.date,
                     linkedEvent: doc.id,
                     school: doc.school,
@@ -90,7 +88,6 @@ export const Events: CollectionConfig = {
 
             // 2. Crea comunicazione se richiesto
             if (doc.sendCommunication) {
-
               // Verifica che la scuola abbia accesso alla feature calendario
               const school = await req.payload.findByID({
                 collection: 'schools',
@@ -162,9 +159,12 @@ export const Events: CollectionConfig = {
                 })
                 console.log(`✅ Comunicazione creata con successo per: "${doc.title}"`)
               }
-          }
+            }
           } catch (error) {
-            console.error('Errore durante la creazione automatica di calendario/comunicazione:', error)
+            console.error(
+              'Errore durante la creazione automatica di calendario/comunicazione:',
+              error,
+            )
           }
         }
       },
@@ -198,7 +198,7 @@ export const Events: CollectionConfig = {
       defaultValue: false,
       admin: {
         description:
-          "Se abilitato, aggiunge un overlay gradiente sopra l'immagine di copertina per migliorare la leggibilità del testo nell'hero",
+          "Se abilitato, aggiunge uno sfondo sfumato sopra l'immagine di copertina per migliorare la leggibilità del testo nella copertina",
       },
     },
     {
@@ -211,38 +211,134 @@ export const Events: CollectionConfig = {
       },
     },
     {
-      name: 'addToCalendar',
+      name: 'isBookable',
       type: 'checkbox',
-      label: 'Vuoi aggiungere l\'evento al calendario?',
+      label: 'Prenotabile',
       defaultValue: false,
       admin: {
-        description:
-          'Se abilitato, verrà creata automaticamente una entry nel calendario collegata a questo evento',
+        description: 'Permetti ai genitori di prenotare appuntamenti per questo evento',
         position: 'sidebar',
-        condition: (data) => {
-          console.log("ciao", data)
-          if (!data.school) return false
-          return true
+      },
+    },
+    {
+      name: 'bookingSettings',
+      type: 'group',
+      label: 'Impostazioni Prenotazione',
+      admin: {
+        condition: (data) => data.isBookable === true,
+      },
+      fields: [
+        {
+          name: 'maxCapacity',
+          type: 'number',
+          label: 'Posti disponibili',
+          admin: {
+            description:
+              'Numero massimo di genitori che possono prenotare (lasciare vuoto per illimitati)',
+          },
+        },
+        {
+          name: 'bookingDeadline',
+          type: 'date',
+          label: 'Scadenza prenotazioni',
+          admin: {
+            description: 'Data limite per le prenotazioni (opzionale)',
+            date: {
+              displayFormat: 'dd/MM/yyyy HH:mm',
+              pickerAppearance: 'dayAndTime',
+            },
+          },
+        },
+        {
+          name: 'duration',
+          type: 'number',
+          label: 'Durata (minuti)',
+          admin: {
+            description: 'Durata prevista di ogni appuntamento in minuti (es. 30)',
+          },
+        },
+        {
+          name: 'requiresApproval',
+          type: 'checkbox',
+          label: 'Richiede approvazione',
+          defaultValue: true,
+          admin: {
+            description: 'Se attivo, le prenotazioni devono essere approvate dallo school-admin',
+          },
+        },
+        {
+          name: 'useTimeSlots',
+          type: 'checkbox',
+          label: 'Definisci fasce orarie',
+          defaultValue: false,
+          admin: {
+            description:
+              'Se attivo, i genitori potranno scegliere uno specifico slot orario per la prenotazione',
+          },
+        },
+        {
+          name: 'slotDuration',
+          type: 'select',
+          label: 'Durata slot',
+          defaultValue: '30',
+          options: [
+            {
+              label: '15 minuti',
+              value: '15',
+            },
+            {
+              label: '30 minuti',
+              value: '30',
+            },
+            {
+              label: '1 ora',
+              value: '60',
+            },
+          ],
+          admin: {
+            description: 'Durata di ogni slot orario disponibile',
+            condition: (data) => data.bookingSettings?.useTimeSlots === true,
+          },
+        },
+        {
+          name: 'startTime',
+          type: 'text',
+          label: 'Orario inizio',
+          admin: {
+            description: 'Orario di inizio disponibilità (formato HH:mm, es. 09:00)',
+            condition: (data) => data.bookingSettings?.useTimeSlots === true,
+          },
+        },
+        {
+          name: 'endTime',
+          type: 'text',
+          label: 'Orario fine',
+          admin: {
+            description: 'Orario di fine disponibilità (formato HH:mm, es. 18:00)',
+            condition: (data) => data.bookingSettings?.useTimeSlots === true,
+          },
+        },
+      ],
+    },
+    {
+      name: 'addToCalendar',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        position: 'sidebar',
+        components: {
+          Field: '@/components/Events/AddToCalendarField',
         },
       },
     },
     {
       name: 'sendCommunication',
       type: 'checkbox',
-      label: 'Vuoi inviare una comunicazione?',
       defaultValue: false,
       admin: {
-        description:
-          'Se abilitato, verrà creata automaticamente una comunicazione per notificare questo evento',
         position: 'sidebar',
-        condition: (data) => {
-          // Nascondi la checkbox se la scuola non ha la feature comunicazioni
-          if (!data.school) return false
-          
-          // Nota: questa è una condizione sincrona, quindi non possiamo fare query async
-          // La validazione vera è nel backend. Qui mostriamo sempre la checkbox
-          // ma il backend impedirà la creazione se la feature non è attiva
-          return true
+        components: {
+          Field: '@/components/Events/SendCommunicationField',
         },
       },
     },

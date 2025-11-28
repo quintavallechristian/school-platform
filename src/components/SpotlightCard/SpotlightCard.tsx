@@ -78,7 +78,7 @@ const SpotlightCard = React.forwardRef<HTMLDivElement, SpotlightCardProps>(
 
       const rect = internalRef.current.getBoundingClientRect()
       setPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top })
-      
+
       props.onMouseMove?.(e)
     }
 

@@ -66,7 +66,21 @@ export const Pages: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'school', 'updatedAt'],
-    group: 'Blog',
+    group: 'Contenuti',
+    description:
+      'In questa sezione puoi creare pagine personalizzate per la tua scuola, che vadano oltre le pagine di default. Puoi, per esempio, creare una pagina "La nostra storia" o "I nostri valori".',
+    components: {
+      beforeList: [
+        {
+          path: '@/components/UpgradeMessage',
+          clientProps: {
+            requiredPlan: 'professional',
+            featureName: 'Pagine',
+            featureFlag: 'showPages',
+          },
+        },
+      ],
+    },
   },
   access: {
     read: tenantRead,
@@ -100,7 +114,8 @@ export const Pages: CollectionConfig = {
       type: 'text',
       label: 'Sottotitolo',
       admin: {
-        description: "Testo che appare sotto il titolo nell'hero (se l'hero è abilitato)",
+        description:
+          'Testo che appare sotto il titolo nella copertina (se la copertina è abilitato)',
       },
     },
     // Configurazione copertina
@@ -109,7 +124,7 @@ export const Pages: CollectionConfig = {
       type: 'group',
       label: 'Configurazione copertina',
       admin: {
-        description: "Personalizza l'hero di default della pagina",
+        description: 'Personalizza la copertina di default della pagina',
       },
       fields: [
         {
@@ -138,7 +153,7 @@ export const Pages: CollectionConfig = {
           relationTo: 'media',
           label: 'Immagine di sfondo',
           admin: {
-            description: "Immagine opzionale per lo sfondo dell'hero",
+            description: 'Immagine opzionale per lo sfondo della copertina',
             condition: (data, siblingData) => siblingData?.showHero === true,
           },
           filterOptions: filterBySchool,
@@ -162,7 +177,7 @@ export const Pages: CollectionConfig = {
           defaultValue: false,
           admin: {
             description:
-              "Se abilitato, aggiunge un overlay gradiente sopra l'immagine per migliorare la leggibilità del testo",
+              "Se abilitato, aggiunge uno sfondo sfumato sopra l'immagine per migliorare la leggibilità del testo",
             condition: (data, siblingData) =>
               siblingData?.showHero === true && siblingData?.backgroundImage,
           },
@@ -244,7 +259,7 @@ export const Pages: CollectionConfig = {
               label: 'A schermo intero',
               defaultValue: false,
               admin: {
-                description: "Se attivo, l'hero occuperà l'intera altezza dello schermo",
+                description: "Se attivo, la copertina occuperà l'intera altezza dello schermo",
               },
             },
             {
@@ -253,7 +268,7 @@ export const Pages: CollectionConfig = {
               relationTo: 'media',
               label: 'Immagine di sfondo',
               admin: {
-                description: "Immagine opzionale per lo sfondo dell'hero",
+                description: 'Immagine opzionale per lo sfondo della copertina',
               },
               filterOptions: filterBySchool,
             },
@@ -274,7 +289,7 @@ export const Pages: CollectionConfig = {
               defaultValue: false,
               admin: {
                 description:
-                  "Se abilitato, aggiunge un overlay gradiente sopra l'immagine per migliorare la leggibilità del testo",
+                  "Se abilitato, aggiunge uno sfondo sfumato sopra l'immagine per migliorare la leggibilità del testo",
               },
             },
             {
@@ -314,7 +329,7 @@ export const Pages: CollectionConfig = {
               type: 'group',
               label: 'Divisore Superiore',
               admin: {
-                description: "Aggiungi un divisore decorativo in cima all'hero",
+                description: 'Aggiungi un divisore decorativo in cima alla copertina',
               },
               fields: [
                 {
@@ -823,7 +838,8 @@ export const Pages: CollectionConfig = {
               label: 'Mostra pulsante "Vedi tutti"',
               defaultValue: true,
               admin: {
-                description: 'Mostra un pulsante per andare alla pagina piano offerta formativa completa',
+                description:
+                  'Mostra un pulsante per andare alla pagina piano offerta formativa completa',
               },
             },
           ],

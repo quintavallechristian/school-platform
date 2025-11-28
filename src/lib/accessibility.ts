@@ -252,7 +252,9 @@ export function suggestAccessibleColor(
 /**
  * Formatta il risultato della validazione per il log
  */
-export function formatValidationReport(validation: ReturnType<typeof validateSchoolColors>): string {
+export function formatValidationReport(
+  validation: ReturnType<typeof validateSchoolColors>,
+): string {
   let report = '=== REPORT VALIDAZIONE ACCESSIBILITÀ COLORI ===\n\n'
 
   if (validation.valid) {

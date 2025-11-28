@@ -8,28 +8,29 @@ import ChangePlanPortalButton from '../ChangePlanPortalButton'
 const FeatureVisibilityField: GroupFieldClientComponent = ({ path }) => {
   // Use useDocumentInfo to access the actual document data
   const { data: schoolData } = useDocumentInfo()
-  
+
   // Extract the plan from the subscription group
   const plan = (schoolData?.subscription?.plan as string) || 'starter'
 
   // Define feature groups
   const features = {
     starter: [
-      { name: 'showChiSiamo', label: 'Chi Siamo' },
       { name: 'showBlog', label: 'Blog' },
-      { name: 'showEvents', label: 'Eventi' },
+      { name: 'showChiSiamo', label: 'Chi Siamo' },
       { name: 'showDocuments', label: 'Documenti' },
+      { name: 'showCalendar', label: 'Calendario' },
+      { name: 'showMenu', label: 'Mensa' },
+      { name: 'showProjects', label: 'Progetti' },
+      { name: 'showEducationalOfferings', label: 'Piano Offerta Formativa' },
     ],
     professional: [
-      { name: 'showProjects', label: 'Progetti (PRO)' },
-      { name: 'showEducationalOfferings', label: 'Piano Offerta Formativa (PRO)' },
-      { name: 'showCalendar', label: 'Calendario (PRO)' },
-      { name: 'showMenu', label: 'Mensa (PRO)' },
-      { name: 'showParentsArea', label: 'Area Riservata Genitori (PRO)' },
+      { name: 'showTeachers', label: 'Insegnanti' },
+      { name: 'showEvents', label: 'Eventi' },
+      { name: 'showParentsArea', label: 'Area Riservata Genitori' },
+      { name: 'showPages', label: 'Pagine' },
+      { name: 'showCommunications', label: 'Comunicazioni push' },
     ],
-    enterprise: [
-      { name: 'showCommunications', label: 'Comunicazioni (ENT)' },
-    ],
+    enterprise: [{ name: 'enableEmailCommunications', label: 'Comunicazioni via mail' }],
   }
 
   // Determine included and additional features based on plan
@@ -38,11 +39,7 @@ const FeatureVisibilityField: GroupFieldClientComponent = ({ path }) => {
 
   switch (plan) {
     case 'enterprise':
-      includedFeatures = [
-        ...features.starter,
-        ...features.professional,
-        ...features.enterprise,
-      ]
+      includedFeatures = [...features.starter, ...features.professional, ...features.enterprise]
       additionalFeatures = []
       break
     case 'professional':
@@ -57,7 +54,15 @@ const FeatureVisibilityField: GroupFieldClientComponent = ({ path }) => {
   }
 
   // Helper component for a single checkbox
-  const FeatureCheckbox = ({ name, label, disabled }: { name: string; label: string; disabled?: boolean }) => {
+  const FeatureCheckbox = ({
+    name,
+    label,
+    disabled,
+  }: {
+    name: string
+    label: string
+    disabled?: boolean
+  }) => {
     const fieldPath = path ? `${path}.${name}` : name
     const { value, setValue } = useField<boolean>({ path: fieldPath })
 

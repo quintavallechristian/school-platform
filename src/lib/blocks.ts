@@ -95,7 +95,7 @@ export const pageBlocks: Block[] = [
         label: 'A schermo intero',
         defaultValue: false,
         admin: {
-          description: "Se attivo, l'hero occuperà l'intera altezza dello schermo",
+          description: "Se attivo, la copertina occuperà l'intera altezza dello schermo",
         },
       },
       {
@@ -104,7 +104,7 @@ export const pageBlocks: Block[] = [
         relationTo: 'media',
         label: 'Immagine di sfondo',
         admin: {
-          description: "Immagine opzionale per lo sfondo dell'hero",
+          description: "Immagine opzionale per lo sfondo della copertina",
         },
       },
       {
@@ -124,7 +124,7 @@ export const pageBlocks: Block[] = [
         defaultValue: false,
         admin: {
           description:
-            "Se abilitato, aggiunge un overlay gradiente sopra l'immagine per migliorare la leggibilità del testo",
+            "Se abilitato, aggiunge uno sfondo sfumato sopra l'immagine per migliorare la leggibilità del testo",
         },
       },
       {
@@ -164,7 +164,7 @@ export const pageBlocks: Block[] = [
         type: 'group',
         label: 'Divisore Superiore',
         admin: {
-          description: "Aggiungi un divisore decorativo in cima all'hero",
+          description: "Aggiungi un divisore decorativo in cima alla copertina",
         },
         fields: [
           {
@@ -189,7 +189,7 @@ export const pageBlocks: Block[] = [
         type: 'group',
         label: 'Divisore Inferiore',
         admin: {
-          description: "Aggiungi un divisore decorativo in fondo all'hero",
+          description: "Aggiungi un divisore decorativo in fondo alla copertina",
         },
         fields: [
           {

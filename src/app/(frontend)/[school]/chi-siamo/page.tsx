@@ -85,7 +85,7 @@ export default async function ChiSiamoPage({ params }: PageProps) {
   // Se è personalizzata, mostra la versione personalizzata
   const typedPage = chiSiamo as ChiSiamoType
 
-  // Mostra l'hero di default solo se showHero è esplicitamente true o undefined
+  // Mostra la copertina di default solo se showHero è esplicitamente true o undefined
   const shouldShowDefaultHero =
     typedPage.heroSettings?.showHero === true || typedPage.heroSettings?.showHero === undefined
   const heroFullHeight = typedPage.heroSettings?.fullHeight ?? false
@@ -121,7 +121,7 @@ export default async function ChiSiamoPage({ params }: PageProps) {
 
   const hasContent = hasRealContent(typedPage.content)
 
-  // Prepara il divisore inferiore per l'hero di default
+  // Prepara il divisore inferiore per la copertina di default
   const bottomDivider =
     typedPage.heroSettings?.bottomDivider?.enabled && typedPage.heroSettings?.bottomDivider?.style
       ? {

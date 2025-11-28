@@ -33,7 +33,6 @@ export const ChiSiamo: CollectionConfig = {
         },
       ],
     },
-
   },
   access: {
     read: tenantRead,
@@ -70,7 +69,7 @@ export const ChiSiamo: CollectionConfig = {
       type: 'group',
       label: 'Configurazione copertina',
       admin: {
-        description: "Personalizza l'hero di default della pagina",
+        description: "Personalizza la copertina di default della pagina",
       },
       fields: [
         {
@@ -98,7 +97,7 @@ export const ChiSiamo: CollectionConfig = {
           type: 'text',
           label: 'Sottotitolo',
           admin: {
-            description: "Testo che appare sotto il titolo nell'hero",
+            description: "Testo che appare sotto il titolo nella copertina",
             condition: (data, siblingData) => siblingData?.showHero === true,
           },
         },
@@ -118,7 +117,7 @@ export const ChiSiamo: CollectionConfig = {
           relationTo: 'media',
           label: 'Immagine di sfondo',
           admin: {
-            description: "Immagine opzionale per lo sfondo dell'hero",
+            description: "Immagine opzionale per lo sfondo della copertina",
             condition: (data, siblingData) => siblingData?.showHero === true,
           },
           filterOptions: filterBySchool,
@@ -142,7 +141,7 @@ export const ChiSiamo: CollectionConfig = {
           defaultValue: false,
           admin: {
             description:
-              "Se abilitato, aggiunge un overlay gradiente sopra l'immagine per migliorare la leggibilità del testo",
+              "Se abilitato, aggiunge uno sfondo sfumato sopra l'immagine per migliorare la leggibilità del testo",
             condition: (data, siblingData) =>
               siblingData?.showHero === true && siblingData?.backgroundImage,
           },

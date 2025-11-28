@@ -30,10 +30,7 @@ export default async function EventsPage({ params }: { params: Promise<{ school:
 
   return (
     <div className="min-h-[calc(100vh-200px)]">
-      <Hero
-        title="Eventi della scuola"
-        subtitle={`Scopri tutti i nostri eventi`}
-      />
+      <Hero title="Eventi della scuola" subtitle={`Scopri tutti i nostri eventi`} />
       <Breadcrumbs />
 
       <section className="py-16">

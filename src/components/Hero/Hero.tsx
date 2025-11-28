@@ -20,6 +20,7 @@ export default function Hero({
   gradientOverlay = false,
   topDivider,
   bottomDivider,
+  children,
 }: {
   title: string
   subtitle?: string
@@ -46,6 +47,7 @@ export default function Hero({
     invert?: boolean
     height?: number
   }
+  children?: React.ReactNode
 }) {
   // Colori di default conformi WCAG 2.1 AA (allineati con layout.tsx)
   const defaultPrimaryColor = '#1e40af' // Blu scuro (8.72:1 su bianco)
@@ -264,6 +266,7 @@ export default function Hero({
                 <Button variant={button.variant || 'default'}>{button.text}</Button>
               </Link>
             ))}
+          {children}
         </div>
       </div>
 

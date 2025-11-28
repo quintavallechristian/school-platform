@@ -161,13 +161,12 @@ export const ParentAppointments: CollectionConfig = {
       },
     },
     {
-      name: 'calendarEvent',
+      name: 'event',
       type: 'relationship',
-      relationTo: 'calendar-days',
-      label: 'Evento Calendario',
+      relationTo: 'events',
+      label: 'Evento',
       admin: {
-        description:
-          'Evento del calendario a cui si riferisce questo appuntamento (se è una prenotazione)',
+        description: 'Evento a cui si riferisce questo appuntamento (se è una prenotazione)',
       },
     },
     {
@@ -246,12 +245,8 @@ export const ParentAppointments: CollectionConfig = {
           value: 'pending',
         },
         {
-          label: 'Programmato',
-          value: 'scheduled',
-        },
-        {
-          label: 'Completato',
-          value: 'completed',
+          label: 'Confermato',
+          value: 'confirmed',
         },
         {
           label: 'Annullato',

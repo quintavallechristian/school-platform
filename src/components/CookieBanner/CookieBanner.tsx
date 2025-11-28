@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '../ui/button'
+import SpotlightCard from '../SpotlightCard/SpotlightCard'
 
 type CookiePreferences = {
   necessary: boolean
@@ -136,7 +137,7 @@ export default function CookieBanner() {
 
       {/* Banner */}
       <div className="fixed bottom-0 left-0 right-0 z-[9999] p-4 sm:p-6">
-        <div className="max-w-6xl mx-auto bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl border border-neutral-200 dark:border-neutral-700 overflow-hidden">
+        <SpotlightCard className="max-w-6xl mx-auto px-0 py-0">
           {!showSettings ? (
             // Vista principale del banner
             <div className="p-6 sm:p-8">
@@ -298,7 +299,7 @@ export default function CookieBanner() {
               </div>
             </div>
           )}
-        </div>
+        </SpotlightCard>
       </div>
     </>
   )

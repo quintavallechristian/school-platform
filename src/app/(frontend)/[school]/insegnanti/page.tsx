@@ -28,7 +28,7 @@ export default async function InsegnantiPage({ params }: PageProps) {
             Conosci il team di {school.name}
           </p>
         </header>
-        
+
         <Breadcrumbs />
 
         {/* Teachers Grid */}

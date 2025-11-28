@@ -17,8 +17,8 @@ export function TermsOfServiceContent() {
       <div className="mb-10 p-6 bg-linear-to-br from-neutral-50 to-neutral-100 dark:from-neutral-800/50 dark:to-neutral-900/50 rounded-lg border border-neutral-200 dark:border-neutral-700">
         <p className="text-lg leading-relaxed m-0">
           I presenti Termini e Condizioni regolano l’utilizzo della piattaforma{' '}
-          <strong>School Platform</strong>, offerta da <strong>Christian Quintavalle</strong>,
-          con sede in <strong>via R.A. Livatino 10/D</strong>, Codice Fiscale{' '}
+          <strong>School Platform</strong>, offerta da <strong>Christian Quintavalle</strong>, con
+          sede in <strong>via R.A. Livatino 10/D</strong>, Codice Fiscale{' '}
           <strong>QNTCRS92E05G888C</strong> (“Titolare”). Accedendo alla piattaforma, l’utente
           accetta integralmente i presenti Termini.
         </p>
@@ -47,8 +47,7 @@ export function TermsOfServiceContent() {
               <strong>Titolare del servizio:</strong> Christian Quintavalle.
             </li>
             <li>
-              <strong>Contenuti:</strong> documenti, foto, testi e materiali caricati dagli
-              utenti.
+              <strong>Contenuti:</strong> documenti, foto, testi e materiali caricati dagli utenti.
             </li>
           </ul>
         </div>
@@ -61,9 +60,9 @@ export function TermsOfServiceContent() {
         </h3>
         <div className="p-6 bg-green-50 dark:bg-green-950/20 rounded-lg border-l-4 border-green-500">
           <p className="text-neutral-700 dark:text-neutral-300 m-0">
-            School Platform è un servizio SaaS che consente alle scuole di gestire
-            comunicazioni, documenti, immagini, attività scolastiche e account interni. Il
-            servizio è erogato in abbonamento tramite Stripe.
+            School Platform è un servizio SaaS che consente alle scuole di gestire comunicazioni,
+            documenti, immagini, attività scolastiche e account interni. Il servizio è erogato in
+            abbonamento tramite Stripe.
           </p>
         </div>
       </section>
@@ -75,9 +74,9 @@ export function TermsOfServiceContent() {
         </h3>
         <div className="p-6 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg border-l-4 border-yellow-500">
           <p className="text-neutral-700 dark:text-neutral-300 m-0">
-            Lo School Admin deve essere autorizzato a rappresentare la scuola, fornire
-            informazioni accurate e garantire un utilizzo corretto del servizio. Il Titolare
-            può rifiutare registrazioni sospette.
+            Lo School Admin deve essere autorizzato a rappresentare la scuola, fornire informazioni
+            accurate e garantire un utilizzo corretto del servizio. Il Titolare può rifiutare
+            registrazioni sospette.
           </p>
         </div>
       </section>
@@ -89,9 +88,9 @@ export function TermsOfServiceContent() {
         </h3>
         <div className="p-6 bg-red-50 dark:bg-red-950/20 rounded-lg border-l-4 border-red-500">
           <p className="text-neutral-700 dark:text-neutral-300 m-0">
-            La scuola è l’unica responsabile dei dati personali trattati, dei contenuti
-            caricati e delle comunicazioni inviate. È suo obbligo raccogliere i consensi
-            necessari (es. foto minori).
+            La scuola è l’unica responsabile dei dati personali trattati, dei contenuti caricati e
+            delle comunicazioni inviate. È suo obbligo raccogliere i consensi necessari (es. foto
+            minori).
           </p>
         </div>
       </section>
@@ -150,8 +149,8 @@ export function TermsOfServiceContent() {
         </h3>
         <div className="p-6 bg-teal-50 dark:bg-teal-950/20 rounded-lg border-l-4 border-teal-500">
           <p className="text-neutral-700 dark:text-neutral-300 m-0">
-            Il Titolare garantisce una disponibilità media del servizio del 99%, salvo
-            manutenzioni, problemi dei provider o cause di forza maggiore.
+            Il Titolare garantisce una disponibilità media del servizio del 99%, salvo manutenzioni,
+            problemi dei provider o cause di forza maggiore.
           </p>
         </div>
       </section>
@@ -185,9 +184,7 @@ export function TermsOfServiceContent() {
           <ul className="mt-3 space-y-1 text-neutral-700 dark:text-neutral-300">
             <li>• Privacy Policy della Piattaforma</li>
             <li>• Privacy Policy della Scuola</li>
-            <li>
-              • Data Processing Agreement (DPA) obbligatorio per l’attivazione della scuola
-            </li>
+            <li>• Data Processing Agreement (DPA) obbligatorio per l’attivazione della scuola</li>
           </ul>
         </div>
       </section>
@@ -213,8 +210,8 @@ export function TermsOfServiceContent() {
         <div className="p-6 bg-cyan-50 dark:bg-cyan-950/20 rounded-lg border-l-4 border-cyan-500">
           <p className="text-neutral-700 dark:text-neutral-300 m-0">
             Il Titolare non è responsabile per danni indiretti, perdite di dati, profitti o
-            opportunità. In ogni caso, la responsabilità massima non può superare l’importo
-            pagato dall’utente nei 12 mesi precedenti.
+            opportunità. In ogni caso, la responsabilità massima non può superare l’importo pagato
+            dall’utente nei 12 mesi precedenti.
           </p>
         </div>
       </section>
@@ -226,9 +223,8 @@ export function TermsOfServiceContent() {
         </h3>
         <div className="p-6 bg-indigo-50 dark:bg-indigo-950/20 rounded-lg border-l-4 border-indigo-500">
           <p className="text-neutral-700 dark:text-neutral-300 m-0">
-            Il Titolare può aggiornare i presenti Termini in qualsiasi momento. Le modifiche
-            saranno comunicate tramite la piattaforma. L’uso continuato costituisce
-            accettazione.
+            Il Titolare può aggiornare i presenti Termini in qualsiasi momento. Le modifiche saranno
+            comunicate tramite la piattaforma. L’uso continuato costituisce accettazione.
           </p>
         </div>
       </section>
@@ -240,8 +236,8 @@ export function TermsOfServiceContent() {
         </h3>
         <div className="p-6 bg-fuchsia-50 dark:bg-fuchsia-950/20 rounded-lg border-l-4 border-fuchsia-500">
           <p className="text-neutral-700 dark:text-neutral-300 m-0">
-            I presenti Termini sono regolati dalla legge italiana. Foro competente: Tribunale
-            di competenza del Titolare.
+            I presenti Termini sono regolati dalla legge italiana. Foro competente: Tribunale di
+            competenza del Titolare.
           </p>
         </div>
       </section>

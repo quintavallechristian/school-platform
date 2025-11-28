@@ -1,4 +1,7 @@
 import { ModeToggle } from './ModeToggle'
+import { getPayloadHMR } from '@payloadcms/next/utilities'
+import config from '@payload-config'
+import { cookies } from 'next/headers'
 
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -51,6 +54,20 @@ export default async function Navbar({
 
   const menuItems = [...staticMenuItems.map(({ label, href }) => ({ label, href }))]
 
+  const payload = await getPayloadHMR({ config })
+  const cookieStore = await cookies()
+  const token = cookieStore.get('payload-token')?.value
+  let user = null
+
+  if (token) {
+    try {
+      const result = await payload.auth({ headers: new Headers({ Authorization: `JWT ${token}` }) })
+      user = result.user
+    } catch (_error) {
+      // ignore
+    }
+  }
+
   return (
     <NavbarWrapper>
       <nav role="navigation" aria-label="Navigazione principale">
@@ -79,9 +96,9 @@ export default async function Navbar({
           <GuestNavigationMenu menuItems={menuItems} />
           <div className="flex items-center gap-4">
             {school && isFeatureEnabled(school, 'parentsArea') && (
-              <Link href={`${baseHref}/parents/login`}>
+              <Link href={user ? `${baseHref}/parents/dashboard` : `${baseHref}/parents/login`}>
                 <Button variant="outline" size="sm" className="hidden md:flex">
-                  Area Genitori
+                  {user ? 'Area Genitori' : "Accedi all'area genitori"}
                 </Button>
               </Link>
             )}

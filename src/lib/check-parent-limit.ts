@@ -16,7 +16,7 @@ export interface ParentLimitCheckResult {
  */
 export async function checkParentLimit(
   schoolId: string,
-  payload: Payload
+  payload: Payload,
 ): Promise<ParentLimitCheckResult> {
   try {
     // Fetch the school to get its subscription plan
@@ -65,7 +65,8 @@ export async function checkParentLimit(
     let message: string | undefined
     if (!canAdd) {
       if (plan === 'starter') {
-        message = 'Il piano Starter non supporta l\'area genitori. Effettua l\'upgrade al piano Professional o Enterprise.'
+        message =
+          "Il piano Starter non supporta l'area genitori. Effettua l'upgrade al piano Professional o Enterprise."
       } else if (limit !== null) {
         message = `Limite di ${limit} famiglie raggiunto per il piano ${plan}. Effettua l'upgrade per aggiungere più famiglie.`
       }
