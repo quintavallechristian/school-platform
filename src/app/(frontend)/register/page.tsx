@@ -39,6 +39,9 @@ function SignupContent() {
     lastName: '',
     password: '',
     confirmPassword: '',
+    acceptPrivacy: false,
+    acceptTerms: false,
+    acceptDpa: false,
   })
 
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -51,7 +54,7 @@ function SignupContent() {
   }
 
   // Validazione di un singolo campo
-  const validateField = (fieldName: keyof typeof formData, value: string) => {
+  const validateField = (fieldName: keyof typeof formData, value: string | boolean) => {
     // Crea un oggetto parziale per validare
     const partialData = { ...formData, [fieldName]: value }
     const result = registerSchoolSchema.safeParse(partialData)
@@ -83,7 +86,7 @@ function SignupContent() {
   }
 
   // Handler per il cambio di valore nei campi
-  const handleFieldChange = (fieldName: keyof typeof formData, value: string) => {
+  const handleFieldChange = (fieldName: keyof typeof formData, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [fieldName]: value }))
   }
 
@@ -270,56 +273,76 @@ function SignupContent() {
                 )}
               </div>
             </div>
-            <div className="flex items-center space-x-2 mt-8">
-              <input
-                type="checkbox"
-                id="privacy"
-                name="privacy"
-                required
-                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              />
-              <label htmlFor="privacy" className="text-sm text-gray-700 dark:text-gray-300">
-                Accetto la{' '}
-                <PrivacyPolicyModal>
-                  <span className="underline cursor-pointer text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
-                    privacy policy
-                  </span>
-                </PrivacyPolicyModal>
-              </label>
-            </div>
-            <div className="flex items-center space-x-2 mt-2">
-              <input
-                type="checkbox"
-                id="tos"
-                name="tos"
-                required
-                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              />
-              <label htmlFor="tos" className="text-sm text-gray-700 dark:text-gray-300">
-                Accetto i{' '}
-                <TermsOfServiceModal>
-                  <span className="underline cursor-pointer text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
-                    termini e condizioni
-                  </span>
-                </TermsOfServiceModal>
-              </label>
-            </div>
-            <div className="flex items-center space-x-2 mt-2">
-              <input
-                type="checkbox"
-                id="dpa"
-                name="dpa"
-                required
-                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              />
-              <label htmlFor="dpa" className="text-sm text-gray-700 dark:text-gray-300">
-                Accetto il{' '}
-                <DpaModal>
-                  <span className="underline cursor-pointer text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
-                    Data processing agreement
-                  </span>
-                </DpaModal>
-              </label>
+            <div className="space-y-3 mt-8">
+              <div>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="privacy"
+                    name="privacy"
+                    checked={formData.acceptPrivacy}
+                    onChange={(e) => handleFieldChange('acceptPrivacy', e.target.checked)}
+                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <label htmlFor="privacy" className="text-sm text-gray-700 dark:text-gray-300">
+                    Accetto la{' '}
+                    <PrivacyPolicyModal>
+                      <span className="underline cursor-pointer text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                        privacy policy
+                      </span>
+                    </PrivacyPolicyModal>
+                  </label>
+                </div>
+                {errors.acceptPrivacy && (
+                  <p className="text-red-500 text-sm mt-1 ml-6">{errors.acceptPrivacy}</p>
+                )}
+              </div>
+              <div>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="tos"
+                    name="tos"
+                    checked={formData.acceptTerms}
+                    onChange={(e) => handleFieldChange('acceptTerms', e.target.checked)}
+                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <label htmlFor="tos" className="text-sm text-gray-700 dark:text-gray-300">
+                    Accetto i{' '}
+                    <TermsOfServiceModal>
+                      <span className="underline cursor-pointer text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                        termini e condizioni
+                      </span>
+                    </TermsOfServiceModal>
+                  </label>
+                </div>
+                {errors.acceptTerms && (
+                  <p className="text-red-500 text-sm mt-1 ml-6">{errors.acceptTerms}</p>
+                )}
+              </div>
+              <div>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="dpa"
+                    name="dpa"
+                    checked={formData.acceptDpa}
+                    onChange={(e) => handleFieldChange('acceptDpa', e.target.checked)}
+                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <label htmlFor="dpa" className="text-sm text-gray-700 dark:text-gray-300">
+                    Accetto il{' '}
+                    <DpaModal>
+                      <span className="underline cursor-pointer text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                        Data processing agreement
+                      </span>
+                    </DpaModal>
+                  </label>
+                </div>
+                {errors.acceptDpa && (
+                  <p className="text-red-500 text-sm mt-1 ml-6">{errors.acceptDpa}</p>
+                )}
+              </div>
             </div>
             <div className="flex flex-col gap-2 mt-4">
               <Button type="submit" className="w-full" disabled={isSubmitting}>

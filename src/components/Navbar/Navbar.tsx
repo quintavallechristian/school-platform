@@ -25,6 +25,7 @@ export default async function Navbar({
   schoolId?: string | number
   school?: School
 }) {
+  const payload = await getPayloadHMR({ config })
   // Menu items statici - filtrati in base alle impostazioni della scuola
   const staticMenuItems = [
     { label: 'Chi Siamo', href: `${baseHref}/chi-siamo`, feature: 'chiSiamo' as const },
@@ -52,9 +53,35 @@ export default async function Navbar({
     return isFeatureEnabled(school, item.feature)
   })
 
-  const menuItems = [...staticMenuItems.map(({ label, href }) => ({ label, href }))]
+  // Recupera le pagine custom con showInNavbar = true per questa scuola
+  let customPages: Array<{ label: string; href: string; order: number }> = []
+  if (school) {
+    try {
+      const pagesResult = await payload.find({
+        collection: 'pages',
+        where: {
+          and: [{ school: { equals: school.id } }, { showInNavbar: { equals: true } }],
+        },
+        limit: 100,
+      })
 
-  const payload = await getPayloadHMR({ config })
+      customPages = pagesResult.docs
+        .map((page) => ({
+          label: page.title,
+          href: `${baseHref}/pagine/${page.slug}`,
+          order: page.navbarOrder ?? 999, // Le pagine senza ordine vanno in fondo
+        }))
+        .sort((a, b) => a.order - b.order)
+    } catch (error) {
+      console.error('Errore nel caricamento delle pagine custom per la navbar:', error)
+    }
+  }
+
+  const menuItems = [
+    ...staticMenuItems.map(({ label, href }) => ({ label, href })),
+    ...customPages.map(({ label, href }) => ({ label, href })),
+  ]
+
   const cookieStore = await cookies()
   const token = cookieStore.get('payload-token')?.value
   let user = null

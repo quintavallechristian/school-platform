@@ -71,17 +71,6 @@ export default async function ProjectPage({
             </div>
           </div>
         )}
-
-        <footer className="px-8 pb-8">
-          <div className="max-w-4xl mx-auto">
-            <Link href={`/${schoolSlug}/progetti`}>
-              <Button variant="ghost">
-                <ArrowLeft className="h-4 w-4" />
-                Torna ai Progetti
-              </Button>
-            </Link>
-          </div>
-        </footer>
       </article>
     </div>
   )

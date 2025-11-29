@@ -46,7 +46,7 @@ export function EmailSubscription({ schoolId }: EmailSubscriptionProps) {
   }
 
   return (
-    <SpotlightCard className="rounded-lg border  p-6 shadow-sm">
+    <SpotlightCard>
       <div className="flex items-start gap-4">
         <div className="rounded-full bg-primary/10 p-3">
           <Mail className="h-6 w-6 text-primary" />

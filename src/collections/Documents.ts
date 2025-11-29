@@ -77,18 +77,6 @@ export const Documents: CollectionConfig = {
           admin: {
             description: 'PDF, DOC, XLS, o altri documenti',
           },
-          filterOptions: ({ data }) => {
-            // Filtra i media per mostrare solo quelli della scuola selezionata
-            if (data?.school) {
-              return {
-                school: {
-                  equals: typeof data.school === 'string' ? data.school : data.school.id,
-                },
-              }
-            }
-            // Se non c'è scuola selezionata, restituisci false
-            return false
-          },
         },
         {
           name: 'title',
@@ -125,13 +113,6 @@ export const Documents: CollectionConfig = {
           },
         },
       ],
-      admin: {
-        description: 'Aggiungi uno o più documenti per questa sezione',
-        condition: (data) => {
-          // Mostra la sezione file solo se è stata selezionata una scuola
-          return !!data.school
-        },
-      },
     },
     {
       name: 'order',
@@ -172,30 +153,6 @@ export const Documents: CollectionConfig = {
           pickerAppearance: 'dayOnly',
         },
       },
-    },
-    // SEO Fields
-    {
-      name: 'seo',
-      type: 'group',
-      label: 'SEO',
-      fields: [
-        {
-          name: 'metaTitle',
-          type: 'text',
-          label: 'Meta Title',
-          admin: {
-            description: 'Titolo per i motori di ricerca (se vuoto, usa il titolo del documento)',
-          },
-        },
-        {
-          name: 'metaDescription',
-          type: 'textarea',
-          label: 'Meta Description',
-          admin: {
-            description: 'Descrizione per i motori di ricerca (max 160 caratteri)',
-          },
-        },
-      ],
     },
   ],
 }

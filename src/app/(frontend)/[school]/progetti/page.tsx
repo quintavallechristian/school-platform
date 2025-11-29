@@ -7,6 +7,7 @@ import type { Project } from '@/payload-types'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Breadcrumbs } from '@/components/Breadcrumbs/Breadcrumbs'
+import EmptyArea from '@/components/EmptyArea/EmptyArea'
 
 export default async function ProjectsPage({ params }: { params: Promise<{ school: string }> }) {
   const { school: schoolSlug } = await params
@@ -25,10 +26,7 @@ export default async function ProjectsPage({ params }: { params: Promise<{ schoo
 
   return (
     <div className="min-h-[calc(100vh-200px)]">
-      <Hero
-        title="Progetti della scuola"
-        subtitle={`Scopri tutti i progetti e le attività di ${school.name}`}
-      />
+      <Hero title="Progetti della scuola" />
       <Breadcrumbs />
 
       <section className="py-16">
@@ -51,18 +49,21 @@ export default async function ProjectsPage({ params }: { params: Promise<{ schoo
 
                     <div className="p-6">
                       <h2 className="text-2xl font-bold mb-4">{project.title}</h2>
-                      <Button className="w-fit">Vedi progetto</Button>
+                      <Button className="w-fit" size="sm">
+                        Vedi progetto
+                      </Button>
                     </div>
                   </Link>
                 </SpotlightCard>
               ))}
             </div>
           ) : (
-            <div className="text-center py-16">
-              <p className="text-muted-foreground text-lg">
-                Nessun progetto disponibile al momento.
-              </p>
-            </div>
+            <SpotlightCard className="max-w-4xl mx-auto px-0 py-0">
+              <EmptyArea
+                title="Nessun progetto disponibile al momento."
+                message="Tuttavia, puoi sempre visitare la homepage per informazioni generali."
+              />
+            </SpotlightCard>
           )}
         </div>
       </section>
@@ -82,6 +83,5 @@ export async function generateMetadata({ params }: { params: Promise<{ school: s
 
   return {
     title: `Progetti - ${school.name}`,
-    description: `Scopri tutti i progetti e le attività realizzate da ${school.name}`,
   }
 }

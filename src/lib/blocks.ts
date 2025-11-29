@@ -52,7 +52,7 @@ export const shapeDividerFields = [
 const createBackgroundColorField = () => ({
   name: 'backgroundColor',
   type: 'text' as const,
-  label: 'Background Color',
+  label: 'Colore di sfondo',
   defaultValue: '',
   admin: {
     components: {
@@ -104,7 +104,7 @@ export const pageBlocks: Block[] = [
         relationTo: 'media',
         label: 'Immagine di sfondo',
         admin: {
-          description: "Immagine opzionale per lo sfondo della copertina",
+          description: 'Immagine opzionale per lo sfondo della copertina',
         },
       },
       {
@@ -164,7 +164,7 @@ export const pageBlocks: Block[] = [
         type: 'group',
         label: 'Divisore Superiore',
         admin: {
-          description: "Aggiungi un divisore decorativo in cima alla copertina",
+          description: 'Aggiungi un divisore decorativo in cima alla copertina',
         },
         fields: [
           {
@@ -189,7 +189,7 @@ export const pageBlocks: Block[] = [
         type: 'group',
         label: 'Divisore Inferiore',
         admin: {
-          description: "Aggiungi un divisore decorativo in fondo alla copertina",
+          description: 'Aggiungi un divisore decorativo in fondo alla copertina',
         },
         fields: [
           {

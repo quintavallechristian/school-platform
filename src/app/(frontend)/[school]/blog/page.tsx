@@ -6,6 +6,7 @@ import Hero from '@/components/Hero/Hero'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import { Button } from '@/components/ui/button'
 import { Breadcrumbs } from '@/components/Breadcrumbs/Breadcrumbs'
+import EmptyArea from '@/components/EmptyArea/EmptyArea'
 
 export default async function BlogPage({ params }: { params: Promise<{ school: string }> }) {
   const { school: schoolSlug } = await params
@@ -24,10 +25,7 @@ export default async function BlogPage({ params }: { params: Promise<{ school: s
 
   return (
     <div className="min-h-screen">
-      <Hero
-        title="Blog & Notizie"
-        subtitle={`Tutte le notizie e gli aggiornamenti di ${school.name}`}
-      />
+      <Hero title="Blog & Notizie" />
       <Breadcrumbs />
 
       <div className="container mx-auto px-4 py-12">
@@ -72,10 +70,12 @@ export default async function BlogPage({ params }: { params: Promise<{ school: s
             ))}
           </div>
         ) : (
-          <div className="text-center py-20">
-            <p className="text-2xl text-muted-foreground mb-4">📭 Nessun articolo pubblicato</p>
-            <p className="text-muted-foreground">Torna presto per leggere le nostre notizie!</p>
-          </div>
+          <SpotlightCard className="max-w-4xl mx-auto -mt-16 px-0 py-0">
+            <EmptyArea
+              title="Nessun articolo pubblicato"
+              message="Torna presto per leggere le nostre notizie!"
+            />
+          </SpotlightCard>
         )}
       </div>
     </div>

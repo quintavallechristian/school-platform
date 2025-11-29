@@ -371,7 +371,7 @@ export const Schools: CollectionConfig = {
                   name: 'showEvents',
                   type: 'checkbox',
                   label: 'Mostra Eventi',
-                  defaultValue: true,
+                  defaultValue: false,
                 },
                 {
                   name: 'showProjects',
@@ -413,6 +413,24 @@ export const Schools: CollectionConfig = {
                   name: 'showParentsArea',
                   type: 'checkbox',
                   label: 'Mostra Area Riservata Genitori',
+                  defaultValue: false,
+                },
+                {
+                  name: 'showTeachers',
+                  type: 'checkbox',
+                  label: 'Mostra Insegnanti',
+                  defaultValue: false,
+                },
+                {
+                  name: 'showPages',
+                  type: 'checkbox',
+                  label: 'Mostra Pagine',
+                  defaultValue: false,
+                },
+                {
+                  name: 'enableEmailCommunications',
+                  type: 'checkbox',
+                  label: 'Abilita invio email per comunicazioni',
                   defaultValue: false,
                 },
               ],

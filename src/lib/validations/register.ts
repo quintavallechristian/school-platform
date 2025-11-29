@@ -43,6 +43,18 @@ export const registerSchoolSchema = z
       ),
 
     confirmPassword: z.string().min(1, 'Conferma password richiesta'),
+
+    acceptPrivacy: z.boolean().refine((val) => val === true, {
+      message: 'Devi accettare la privacy policy per continuare',
+    }),
+
+    acceptTerms: z.boolean().refine((val) => val === true, {
+      message: 'Devi accettare i termini e condizioni per continuare',
+    }),
+
+    acceptDpa: z.boolean().refine((val) => val === true, {
+      message: 'Devi accettare il Data processing agreement per continuare',
+    }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Le password non coincidono',

@@ -84,8 +84,9 @@ export const CalendarDays: CollectionConfig = {
       relationTo: 'events',
       label: 'Evento Collegato',
       admin: {
-        description: 'Collega un evento per maggiori dettagli',
-        condition: (data) => data.type === 'event' || data.type === 'trip',
+        components: {
+          Field: '@/components/CalendarDays/LinkedEventField',
+        },
       },
     },
     {

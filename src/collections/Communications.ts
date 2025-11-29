@@ -51,6 +51,21 @@ export const Communications: CollectionConfig = {
         if (!doc.isActive) return
 
         try {
+          // Fetch school data to check if email communications are enabled
+          const schoolId = typeof doc.school === 'string' ? doc.school : doc.school.id
+          const school = await req.payload.findByID({
+            collection: 'schools',
+            id: schoolId,
+          })
+
+          // Check if email communications feature is enabled
+          if (!school.featureVisibility?.enableEmailCommunications) {
+            console.log(
+              `Email communications disabled for school ${school.name}. Skipping email sending.`,
+            )
+            return
+          }
+
           // Trova iscritti della stessa scuola
           const subscribers = await req.payload.find({
             collection: 'email-subscribers',
@@ -76,13 +91,6 @@ export const Communications: CollectionConfig = {
             year: 'numeric',
             hour: '2-digit',
             minute: '2-digit',
-          })
-
-          // Fetch school data to get domain and name
-          const schoolId = typeof doc.school === 'string' ? doc.school : doc.school.id
-          const school = await req.payload.findByID({
-            collection: 'schools',
-            id: schoolId,
           })
 
           const schoolDomain = school.slug || 'scuola'

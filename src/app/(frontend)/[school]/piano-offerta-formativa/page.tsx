@@ -9,6 +9,7 @@ import Hero from '@/components/Hero/Hero'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import GalleryView from '@/components/GalleryView/GalleryView'
 import { RichTextRenderer } from '@/components/RichTextRenderer/RichTextRenderer'
+import EmptyArea from '@/components/EmptyArea/EmptyArea'
 
 export default async function EducationalOfferingPage({
   params,
@@ -32,15 +33,13 @@ export default async function EducationalOfferingPage({
   if (!offering) {
     return (
       <div className="min-h-[calc(100vh-200px)]">
-        <Hero
-          title="Piano Offerta Formativa"
-          subtitle={`Scopri il piano offerta formativa di ${school.name}`}
-        />
-        <div className="py-16 px-8 text-center">
-          <p className="text-muted-foreground text-lg">
-            Nessun piano offerta formativa attivo al momento.
-          </p>
-        </div>
+        <Hero title="Piano Offerta Formativa" />
+        <SpotlightCard className="max-w-4xl mx-auto -mt-16 px-0 py-0">
+          <EmptyArea
+            title="Nessun piano offerta formativa attivo al momento."
+            message="Tuttavia, puoi sempre visitare la homepage per informazioni generali."
+          />
+        </SpotlightCard>
       </div>
     )
   }

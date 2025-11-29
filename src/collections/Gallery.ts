@@ -88,45 +88,45 @@ export const Gallery: CollectionConfig = {
       },
     },
     // Relazioni con altre collection
-    {
-      name: 'linkedTo',
-      type: 'group',
-      label: 'Collegata a',
-      admin: {
-        description: 'Specifica a quale contenuto è collegata questa galleria (opzionale)',
-      },
-      fields: [
-        {
-          name: 'type',
-          type: 'select',
-          label: 'Tipo di contenuto',
-          options: [
-            { label: 'Nessuno', value: 'none' },
-            { label: 'Articolo', value: 'article' },
-            { label: 'Pagina', value: 'page' },
-            { label: 'Evento', value: 'event' },
-          ],
-          defaultValue: 'none',
-        },
-        {
-          name: 'article',
-          type: 'relationship',
-          relationTo: 'articles',
-          label: 'Articolo',
-          admin: {
-            condition: (data, siblingData) => siblingData.type === 'article',
-          },
-        },
-        {
-          name: 'event',
-          type: 'relationship',
-          relationTo: 'events',
-          label: 'Evento',
-          admin: {
-            condition: (data, siblingData) => siblingData.type === 'event',
-          },
-        },
-      ],
-    },
+    // {
+    //   name: 'linkedTo',
+    //   type: 'group',
+    //   label: 'Collegata a',
+    //   admin: {
+    //     description: 'Specifica a quale contenuto è collegata questa galleria (opzionale)',
+    //   },
+    //   fields: [
+    //     {
+    //       name: 'type',
+    //       type: 'select',
+    //       label: 'Tipo di contenuto',
+    //       options: [
+    //         { label: 'Nessuno', value: 'none' },
+    //         { label: 'Articolo', value: 'article' },
+    //         { label: 'Pagina', value: 'page' },
+    //         { label: 'Evento', value: 'event' },
+    //       ],
+    //       defaultValue: 'none',
+    //     },
+    //     {
+    //       name: 'article',
+    //       type: 'relationship',
+    //       relationTo: 'articles',
+    //       label: 'Articolo',
+    //       admin: {
+    //         condition: (data, siblingData) => siblingData.type === 'article',
+    //       },
+    //     },
+    //     {
+    //       name: 'event',
+    //       type: 'relationship',
+    //       relationTo: 'events',
+    //       label: 'Evento',
+    //       admin: {
+    //         condition: (data, siblingData) => siblingData.type === 'event',
+    //       },
+    //     },
+    //   ],
+    // },
   ],
 }

@@ -45,6 +45,7 @@ export async function POST(req: Request) {
                 isTrial: true,
                 expiresAt: new Date(subscription.trial_end! * 1000).toISOString(),
                 stripeCustomerId: subscription.customer as string,
+                plan: getPlanFromPrice(subscription.items.data[0].price.id),
               },
             },
           })

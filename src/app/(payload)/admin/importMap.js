@@ -25,7 +25,9 @@ import { StrikethroughFeatureClient as StrikethroughFeatureClient_e70f5e05f09f93
 import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { FilteredBlocksField as FilteredBlocksField_06bcb30df7896f9e0bbca96126dfb6ac } from '@/components/FilteredBlocksField/FilteredBlocksField'
 import { default as default_8d573dc83a70acbf4ee29084dadab260 } from '@/components/UpgradeMessage'
+import { default as default_b863bd80291983c0ee511be42c3dbafd } from '@/components/CalendarDays/LinkedEventField'
 import { default as default_271faedaf157e8a4284b53f24003d199 } from '@/components/Events/AddToCalendarField'
 import { default as default_a5c9098e7dddd0340e6a25b86e9ffd89 } from '@/components/Events/SendCommunicationField'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
@@ -58,7 +60,9 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#UnderlineFeatureClient": UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "@/components/FilteredBlocksField/FilteredBlocksField#FilteredBlocksField": FilteredBlocksField_06bcb30df7896f9e0bbca96126dfb6ac,
   "@/components/UpgradeMessage#default": default_8d573dc83a70acbf4ee29084dadab260,
+  "@/components/CalendarDays/LinkedEventField#default": default_b863bd80291983c0ee511be42c3dbafd,
   "@/components/Events/AddToCalendarField#default": default_271faedaf157e8a4284b53f24003d199,
   "@/components/Events/SendCommunicationField#default": default_a5c9098e7dddd0340e6a25b86e9ffd89,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24

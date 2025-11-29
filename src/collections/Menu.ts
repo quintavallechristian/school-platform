@@ -8,24 +8,18 @@ import {
 } from '../lib/access'
 
 // Helper per creare i campi di un giorno
-const createDayFields = (dayName: string, emoji: string = '🗓️') => ({
+const createDayFields = (dayName: string) => ({
   name: dayName.toLowerCase(),
   type: 'group' as const,
-  label: `${emoji} ${dayName}`,
+  label: `${dayName}`,
   admin: {
     style: {
       borderBottom: '1px solid #e5e7eb',
-      paddingBottom: '1rem',
-      marginBottom: '1rem',
+      paddingBottom: '2rem',
+      marginBottom: '2rem',
     },
   },
   fields: [
-    {
-      name: 'isSpecialDish',
-      type: 'checkbox' as const,
-      label: 'Piatto Unico',
-      defaultValue: false,
-    },
     {
       name: 'dishes',
       type: 'array' as const,
@@ -33,6 +27,7 @@ const createDayFields = (dayName: string, emoji: string = '🗓️') => ({
       fields: [
         {
           name: 'dish',
+          label: 'Piatto',
           type: 'text' as const,
           required: true,
         },
@@ -112,6 +107,7 @@ export const Menu: CollectionConfig = {
     },
     {
       name: 'name',
+      label: 'Nome',
       type: 'text',
       required: true,
       admin: {
@@ -151,19 +147,19 @@ export const Menu: CollectionConfig = {
       type: 'tabs',
       tabs: [
         {
-          label: '📅 Settimana 1',
+          label: 'Settimana 1',
           fields: [createWeekFields(1)],
         },
         {
-          label: '📅 Settimana 2',
+          label: 'Settimana 2',
           fields: [createWeekFields(2)],
         },
         {
-          label: '📅 Settimana 3',
+          label: 'Settimana 3',
           fields: [createWeekFields(3)],
         },
         {
-          label: '📅 Settimana 4',
+          label: 'Settimana 4',
           fields: [createWeekFields(4)],
         },
       ],

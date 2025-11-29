@@ -240,6 +240,9 @@ export interface School {
     showDocuments?: boolean | null;
     showCommunications?: boolean | null;
     showParentsArea?: boolean | null;
+    showTeachers?: boolean | null;
+    showPages?: boolean | null;
+    enableEmailCommunications?: boolean | null;
   };
   /**
    * Informazioni sul piano di abbonamento
@@ -362,7 +365,7 @@ export interface Homepage {
     };
   };
   /**
-   * Aggiungi sezioni personalizzate come call-to-action, team cards, feature grids, ecc.
+   * Aggiungi sezioni personalizzate: liste articoli, comunicazioni, gallerie, ecc. I blocchi disponibili dipendono dalle funzionalità attive nelle impostazioni della scuola.
    */
   blocks?:
     | (
@@ -692,174 +695,6 @@ export interface Gallery {
         id?: string | null;
       }[]
     | null;
-  /**
-   * Specifica a quale contenuto è collegata questa galleria (opzionale)
-   */
-  linkedTo?: {
-    type?: ('none' | 'article' | 'page' | 'event') | null;
-    article?: (string | null) | Article;
-    event?: (string | null) | Event;
-  };
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "articles".
- */
-export interface Article {
-  id: string;
-  /**
-   * Scuola a cui appartiene questo articolo
-   */
-  school?: (string | null) | School;
-  title: string;
-  cover?: (string | null) | Media;
-  /**
-   * Se abilitato, aggiunge uno sfondo sfumato sopra l'immagine di copertina per migliorare la leggibilità del testo nella copertina
-   */
-  gradientOverlay?: boolean | null;
-  slug: string;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  author?: (string | null) | User;
-  publishedAt?: string | null;
-  /**
-   * Collega una galleria di immagini a questo articolo (opzionale)
-   */
-  gallery?: (string | null) | Gallery;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
- */
-export interface User {
-  id: string;
-  /**
-   * Amministratore: gestisce la propria scuola | Editor: può modificare contenuti | Genitore: area riservata
-   */
-  role?: ('super-admin' | 'school-admin' | 'editor' | 'parent') | null;
-  /**
-   * Scuole di appartenenza
-   */
-  schools?: (string | School)[] | null;
-  firstName?: string | null;
-  lastName?: string | null;
-  phone?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
-    | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
-      }[]
-    | null;
-  password?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "events".
- */
-export interface Event {
-  id: string;
-  /**
-   * Scuola a cui appartiene questo evento
-   */
-  school?: (string | null) | School;
-  title: string;
-  date: string;
-  description?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  location?: string | null;
-  /**
-   * Costo dell'evento (es. "15€" o "Gratuito")
-   */
-  cost?: string | null;
-  cover?: (string | null) | Media;
-  /**
-   * Se abilitato, aggiunge uno sfondo sfumato sopra l'immagine di copertina per migliorare la leggibilità del testo nella copertina
-   */
-  gradientOverlay?: boolean | null;
-  /**
-   * Collega una galleria di immagini a questo evento (opzionale)
-   */
-  gallery?: (string | null) | Gallery;
-  /**
-   * Permetti ai genitori di prenotare appuntamenti per questo evento
-   */
-  isBookable?: boolean | null;
-  bookingSettings?: {
-    /**
-     * Numero massimo di genitori che possono prenotare (lasciare vuoto per illimitati)
-     */
-    maxCapacity?: number | null;
-    /**
-     * Data limite per le prenotazioni (opzionale)
-     */
-    bookingDeadline?: string | null;
-    /**
-     * Durata prevista di ogni appuntamento in minuti (es. 30)
-     */
-    duration?: number | null;
-    /**
-     * Se attivo, le prenotazioni devono essere approvate dallo school-admin
-     */
-    requiresApproval?: boolean | null;
-    /**
-     * Se attivo, i genitori potranno scegliere uno specifico slot orario per la prenotazione
-     */
-    useTimeSlots?: boolean | null;
-    /**
-     * Durata di ogni slot orario disponibile
-     */
-    slotDuration?: ('15' | '30' | '60') | null;
-    /**
-     * Orario di inizio disponibilità (formato HH:mm, es. 09:00)
-     */
-    startTime?: string | null;
-    /**
-     * Orario di fine disponibilità (formato HH:mm, es. 18:00)
-     */
-    endTime?: string | null;
-  };
-  addToCalendar?: boolean | null;
-  sendCommunication?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1139,15 +974,96 @@ export interface CalendarDay {
   title: string;
   description?: string | null;
   type: 'holiday' | 'closure' | 'event' | 'trip';
-  /**
-   * Collega un evento per maggiori dettagli
-   */
   linkedEvent?: (string | null) | Event;
   startDate: string;
   /**
    * Lasciare vuoto se è un singolo giorno
    */
   endDate?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events".
+ */
+export interface Event {
+  id: string;
+  /**
+   * Scuola a cui appartiene questo evento
+   */
+  school?: (string | null) | School;
+  title: string;
+  date: string;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  location?: string | null;
+  /**
+   * Costo dell'evento (es. "15€" o "Gratuito")
+   */
+  cost?: string | null;
+  cover?: (string | null) | Media;
+  /**
+   * Se abilitato, aggiunge uno sfondo sfumato sopra l'immagine di copertina per migliorare la leggibilità del testo nella copertina
+   */
+  gradientOverlay?: boolean | null;
+  /**
+   * Collega una galleria di immagini a questo evento (opzionale)
+   */
+  gallery?: (string | null) | Gallery;
+  /**
+   * Permetti ai genitori di prenotare appuntamenti per questo evento
+   */
+  isBookable?: boolean | null;
+  bookingSettings?: {
+    /**
+     * Numero massimo di genitori che possono prenotare (lasciare vuoto per illimitati)
+     */
+    maxCapacity?: number | null;
+    /**
+     * Data limite per le prenotazioni (opzionale)
+     */
+    bookingDeadline?: string | null;
+    /**
+     * Durata prevista di ogni appuntamento in minuti (es. 30)
+     */
+    duration?: number | null;
+    /**
+     * Se attivo, le prenotazioni devono essere approvate dallo school-admin
+     */
+    requiresApproval?: boolean | null;
+    /**
+     * Se attivo, i genitori potranno scegliere uno specifico slot orario per la prenotazione
+     */
+    useTimeSlots?: boolean | null;
+    /**
+     * Durata di ogni slot orario disponibile
+     */
+    slotDuration?: ('15' | '30' | '60') | null;
+    /**
+     * Orario di inizio disponibilità (formato HH:mm, es. 09:00)
+     */
+    startTime?: string | null;
+    /**
+     * Orario di fine disponibilità (formato HH:mm, es. 18:00)
+     */
+    endTime?: string | null;
+  };
+  addToCalendar?: boolean | null;
+  sendCommunication?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1181,7 +1097,6 @@ export interface Menu {
   validTo?: string | null;
   week1?: {
     lunedì?: {
-      isSpecialDish?: boolean | null;
       dishes?:
         | {
             dish: string;
@@ -1190,7 +1105,6 @@ export interface Menu {
         | null;
     };
     martedì?: {
-      isSpecialDish?: boolean | null;
       dishes?:
         | {
             dish: string;
@@ -1199,7 +1113,6 @@ export interface Menu {
         | null;
     };
     mercoledì?: {
-      isSpecialDish?: boolean | null;
       dishes?:
         | {
             dish: string;
@@ -1208,7 +1121,6 @@ export interface Menu {
         | null;
     };
     giovedì?: {
-      isSpecialDish?: boolean | null;
       dishes?:
         | {
             dish: string;
@@ -1217,7 +1129,6 @@ export interface Menu {
         | null;
     };
     venerdì?: {
-      isSpecialDish?: boolean | null;
       dishes?:
         | {
             dish: string;
@@ -1232,7 +1143,6 @@ export interface Menu {
   };
   week2?: {
     lunedì?: {
-      isSpecialDish?: boolean | null;
       dishes?:
         | {
             dish: string;
@@ -1241,7 +1151,6 @@ export interface Menu {
         | null;
     };
     martedì?: {
-      isSpecialDish?: boolean | null;
       dishes?:
         | {
             dish: string;
@@ -1250,7 +1159,6 @@ export interface Menu {
         | null;
     };
     mercoledì?: {
-      isSpecialDish?: boolean | null;
       dishes?:
         | {
             dish: string;
@@ -1259,7 +1167,6 @@ export interface Menu {
         | null;
     };
     giovedì?: {
-      isSpecialDish?: boolean | null;
       dishes?:
         | {
             dish: string;
@@ -1268,7 +1175,6 @@ export interface Menu {
         | null;
     };
     venerdì?: {
-      isSpecialDish?: boolean | null;
       dishes?:
         | {
             dish: string;
@@ -1283,7 +1189,6 @@ export interface Menu {
   };
   week3?: {
     lunedì?: {
-      isSpecialDish?: boolean | null;
       dishes?:
         | {
             dish: string;
@@ -1292,7 +1197,6 @@ export interface Menu {
         | null;
     };
     martedì?: {
-      isSpecialDish?: boolean | null;
       dishes?:
         | {
             dish: string;
@@ -1301,7 +1205,6 @@ export interface Menu {
         | null;
     };
     mercoledì?: {
-      isSpecialDish?: boolean | null;
       dishes?:
         | {
             dish: string;
@@ -1310,7 +1213,6 @@ export interface Menu {
         | null;
     };
     giovedì?: {
-      isSpecialDish?: boolean | null;
       dishes?:
         | {
             dish: string;
@@ -1319,7 +1221,6 @@ export interface Menu {
         | null;
     };
     venerdì?: {
-      isSpecialDish?: boolean | null;
       dishes?:
         | {
             dish: string;
@@ -1334,7 +1235,6 @@ export interface Menu {
   };
   week4?: {
     lunedì?: {
-      isSpecialDish?: boolean | null;
       dishes?:
         | {
             dish: string;
@@ -1343,7 +1243,6 @@ export interface Menu {
         | null;
     };
     martedì?: {
-      isSpecialDish?: boolean | null;
       dishes?:
         | {
             dish: string;
@@ -1352,7 +1251,6 @@ export interface Menu {
         | null;
     };
     mercoledì?: {
-      isSpecialDish?: boolean | null;
       dishes?:
         | {
             dish: string;
@@ -1361,7 +1259,6 @@ export interface Menu {
         | null;
     };
     giovedì?: {
-      isSpecialDish?: boolean | null;
       dishes?:
         | {
             dish: string;
@@ -1370,7 +1267,6 @@ export interface Menu {
         | null;
     };
     venerdì?: {
-      isSpecialDish?: boolean | null;
       dishes?:
         | {
             dish: string;
@@ -1410,34 +1306,29 @@ export interface Document {
    * Breve descrizione della sezione (opzionale)
    */
   description?: string | null;
-  /**
-   * Aggiungi uno o più documenti per questa sezione
-   */
-  files?:
-    | {
-        /**
-         * PDF, DOC, XLS, o altri documenti
-         */
-        file: string | Media;
-        /**
-         * Nome descrittivo del documento
-         */
-        title: string;
-        /**
-         * Breve descrizione del contenuto (opzionale)
-         */
-        description?: string | null;
-        /**
-         * Es: "v1.2", "Anno Scolastico 2024/25"
-         */
-        version?: string | null;
-        /**
-         * Se attivo, questo documento verrà mostrato nella sezione "In evidenza"
-         */
-        featured?: boolean | null;
-        id?: string | null;
-      }[]
-    | null;
+  files: {
+    /**
+     * PDF, DOC, XLS, o altri documenti
+     */
+    file: string | Media;
+    /**
+     * Nome descrittivo del documento
+     */
+    title: string;
+    /**
+     * Breve descrizione del contenuto (opzionale)
+     */
+    description?: string | null;
+    /**
+     * Es: "v1.2", "Anno Scolastico 2024/25"
+     */
+    version?: string | null;
+    /**
+     * Se attivo, questo documento verrà mostrato nella sezione "In evidenza"
+     */
+    featured?: boolean | null;
+    id?: string | null;
+  }[];
   /**
    * Numero per ordinare le sezioni (più basso = prima)
    */
@@ -1454,16 +1345,6 @@ export interface Document {
    * Data dopo la quale il documento non sarà più visibile (opzionale)
    */
   expiresAt?: string | null;
-  seo?: {
-    /**
-     * Titolo per i motori di ricerca (se vuoto, usa il titolo del documento)
-     */
-    metaTitle?: string | null;
-    /**
-     * Descrizione per i motori di ricerca (max 160 caratteri)
-     */
-    metaDescription?: string | null;
-  };
   updatedAt: string;
   createdAt: string;
 }
@@ -1552,6 +1433,82 @@ export interface Communication {
   linkedEvent?: (string | null) | Event;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "articles".
+ */
+export interface Article {
+  id: string;
+  /**
+   * Scuola a cui appartiene questo articolo
+   */
+  school?: (string | null) | School;
+  title: string;
+  cover?: (string | null) | Media;
+  /**
+   * Se abilitato, aggiunge uno sfondo sfumato sopra l'immagine di copertina per migliorare la leggibilità del testo nella copertina
+   */
+  gradientOverlay?: boolean | null;
+  slug: string;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  author?: (string | null) | User;
+  publishedAt?: string | null;
+  /**
+   * Collega una galleria di immagini a questo articolo (opzionale)
+   */
+  gallery?: (string | null) | Gallery;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: string;
+  /**
+   * Amministratore: gestisce la propria scuola | Editor: può modificare contenuti | Genitore: area riservata
+   */
+  role?: ('super-admin' | 'school-admin' | 'editor' | 'parent') | null;
+  /**
+   * Scuole di appartenenza
+   */
+  schools?: (string | School)[] | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  phone?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
 }
 /**
  * Gestisci gli iscritti alle notifiche email delle comunicazioni
@@ -1679,10 +1636,6 @@ export interface Page {
    */
   slug: string;
   /**
-   * Testo che appare sotto il titolo nella copertina (se la copertina è abilitato)
-   */
-  subtitle?: string | null;
-  /**
    * Personalizza la copertina di default della pagina
    */
   heroSettings?: {
@@ -1690,6 +1643,14 @@ export interface Page {
      * Se disabilitato, la copertina non verrà mostrata (utile se usi un immagini personalizzate)
      */
     showHero?: boolean | null;
+    /**
+     * Titolo che appare nella copertina
+     */
+    title?: string | null;
+    /**
+     * Testo che appare sotto il titolo nella copertina
+     */
+    subtitle?: string | null;
     /**
      * Se abilitato, la copertina occuperà l'intera altezza dello schermo
      */
@@ -1706,60 +1667,43 @@ export interface Page {
      * Se abilitato, aggiunge uno sfondo sfumato sopra l'immagine per migliorare la leggibilità del testo
      */
     gradientOverlay?: boolean | null;
-  };
-  /**
-   * Aggiungi un divisore decorativo in fondo alla copertina
-   */
-  heroBottomDivider?: {
-    enabled?: boolean | null;
-    style?:
-      | (
-          | 'wave'
-          | 'wave-brush'
-          | 'waves'
-          | 'zigzag'
-          | 'triangle'
-          | 'triangle-asymmetric'
-          | 'curve'
-          | 'curve-asymmetric'
-          | 'tilt'
-          | 'arrow'
-          | 'split'
-          | 'clouds'
-          | 'mountains'
-        )
-      | null;
     /**
-     * Altezza del divisore in pixel (30-300)
+     * Aggiungi un divisore decorativo in fondo alla copertina
      */
-    height?: number | null;
-    flip?: boolean | null;
-    invert?: boolean | null;
+    bottomDivider?: {
+      enabled?: boolean | null;
+      style?:
+        | (
+            | 'wave'
+            | 'wave-brush'
+            | 'waves'
+            | 'zigzag'
+            | 'triangle'
+            | 'triangle-asymmetric'
+            | 'curve'
+            | 'curve-asymmetric'
+            | 'tilt'
+            | 'arrow'
+            | 'split'
+            | 'clouds'
+            | 'mountains'
+          )
+        | null;
+      /**
+       * Altezza del divisore in pixel (30-300)
+       */
+      height?: number | null;
+      flip?: boolean | null;
+      invert?: boolean | null;
+    };
   };
   /**
-   * Testo principale che appare dopo la copertina
-   */
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * Aggiungi sezioni personalizzate come call-to-action, team cards, feature grids, ecc.
+   * Aggiungi sezioni personalizzate: liste articoli, comunicazioni, gallerie, ecc. I blocchi disponibili dipendono dalle funzionalità attive nelle impostazioni della scuola.
    */
   blocks?:
     | (
         | {
+            backgroundColor?: string | null;
             /**
              * Titolo principale con effetto gradiente animato
              */
@@ -1855,6 +1799,17 @@ export interface Page {
             blockType: 'hero';
           }
         | {
+            backgroundColor?: string | null;
+            title?: string | null;
+            limit: number;
+            showViewAll?: boolean | null;
+            featuredOnly?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'testimonials';
+          }
+        | {
+            backgroundColor?: string | null;
             title: string;
             subtitle?: string | null;
             image?: (string | null) | Media;
@@ -1871,6 +1826,7 @@ export interface Page {
             blockType: 'callToAction';
           }
         | {
+            backgroundColor?: string | null;
             content: {
               root: {
                 type: string;
@@ -1891,6 +1847,7 @@ export interface Page {
             blockType: 'richText';
           }
         | {
+            backgroundColor?: string | null;
             title?: string | null;
             columns?: ('2' | '3' | '4') | null;
             cards?:
@@ -1907,6 +1864,7 @@ export interface Page {
             blockType: 'cardGrid';
           }
         | {
+            backgroundColor?: string | null;
             /**
              * Es: "Documenti Utili", "Moduli da scaricare"
              */
@@ -1931,6 +1889,7 @@ export interface Page {
             blockType: 'fileDownload';
           }
         | {
+            backgroundColor?: string | null;
             /**
              * Seleziona una galleria esistente da mostrare
              */
@@ -1940,6 +1899,7 @@ export interface Page {
             blockType: 'gallery';
           }
         | {
+            backgroundColor?: string | null;
             /**
              * Es: "Ultime Notizie", "Articoli in Evidenza"
              */
@@ -1957,6 +1917,7 @@ export interface Page {
             blockType: 'articleList';
           }
         | {
+            backgroundColor?: string | null;
             /**
              * Es: "Prossimi Eventi", "Eventi della Scuola"
              */
@@ -1978,6 +1939,7 @@ export interface Page {
             blockType: 'eventList';
           }
         | {
+            backgroundColor?: string | null;
             /**
              * Es: "I Nostri Progetti", "Progetti della Scuola"
              */
@@ -1995,23 +1957,7 @@ export interface Page {
             blockType: 'projectList';
           }
         | {
-            /**
-             * Es: "Il Nostro Piano Offerta Formativa", "Offerta Formativa"
-             */
-            title?: string | null;
-            /**
-             * Quanti piani offerta formativa mostrare (max 12)
-             */
-            limit: number;
-            /**
-             * Mostra un pulsante per andare alla pagina piano offerta formativa completa
-             */
-            showViewAll?: boolean | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'educationalOfferingList';
-          }
-        | {
+            backgroundColor?: string | null;
             /**
              * Es: "Comunicazioni Importanti", "Avvisi"
              */
@@ -2033,6 +1979,7 @@ export interface Page {
             blockType: 'communications';
           }
         | {
+            backgroundColor?: string | null;
             /**
              * Es: "Il Nostro Team", "I Nostri Insegnanti"
              */
@@ -2051,20 +1998,6 @@ export interface Page {
    * Numero per ordinare le pagine nel menu (più basso = prima)
    */
   navbarOrder?: number | null;
-  /**
-   * Collega una galleria di immagini a questa pagina (opzionale)
-   */
-  gallery?: (string | null) | Gallery;
-  seo?: {
-    /**
-     * Titolo per i motori di ricerca (se vuoto, usa il titolo della pagina)
-     */
-    metaTitle?: string | null;
-    /**
-     * Descrizione per i motori di ricerca (max 160 caratteri)
-     */
-    metaDescription?: string | null;
-  };
   updatedAt: string;
   createdAt: string;
 }
@@ -2267,6 +2200,9 @@ export interface SchoolsSelect<T extends boolean = true> {
         showDocuments?: T;
         showCommunications?: T;
         showParentsArea?: T;
+        showTeachers?: T;
+        showPages?: T;
+        enableEmailCommunications?: T;
       };
   subscription?:
     | T
@@ -2609,7 +2545,6 @@ export interface MenuSelect<T extends boolean = true> {
         lunedì?:
           | T
           | {
-              isSpecialDish?: T;
               dishes?:
                 | T
                 | {
@@ -2620,7 +2555,6 @@ export interface MenuSelect<T extends boolean = true> {
         martedì?:
           | T
           | {
-              isSpecialDish?: T;
               dishes?:
                 | T
                 | {
@@ -2631,7 +2565,6 @@ export interface MenuSelect<T extends boolean = true> {
         mercoledì?:
           | T
           | {
-              isSpecialDish?: T;
               dishes?:
                 | T
                 | {
@@ -2642,7 +2575,6 @@ export interface MenuSelect<T extends boolean = true> {
         giovedì?:
           | T
           | {
-              isSpecialDish?: T;
               dishes?:
                 | T
                 | {
@@ -2653,7 +2585,6 @@ export interface MenuSelect<T extends boolean = true> {
         venerdì?:
           | T
           | {
-              isSpecialDish?: T;
               dishes?:
                 | T
                 | {
@@ -2669,7 +2600,6 @@ export interface MenuSelect<T extends boolean = true> {
         lunedì?:
           | T
           | {
-              isSpecialDish?: T;
               dishes?:
                 | T
                 | {
@@ -2680,7 +2610,6 @@ export interface MenuSelect<T extends boolean = true> {
         martedì?:
           | T
           | {
-              isSpecialDish?: T;
               dishes?:
                 | T
                 | {
@@ -2691,7 +2620,6 @@ export interface MenuSelect<T extends boolean = true> {
         mercoledì?:
           | T
           | {
-              isSpecialDish?: T;
               dishes?:
                 | T
                 | {
@@ -2702,7 +2630,6 @@ export interface MenuSelect<T extends boolean = true> {
         giovedì?:
           | T
           | {
-              isSpecialDish?: T;
               dishes?:
                 | T
                 | {
@@ -2713,7 +2640,6 @@ export interface MenuSelect<T extends boolean = true> {
         venerdì?:
           | T
           | {
-              isSpecialDish?: T;
               dishes?:
                 | T
                 | {
@@ -2729,7 +2655,6 @@ export interface MenuSelect<T extends boolean = true> {
         lunedì?:
           | T
           | {
-              isSpecialDish?: T;
               dishes?:
                 | T
                 | {
@@ -2740,7 +2665,6 @@ export interface MenuSelect<T extends boolean = true> {
         martedì?:
           | T
           | {
-              isSpecialDish?: T;
               dishes?:
                 | T
                 | {
@@ -2751,7 +2675,6 @@ export interface MenuSelect<T extends boolean = true> {
         mercoledì?:
           | T
           | {
-              isSpecialDish?: T;
               dishes?:
                 | T
                 | {
@@ -2762,7 +2685,6 @@ export interface MenuSelect<T extends boolean = true> {
         giovedì?:
           | T
           | {
-              isSpecialDish?: T;
               dishes?:
                 | T
                 | {
@@ -2773,7 +2695,6 @@ export interface MenuSelect<T extends boolean = true> {
         venerdì?:
           | T
           | {
-              isSpecialDish?: T;
               dishes?:
                 | T
                 | {
@@ -2789,7 +2710,6 @@ export interface MenuSelect<T extends boolean = true> {
         lunedì?:
           | T
           | {
-              isSpecialDish?: T;
               dishes?:
                 | T
                 | {
@@ -2800,7 +2720,6 @@ export interface MenuSelect<T extends boolean = true> {
         martedì?:
           | T
           | {
-              isSpecialDish?: T;
               dishes?:
                 | T
                 | {
@@ -2811,7 +2730,6 @@ export interface MenuSelect<T extends boolean = true> {
         mercoledì?:
           | T
           | {
-              isSpecialDish?: T;
               dishes?:
                 | T
                 | {
@@ -2822,7 +2740,6 @@ export interface MenuSelect<T extends boolean = true> {
         giovedì?:
           | T
           | {
-              isSpecialDish?: T;
               dishes?:
                 | T
                 | {
@@ -2833,7 +2750,6 @@ export interface MenuSelect<T extends boolean = true> {
         venerdì?:
           | T
           | {
-              isSpecialDish?: T;
               dishes?:
                 | T
                 | {
@@ -2901,12 +2817,6 @@ export interface DocumentsSelect<T extends boolean = true> {
   requiresAuth?: T;
   publishedAt?: T;
   expiresAt?: T;
-  seo?:
-    | T
-    | {
-        metaTitle?: T;
-        metaDescription?: T;
-      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -3017,32 +2927,33 @@ export interface PagesSelect<T extends boolean = true> {
   school?: T;
   title?: T;
   slug?: T;
-  subtitle?: T;
   heroSettings?:
     | T
     | {
         showHero?: T;
+        title?: T;
+        subtitle?: T;
         fullHeight?: T;
         backgroundImage?: T;
         parallax?: T;
         gradientOverlay?: T;
+        bottomDivider?:
+          | T
+          | {
+              enabled?: T;
+              style?: T;
+              height?: T;
+              flip?: T;
+              invert?: T;
+            };
       };
-  heroBottomDivider?:
-    | T
-    | {
-        enabled?: T;
-        style?: T;
-        height?: T;
-        flip?: T;
-        invert?: T;
-      };
-  content?: T;
   blocks?:
     | T
     | {
         hero?:
           | T
           | {
+              backgroundColor?: T;
               title?: T;
               subtitle?: T;
               fullHeight?: T;
@@ -3078,9 +2989,21 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        testimonials?:
+          | T
+          | {
+              backgroundColor?: T;
+              title?: T;
+              limit?: T;
+              showViewAll?: T;
+              featuredOnly?: T;
+              id?: T;
+              blockName?: T;
+            };
         callToAction?:
           | T
           | {
+              backgroundColor?: T;
               title?: T;
               subtitle?: T;
               image?: T;
@@ -3098,6 +3021,7 @@ export interface PagesSelect<T extends boolean = true> {
         richText?:
           | T
           | {
+              backgroundColor?: T;
               content?: T;
               id?: T;
               blockName?: T;
@@ -3105,6 +3029,7 @@ export interface PagesSelect<T extends boolean = true> {
         cardGrid?:
           | T
           | {
+              backgroundColor?: T;
               title?: T;
               columns?: T;
               cards?:
@@ -3122,6 +3047,7 @@ export interface PagesSelect<T extends boolean = true> {
         fileDownload?:
           | T
           | {
+              backgroundColor?: T;
               title?: T;
               description?: T;
               files?:
@@ -3138,6 +3064,7 @@ export interface PagesSelect<T extends boolean = true> {
         gallery?:
           | T
           | {
+              backgroundColor?: T;
               gallery?: T;
               id?: T;
               blockName?: T;
@@ -3145,6 +3072,7 @@ export interface PagesSelect<T extends boolean = true> {
         articleList?:
           | T
           | {
+              backgroundColor?: T;
               title?: T;
               limit?: T;
               showViewAll?: T;
@@ -3154,6 +3082,7 @@ export interface PagesSelect<T extends boolean = true> {
         eventList?:
           | T
           | {
+              backgroundColor?: T;
               title?: T;
               limit?: T;
               filter?: T;
@@ -3164,15 +3093,7 @@ export interface PagesSelect<T extends boolean = true> {
         projectList?:
           | T
           | {
-              title?: T;
-              limit?: T;
-              showViewAll?: T;
-              id?: T;
-              blockName?: T;
-            };
-        educationalOfferingList?:
-          | T
-          | {
+              backgroundColor?: T;
               title?: T;
               limit?: T;
               showViewAll?: T;
@@ -3182,6 +3103,7 @@ export interface PagesSelect<T extends boolean = true> {
         communications?:
           | T
           | {
+              backgroundColor?: T;
               title?: T;
               limit?: T;
               priorityFilter?: T;
@@ -3192,6 +3114,7 @@ export interface PagesSelect<T extends boolean = true> {
         teacherList?:
           | T
           | {
+              backgroundColor?: T;
               title?: T;
               id?: T;
               blockName?: T;
@@ -3199,13 +3122,6 @@ export interface PagesSelect<T extends boolean = true> {
       };
   showInNavbar?: T;
   navbarOrder?: T;
-  gallery?: T;
-  seo?:
-    | T
-    | {
-        metaTitle?: T;
-        metaDescription?: T;
-      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -3243,13 +3159,6 @@ export interface GallerySelect<T extends boolean = true> {
         caption?: T;
         order?: T;
         id?: T;
-      };
-  linkedTo?:
-    | T
-    | {
-        type?: T;
-        article?: T;
-        event?: T;
       };
   updatedAt?: T;
   createdAt?: T;

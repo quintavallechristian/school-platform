@@ -3,6 +3,8 @@ import { getCurrentSchool, getSchoolCommunications, isFeatureEnabled } from '@/l
 import Hero from '@/components/Hero/Hero'
 import { CommunicationsList } from '@/components/CommunicationsList/CommunicationsList'
 import { EmailSubscription } from '@/components/EmailSubscription/EmailSubscription'
+import EmptyArea from '@/components/EmptyArea/EmptyArea'
+import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 
 export default async function ComunicazioniPage({
   params,
@@ -31,16 +33,21 @@ export default async function ComunicazioniPage({
       />
 
       <div className="container mx-auto px-4 py-12">
-        <div className="mb-8">
-          <EmailSubscription schoolId={school.id} />
-        </div>
+        {school.featureVisibility?.enableEmailCommunications && (
+          <div className="mb-8">
+            <EmailSubscription schoolId={school.id} />
+          </div>
+        )}
 
         {communications.length > 0 ? (
           <CommunicationsList communications={communications} schoolSlug={schoolSlug} />
         ) : (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">Nessuna comunicazione al momento.</p>
-          </div>
+          <SpotlightCard className="px-0 py-0">
+            <EmptyArea
+              title="Nessuna comunicazione al momento"
+              message="Non ci sono comunicazioni di servizio per questa scuola."
+            />
+          </SpotlightCard>
         )}
       </div>
     </>

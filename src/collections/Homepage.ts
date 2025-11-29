@@ -26,7 +26,102 @@ export const Homepage: CollectionConfig = {
     delete: tenantDelete,
   },
   hooks: {
-    beforeChange: [assignSchoolBeforeChange],
+    beforeChange: [
+      assignSchoolBeforeChange,
+      // Valida che i blocchi utilizzati siano abilitati per la scuola
+      async ({ req, data }) => {
+        // Se non ci sono blocchi o non c'è una scuola, non fare nulla
+        if (!data?.blocks || !data?.school) {
+          return data
+        }
+
+        // Super-admin può usare qualsiasi blocco
+        if (req.user?.role === 'super-admin') {
+          return data
+        }
+
+        try {
+          // Ottieni la scuola
+          const school = await req.payload.findByID({
+            collection: 'schools',
+            id: data.school,
+          })
+
+          if (!school?.featureVisibility) {
+            // Se non ci sono feature flags, permetti tutto per retrocompatibilità
+            return data
+          }
+
+          const { featureVisibility } = school
+
+          // Mappa dei blocchi alle rispettive funzionalità
+          const blockFeatureMap: Record<string, keyof typeof featureVisibility | null> = {
+            hero: null, // blocco generale, sempre visibile
+            callToAction: null, // blocco generale, sempre visibile
+            richText: null, // blocco generale, sempre visibile
+            cardGrid: null, // blocco generale, sempre visibile
+            fileDownload: null, // blocco generale, sempre visibile
+            gallery: null, // blocco generale, sempre visibile
+            testimonials: null, // blocco generale, sempre visibile
+            articleList: 'showBlog',
+            eventList: 'showEvents',
+            projectList: 'showProjects',
+            educationalOfferingList: 'showEducationalOfferings',
+            communications: 'showCommunications',
+            teacherList: 'showTeachers',
+          }
+
+          // Controlla ogni blocco
+          const invalidBlocks: string[] = []
+          for (const block of data.blocks) {
+            const featureKey = blockFeatureMap[block.blockType]
+
+            // Se il blocco è generale (featureKey === null), è sempre valido
+            if (featureKey === null) {
+              continue
+            }
+
+            // Controlla se la funzionalità è abilitata
+            const isEnabled = featureVisibility[featureKey]
+
+            // Se non è abilitata, aggiungi alla lista dei blocchi non validi
+            if (!isEnabled) {
+              invalidBlocks.push(block.blockType)
+            }
+          }
+
+          // Se ci sono blocchi non validi, lancia un errore
+          if (invalidBlocks.length > 0) {
+            const blockNames = {
+              articleList: 'Lista Articoli (Blog)',
+              eventList: 'Lista Eventi',
+              projectList: 'Lista Progetti',
+              educationalOfferingList: 'Lista Piano Offerta Formativa',
+              communications: 'Lista Comunicazioni',
+              teacherList: 'Lista Insegnanti',
+            }
+
+            const invalidBlockNames = invalidBlocks
+              .map((slug: string) => blockNames[slug as keyof typeof blockNames] || slug)
+              .join(', ')
+
+            throw new Error(
+              `Non puoi utilizzare questi blocchi perché le funzionalità corrispondenti non sono abilitate per questa scuola: ${invalidBlockNames}. ` +
+                `Vai nelle impostazioni della scuola per abilitare le funzionalità necessarie.`,
+            )
+          }
+        } catch (error) {
+          // Se l'errore è quello che abbiamo lanciato noi, rilancia
+          if (error instanceof Error && error.message.includes('Non puoi utilizzare')) {
+            throw error
+          }
+          // Altrimenti, logga e continua
+          console.error('Error validating blocks:', error)
+        }
+
+        return data
+      },
+    ],
   },
   fields: [
     getSchoolField('Scuola a cui appartiene questa configurazione'),
@@ -168,7 +263,10 @@ export const Homepage: CollectionConfig = {
       label: 'Blocchi Personalizzati',
       admin: {
         description:
-          'Aggiungi sezioni personalizzate come call-to-action, team cards, feature grids, ecc.',
+          'Aggiungi sezioni personalizzate: liste articoli, comunicazioni, gallerie, ecc. I blocchi disponibili dipendono dalle funzionalità attive nelle impostazioni della scuola.',
+        components: {
+          Field: '@/components/FilteredBlocksField/FilteredBlocksField#FilteredBlocksField',
+        },
       },
       blocks: pageBlocks,
     },

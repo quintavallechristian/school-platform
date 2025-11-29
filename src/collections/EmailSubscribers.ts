@@ -24,8 +24,8 @@ export const EmailSubscribers: CollectionConfig = {
           path: '@/components/UpgradeMessage',
           clientProps: {
             requiredPlan: 'enterprise',
-            featureName: 'Comunicazioni',
-            featureFlag: 'showCommunications',
+            featureName: 'Comunicazioni via mail',
+            featureFlag: 'enableEmailCommunications',
           },
         },
       ],

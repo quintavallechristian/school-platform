@@ -8,54 +8,7 @@ import {
   getSchoolField,
   filterBySchool,
 } from '../lib/access'
-
-// Configurazione riutilizzabile per i shape dividers
-const shapeDividerFields = [
-  {
-    name: 'style',
-    type: 'select' as const,
-    label: 'Stile',
-    required: true,
-    options: [
-      { label: 'Onda', value: 'wave' },
-      { label: 'Onda Pennellata', value: 'wave-brush' },
-      { label: 'Onde Multiple', value: 'waves' },
-      { label: 'Zigzag', value: 'zigzag' },
-      { label: 'Triangolo', value: 'triangle' },
-      { label: 'Triangolo Asimmetrico', value: 'triangle-asymmetric' },
-      { label: 'Curva', value: 'curve' },
-      { label: 'Curva Asimmetrica', value: 'curve-asymmetric' },
-      { label: 'Inclinato', value: 'tilt' },
-      { label: 'Freccia', value: 'arrow' },
-      { label: 'Divisione', value: 'split' },
-      { label: 'Nuvole', value: 'clouds' },
-      { label: 'Montagne', value: 'mountains' },
-    ],
-  },
-  {
-    name: 'height',
-    type: 'number' as const,
-    label: 'Altezza (px)',
-    defaultValue: 100,
-    min: 30,
-    max: 300,
-    admin: {
-      description: 'Altezza del divisore in pixel (30-300)',
-    },
-  },
-  {
-    name: 'flip',
-    type: 'checkbox' as const,
-    label: 'Specchia orizzontalmente',
-    defaultValue: false,
-  },
-  {
-    name: 'invert',
-    type: 'checkbox' as const,
-    label: 'Specchia verticalmente',
-    defaultValue: false,
-  },
-]
+import { pageBlocks, shapeDividerFields } from '../lib/blocks'
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
@@ -89,7 +42,102 @@ export const Pages: CollectionConfig = {
     delete: tenantDelete,
   },
   hooks: {
-    beforeChange: [assignSchoolBeforeChange],
+    beforeChange: [
+      assignSchoolBeforeChange,
+      // Valida che i blocchi utilizzati siano abilitati per la scuola
+      async ({ req, data }) => {
+        // Se non ci sono blocchi o non c'è una scuola, non fare nulla
+        if (!data?.blocks || !data?.school) {
+          return data
+        }
+
+        // Super-admin può usare qualsiasi blocco
+        if (req.user?.role === 'super-admin') {
+          return data
+        }
+
+        try {
+          // Ottieni la scuola
+          const school = await req.payload.findByID({
+            collection: 'schools',
+            id: data.school,
+          })
+
+          if (!school?.featureVisibility) {
+            // Se non ci sono feature flags, permetti tutto per retrocompatibilità
+            return data
+          }
+
+          const { featureVisibility } = school
+
+          // Mappa dei blocchi alle rispettive funzionalità
+          const blockFeatureMap: Record<string, keyof typeof featureVisibility | null> = {
+            hero: null, // blocco generale, sempre visibile
+            callToAction: null, // blocco generale, sempre visibile
+            richText: null, // blocco generale, sempre visibile
+            cardGrid: null, // blocco generale, sempre visibile
+            fileDownload: null, // blocco generale, sempre visibile
+            gallery: null, // blocco generale, sempre visibile
+            testimonials: null, // blocco generale, sempre visibile
+            articleList: 'showBlog',
+            eventList: 'showEvents',
+            projectList: 'showProjects',
+            educationalOfferingList: 'showEducationalOfferings',
+            communications: 'showCommunications',
+            teacherList: 'showTeachers',
+          }
+
+          // Controlla ogni blocco
+          const invalidBlocks: string[] = []
+          for (const block of data.blocks) {
+            const featureKey = blockFeatureMap[block.blockType]
+
+            // Se il blocco è generale (featureKey === null), è sempre valido
+            if (featureKey === null) {
+              continue
+            }
+
+            // Controlla se la funzionalità è abilitata
+            const isEnabled = featureVisibility[featureKey]
+
+            // Se non è abilitata, aggiungi alla lista dei blocchi non validi
+            if (!isEnabled) {
+              invalidBlocks.push(block.blockType)
+            }
+          }
+
+          // Se ci sono blocchi non validi, lancia un errore
+          if (invalidBlocks.length > 0) {
+            const blockNames = {
+              articleList: 'Lista Articoli (Blog)',
+              eventList: 'Lista Eventi',
+              projectList: 'Lista Progetti',
+              educationalOfferingList: 'Lista Piano Offerta Formativa',
+              communications: 'Lista Comunicazioni',
+              teacherList: 'Lista Insegnanti',
+            }
+
+            const invalidBlockNames = invalidBlocks
+              .map((slug: string) => blockNames[slug as keyof typeof blockNames] || slug)
+              .join(', ')
+
+            throw new Error(
+              `Non puoi utilizzare questi blocchi perché le funzionalità corrispondenti non sono abilitate per questa scuola: ${invalidBlockNames}. ` +
+                `Vai nelle impostazioni della scuola per abilitare le funzionalità necessarie.`,
+            )
+          }
+        } catch (error) {
+          // Se l'errore è quello che abbiamo lanciato noi, rilancia
+          if (error instanceof Error && error.message.includes('Non puoi utilizzare')) {
+            throw error
+          }
+          // Altrimenti, logga e continua
+          console.error('Error validating blocks:', error)
+        }
+
+        return data
+      },
+    ],
   },
   fields: [
     getSchoolField('Scuola a cui appartiene questa pagina'),
@@ -109,15 +157,6 @@ export const Pages: CollectionConfig = {
         description: 'Es: chi-siamo, contatti, storia',
       },
     },
-    {
-      name: 'subtitle',
-      type: 'text',
-      label: 'Sottotitolo',
-      admin: {
-        description:
-          'Testo che appare sotto il titolo nella copertina (se la copertina è abilitato)',
-      },
-    },
     // Configurazione copertina
     {
       name: 'heroSettings',
@@ -135,6 +174,24 @@ export const Pages: CollectionConfig = {
           admin: {
             description:
               'Se disabilitato, la copertina non verrà mostrata (utile se usi un immagini personalizzate)',
+          },
+        },
+        {
+          name: 'title',
+          type: 'text',
+          label: 'Titolo',
+          admin: {
+            description: 'Titolo che appare nella copertina',
+            condition: (data, siblingData) => siblingData?.showHero === true,
+          },
+        },
+        {
+          name: 'subtitle',
+          type: 'text',
+          label: 'Sottotitolo',
+          admin: {
+            description: 'Testo che appare sotto il titolo nella copertina',
+            condition: (data, siblingData) => siblingData?.showHero === true,
           },
         },
         {
@@ -182,41 +239,33 @@ export const Pages: CollectionConfig = {
               siblingData?.showHero === true && siblingData?.backgroundImage,
           },
         },
-      ],
-    },
-    {
-      name: 'heroBottomDivider',
-      type: 'group',
-      label: 'Divisore Inferiore Copertina',
-      admin: {
-        description: 'Aggiungi un divisore decorativo in fondo alla copertina',
-        condition: (data) => data.heroSettings?.showHero === true,
-      },
-      fields: [
         {
-          name: 'enabled',
-          type: 'checkbox',
-          label: 'Abilita divisore inferiore',
-          defaultValue: false,
-        },
-        ...shapeDividerFields.map((field) => ({
-          ...field,
+          name: 'bottomDivider',
+          type: 'group',
+          label: 'Divisore Inferiore',
           admin: {
-            ...field.admin,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            condition: (data: Record<string, any>, siblingData: Record<string, any>) =>
-              siblingData?.enabled === true,
+            description: 'Aggiungi un divisore decorativo in fondo alla copertina',
+            condition: (data, siblingData) => siblingData?.showHero === true,
           },
-        })),
+          fields: [
+            {
+              name: 'enabled',
+              type: 'checkbox',
+              label: 'Abilita divisore inferiore',
+              defaultValue: false,
+            },
+            ...shapeDividerFields.map((field) => ({
+              ...field,
+              admin: {
+                ...field.admin,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                condition: (data: Record<string, any>, siblingData: Record<string, any>) =>
+                  siblingData?.enabled === true,
+              },
+            })),
+          ],
+        },
       ],
-    },
-    {
-      name: 'content',
-      type: 'richText',
-      label: 'Contenuto principale',
-      admin: {
-        description: 'Testo principale che appare dopo la copertina',
-      },
     },
     // Blocchi componibili
     {
@@ -225,698 +274,12 @@ export const Pages: CollectionConfig = {
       label: 'Blocchi Personalizzati',
       admin: {
         description:
-          'Aggiungi sezioni personalizzate come call-to-action, team cards, feature grids, ecc.',
+          'Aggiungi sezioni personalizzate: liste articoli, comunicazioni, gallerie, ecc. I blocchi disponibili dipendono dalle funzionalità attive nelle impostazioni della scuola.',
+        components: {
+          Field: '@/components/FilteredBlocksField/FilteredBlocksField#FilteredBlocksField',
+        },
       },
-      blocks: [
-        // Blocco Hero
-        {
-          slug: 'hero',
-          labels: {
-            singular: 'Hero Section',
-            plural: 'Hero Sections',
-          },
-          fields: [
-            {
-              name: 'title',
-              type: 'text',
-              required: true,
-              label: 'Titolo',
-              admin: {
-                description: 'Titolo principale con effetto gradiente animato',
-              },
-            },
-            {
-              name: 'subtitle',
-              type: 'textarea',
-              label: 'Sottotitolo',
-              admin: {
-                description: 'Testo secondario con animazione blur',
-              },
-            },
-            {
-              name: 'fullHeight',
-              type: 'checkbox',
-              label: 'A schermo intero',
-              defaultValue: false,
-              admin: {
-                description: "Se attivo, la copertina occuperà l'intera altezza dello schermo",
-              },
-            },
-            {
-              name: 'backgroundImage',
-              type: 'upload',
-              relationTo: 'media',
-              label: 'Immagine di sfondo',
-              admin: {
-                description: 'Immagine opzionale per lo sfondo della copertina',
-              },
-              filterOptions: filterBySchool,
-            },
-            {
-              name: 'parallax',
-              type: 'checkbox',
-              label: 'Effetto Parallax',
-              defaultValue: false,
-              admin: {
-                description:
-                  "Se abilitato, l'immagine di sfondo avrà un effetto parallax durante lo scroll",
-              },
-            },
-            {
-              name: 'gradientOverlay',
-              type: 'checkbox',
-              label: 'Overlay Gradiente',
-              defaultValue: false,
-              admin: {
-                description:
-                  "Se abilitato, aggiunge uno sfondo sfumato sopra l'immagine per migliorare la leggibilità del testo",
-              },
-            },
-            {
-              name: 'buttons',
-              type: 'array',
-              label: 'Pulsanti',
-              maxRows: 3,
-              fields: [
-                {
-                  name: 'text',
-                  type: 'text',
-                  required: true,
-                  label: 'Testo del pulsante',
-                },
-                {
-                  name: 'href',
-                  type: 'text',
-                  required: true,
-                  label: 'Link (URL)',
-                },
-                {
-                  name: 'variant',
-                  type: 'select',
-                  label: 'Stile',
-                  defaultValue: 'default',
-                  options: [
-                    { label: 'Primario', value: 'default' },
-                    { label: 'Distruttivo', value: 'destructive' },
-                    { label: 'Outline', value: 'outline' },
-                    { label: 'Link', value: 'link' },
-                  ],
-                },
-              ],
-            },
-            {
-              name: 'topDivider',
-              type: 'group',
-              label: 'Divisore Superiore',
-              admin: {
-                description: 'Aggiungi un divisore decorativo in cima alla copertina',
-              },
-              fields: [
-                {
-                  name: 'enabled',
-                  type: 'checkbox',
-                  label: 'Abilita divisore superiore',
-                  defaultValue: false,
-                },
-                {
-                  name: 'style',
-                  type: 'select',
-                  label: 'Stile',
-                  required: true,
-                  admin: {
-                    condition: (data, siblingData) => siblingData?.enabled === true,
-                  },
-                  options: [
-                    { label: 'Onda', value: 'wave' },
-                    { label: 'Onda Pennellata', value: 'wave-brush' },
-                    { label: 'Onde Multiple', value: 'waves' },
-                    { label: 'Zigzag', value: 'zigzag' },
-                    { label: 'Triangolo', value: 'triangle' },
-                    { label: 'Triangolo Asimmetrico', value: 'triangle-asymmetric' },
-                    { label: 'Curva', value: 'curve' },
-                    { label: 'Curva Asimmetrica', value: 'curve-asymmetric' },
-                    { label: 'Inclinato', value: 'tilt' },
-                    { label: 'Freccia', value: 'arrow' },
-                    { label: 'Divisione', value: 'split' },
-                    { label: 'Nuvole', value: 'clouds' },
-                    { label: 'Montagne', value: 'mountains' },
-                  ],
-                },
-                {
-                  name: 'height',
-                  type: 'number',
-                  label: 'Altezza (px)',
-                  defaultValue: 100,
-                  min: 30,
-                  max: 300,
-                  admin: {
-                    condition: (data, siblingData) => siblingData?.enabled === true,
-                    description: 'Altezza del divisore in pixel (30-300)',
-                  },
-                },
-                {
-                  name: 'flip',
-                  type: 'checkbox',
-                  label: 'Specchia orizzontalmente',
-                  defaultValue: false,
-                  admin: {
-                    condition: (data, siblingData) => siblingData?.enabled === true,
-                  },
-                },
-                {
-                  name: 'invert',
-                  type: 'checkbox',
-                  label: 'Specchia verticalmente',
-                  defaultValue: false,
-                  admin: {
-                    condition: (data, siblingData) => siblingData?.enabled === true,
-                  },
-                },
-              ],
-            },
-            {
-              name: 'bottomDivider',
-              type: 'group',
-              label: 'Divisore Inferiore',
-              admin: {
-                description: 'Aggiungi un divisore decorativo in fondo alla copertina',
-              },
-              fields: [
-                {
-                  name: 'enabled',
-                  type: 'checkbox',
-                  label: 'Abilita divisore inferiore',
-                  defaultValue: false,
-                },
-                {
-                  name: 'style',
-                  type: 'select',
-                  label: 'Stile',
-                  required: true,
-                  admin: {
-                    condition: (data, siblingData) => siblingData?.enabled === true,
-                  },
-                  options: [
-                    { label: 'Onda', value: 'wave' },
-                    { label: 'Onda Pennellata', value: 'wave-brush' },
-                    { label: 'Onde Multiple', value: 'waves' },
-                    { label: 'Zigzag', value: 'zigzag' },
-                    { label: 'Triangolo', value: 'triangle' },
-                    { label: 'Triangolo Asimmetrico', value: 'triangle-asymmetric' },
-                    { label: 'Curva', value: 'curve' },
-                    { label: 'Curva Asimmetrica', value: 'curve-asymmetric' },
-                    { label: 'Inclinato', value: 'tilt' },
-                    { label: 'Freccia', value: 'arrow' },
-                    { label: 'Divisione', value: 'split' },
-                    { label: 'Nuvole', value: 'clouds' },
-                    { label: 'Montagne', value: 'mountains' },
-                  ],
-                },
-                {
-                  name: 'height',
-                  type: 'number',
-                  label: 'Altezza (px)',
-                  defaultValue: 100,
-                  min: 30,
-                  max: 300,
-                  admin: {
-                    condition: (data, siblingData) => siblingData?.enabled === true,
-                    description: 'Altezza del divisore in pixel (30-300)',
-                  },
-                },
-                {
-                  name: 'flip',
-                  type: 'checkbox',
-                  label: 'Specchia orizzontalmente',
-                  defaultValue: false,
-                  admin: {
-                    condition: (data, siblingData) => siblingData?.enabled === true,
-                  },
-                },
-                {
-                  name: 'invert',
-                  type: 'checkbox',
-                  label: 'Specchia verticalmente',
-                  defaultValue: false,
-                  admin: {
-                    condition: (data, siblingData) => siblingData?.enabled === true,
-                  },
-                },
-              ],
-            },
-          ],
-        },
-        // Blocco Call to Action
-        {
-          slug: 'callToAction',
-          labels: {
-            singular: 'Call to Action',
-            plural: 'Call to Actions',
-          },
-          fields: [
-            {
-              name: 'title',
-              type: 'text',
-              required: true,
-              label: 'Titolo',
-            },
-            {
-              name: 'subtitle',
-              type: 'textarea',
-              label: 'Sottotitolo / Descrizione',
-            },
-            {
-              name: 'image',
-              type: 'upload',
-              relationTo: 'media',
-              label: 'Immagine di sfondo (opzionale)',
-              filterOptions: filterBySchool,
-            },
-            {
-              name: 'buttons',
-              type: 'array',
-              label: 'Pulsanti',
-              maxRows: 3,
-              fields: [
-                {
-                  name: 'text',
-                  type: 'text',
-                  required: true,
-                  label: 'Testo del pulsante',
-                },
-                {
-                  name: 'href',
-                  type: 'text',
-                  required: true,
-                  label: 'Link (URL)',
-                },
-                {
-                  name: 'variant',
-                  type: 'select',
-                  label: 'Stile',
-                  defaultValue: 'default',
-                  options: [
-                    { label: 'Primario', value: 'default' },
-                    { label: 'Secondario', value: 'secondary' },
-                    { label: 'Outline', value: 'outline' },
-                    { label: 'Ghost', value: 'ghost' },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-        // Blocco Rich Text
-        {
-          slug: 'richText',
-          labels: {
-            singular: 'Testo Formattato',
-            plural: 'Testi Formattati',
-          },
-          fields: [
-            {
-              name: 'content',
-              type: 'richText',
-              required: true,
-              label: 'Contenuto',
-            },
-          ],
-        },
-        // Blocco Grid di Card
-        {
-          slug: 'cardGrid',
-          labels: {
-            singular: 'Griglia di Card',
-            plural: 'Griglie di Card',
-          },
-          fields: [
-            {
-              name: 'title',
-              type: 'text',
-              label: 'Titolo della sezione (opzionale)',
-            },
-            {
-              name: 'columns',
-              type: 'select',
-              label: 'Numero di colonne',
-              defaultValue: '3',
-              options: [
-                { label: '2 colonne', value: '2' },
-                { label: '3 colonne', value: '3' },
-                { label: '4 colonne', value: '4' },
-              ],
-            },
-            {
-              name: 'cards',
-              type: 'array',
-              label: 'Card',
-              fields: [
-                {
-                  name: 'title',
-                  type: 'text',
-                  required: true,
-                  label: 'Titolo',
-                },
-                {
-                  name: 'description',
-                  type: 'textarea',
-                  label: 'Descrizione',
-                },
-                {
-                  name: 'image',
-                  type: 'upload',
-                  relationTo: 'media',
-                  label: 'Immagine',
-                  filterOptions: filterBySchool,
-                },
-                {
-                  name: 'link',
-                  type: 'text',
-                  label: 'Link (opzionale)',
-                },
-              ],
-            },
-          ],
-        },
-        // Blocco File Download
-        {
-          slug: 'fileDownload',
-          labels: {
-            singular: 'File Scaricabili',
-            plural: 'File Scaricabili',
-          },
-          fields: [
-            {
-              name: 'title',
-              type: 'text',
-              label: 'Titolo della sezione (opzionale)',
-              admin: {
-                description: 'Es: "Documenti Utili", "Moduli da scaricare"',
-              },
-            },
-            {
-              name: 'description',
-              type: 'textarea',
-              label: 'Descrizione (opzionale)',
-            },
-            {
-              name: 'files',
-              type: 'array',
-              label: 'File',
-              minRows: 1,
-              fields: [
-                {
-                  name: 'file',
-                  type: 'upload',
-                  relationTo: 'media',
-                  required: true,
-                  label: 'File',
-                  admin: {
-                    description: 'PDF, DOC, XLS, o altri documenti',
-                  },
-                  filterOptions: filterBySchool,
-                },
-                {
-                  name: 'title',
-                  type: 'text',
-                  label: 'Titolo (opzionale)',
-                  admin: {
-                    description: 'Se vuoto, usa il nome del file',
-                  },
-                },
-                {
-                  name: 'description',
-                  type: 'text',
-                  label: 'Descrizione (opzionale)',
-                },
-              ],
-            },
-          ],
-        },
-        // Blocco Galleria
-        {
-          slug: 'gallery',
-          labels: {
-            singular: 'Galleria',
-            plural: 'Gallerie',
-          },
-          fields: [
-            {
-              name: 'gallery',
-              type: 'relationship',
-              relationTo: 'gallery',
-              required: true,
-              label: 'Galleria',
-              admin: {
-                description: 'Seleziona una galleria esistente da mostrare',
-              },
-            },
-          ],
-        },
-        // Blocco Lista Articoli
-        {
-          slug: 'articleList',
-          labels: {
-            singular: 'Lista Articoli',
-            plural: 'Liste Articoli',
-          },
-          fields: [
-            {
-              name: 'title',
-              type: 'text',
-              label: 'Titolo della sezione (opzionale)',
-              admin: {
-                description: 'Es: "Ultime Notizie", "Articoli in Evidenza"',
-              },
-            },
-            {
-              name: 'limit',
-              type: 'number',
-              label: 'Numero di articoli da mostrare',
-              defaultValue: 6,
-              min: 1,
-              max: 12,
-              required: true,
-              admin: {
-                description: 'Quanti articoli mostrare (max 12)',
-              },
-            },
-            {
-              name: 'showViewAll',
-              type: 'checkbox',
-              label: 'Mostra pulsante "Vedi tutti"',
-              defaultValue: true,
-              admin: {
-                description: 'Mostra un pulsante per andare alla pagina blog completa',
-              },
-            },
-          ],
-        },
-        // Blocco Lista Eventi
-        {
-          slug: 'eventList',
-          labels: {
-            singular: 'Lista Eventi',
-            plural: 'Liste Eventi',
-          },
-          fields: [
-            {
-              name: 'title',
-              type: 'text',
-              label: 'Titolo della sezione (opzionale)',
-              admin: {
-                description: 'Es: "Prossimi Eventi", "Eventi della Scuola"',
-              },
-            },
-            {
-              name: 'limit',
-              type: 'number',
-              label: 'Numero di eventi da mostrare',
-              defaultValue: 6,
-              min: 1,
-              max: 12,
-              required: true,
-              admin: {
-                description: 'Quanti eventi mostrare (max 12)',
-              },
-            },
-            {
-              name: 'filter',
-              type: 'select',
-              label: 'Filtra eventi',
-              defaultValue: 'all',
-              options: [
-                { label: 'Tutti gli eventi', value: 'all' },
-                { label: 'Solo eventi futuri', value: 'upcoming' },
-                { label: 'Solo eventi passati', value: 'past' },
-              ],
-              admin: {
-                description: 'Scegli quali eventi mostrare in base alla data',
-              },
-            },
-            {
-              name: 'showViewAll',
-              type: 'checkbox',
-              label: 'Mostra pulsante "Vedi tutti"',
-              defaultValue: true,
-              admin: {
-                description: 'Mostra un pulsante per andare alla pagina eventi completa',
-              },
-            },
-          ],
-        },
-        // Blocco Lista Progetti
-        {
-          slug: 'projectList',
-          labels: {
-            singular: 'Lista Progetti',
-            plural: 'Liste Progetti',
-          },
-          fields: [
-            {
-              name: 'title',
-              type: 'text',
-              label: 'Titolo della sezione (opzionale)',
-              admin: {
-                description: 'Es: "I Nostri Progetti", "Progetti della Scuola"',
-              },
-            },
-            {
-              name: 'limit',
-              type: 'number',
-              label: 'Numero di progetti da mostrare',
-              defaultValue: 6,
-              min: 1,
-              max: 12,
-              required: true,
-              admin: {
-                description: 'Quanti progetti mostrare (max 12)',
-              },
-            },
-            {
-              name: 'showViewAll',
-              type: 'checkbox',
-              label: 'Mostra pulsante "Vedi tutti"',
-              defaultValue: true,
-              admin: {
-                description: 'Mostra un pulsante per andare alla pagina progetti completa',
-              },
-            },
-          ],
-        },
-        // Blocco Lista Piano Offerta Formativa
-        {
-          slug: 'educationalOfferingList',
-          labels: {
-            singular: 'Lista Piano Offerta Formativa',
-            plural: 'Liste Piano Offerta Formativa',
-          },
-          fields: [
-            {
-              name: 'title',
-              type: 'text',
-              label: 'Titolo della sezione (opzionale)',
-              admin: {
-                description: 'Es: "Il Nostro Piano Offerta Formativa", "Offerta Formativa"',
-              },
-            },
-            {
-              name: 'limit',
-              type: 'number',
-              label: 'Numero di piani da mostrare',
-              defaultValue: 6,
-              min: 1,
-              max: 12,
-              required: true,
-              admin: {
-                description: 'Quanti piani offerta formativa mostrare (max 12)',
-              },
-            },
-            {
-              name: 'showViewAll',
-              type: 'checkbox',
-              label: 'Mostra pulsante "Vedi tutti"',
-              defaultValue: true,
-              admin: {
-                description:
-                  'Mostra un pulsante per andare alla pagina piano offerta formativa completa',
-              },
-            },
-          ],
-        },
-        // Blocco Comunicazioni
-        {
-          slug: 'communications',
-          labels: {
-            singular: 'Lista Comunicazioni',
-            plural: 'Liste Comunicazioni',
-          },
-          fields: [
-            {
-              name: 'title',
-              type: 'text',
-              label: 'Titolo della sezione (opzionale)',
-              admin: {
-                description: 'Es: "Comunicazioni Importanti", "Avvisi"',
-              },
-            },
-            {
-              name: 'limit',
-              type: 'number',
-              label: 'Numero di comunicazioni da mostrare',
-              defaultValue: 10,
-              min: 1,
-              max: 20,
-              required: true,
-              admin: {
-                description: 'Quante comunicazioni mostrare (max 20)',
-              },
-            },
-            {
-              name: 'priorityFilter',
-              type: 'select',
-              label: 'Filtra per priorità',
-              hasMany: true,
-              options: [
-                { label: 'Bassa', value: 'low' },
-                { label: 'Normale', value: 'normal' },
-                { label: 'Alta', value: 'high' },
-                { label: 'Urgente', value: 'urgent' },
-              ],
-              admin: {
-                description: 'Seleziona le priorità da mostrare (se vuoto, mostra tutte)',
-              },
-            },
-            {
-              name: 'showViewAll',
-              type: 'checkbox',
-              label: 'Mostra pulsante "Vedi tutte"',
-              defaultValue: true,
-              admin: {
-                description: 'Mostra un pulsante per andare alla pagina comunicazioni completa',
-              },
-            },
-          ],
-        },
-        // Blocco Lista Insegnanti
-        {
-          slug: 'teacherList',
-          labels: {
-            singular: 'Lista Insegnanti',
-            plural: 'Liste Insegnanti',
-          },
-          fields: [
-            {
-              name: 'title',
-              type: 'text',
-              label: 'Titolo della sezione (opzionale)',
-              admin: {
-                description: 'Es: "Il Nostro Team", "I Nostri Insegnanti"',
-              },
-            },
-          ],
-        },
-      ],
+      blocks: pageBlocks,
     },
     {
       name: 'showInNavbar',
@@ -935,39 +298,6 @@ export const Pages: CollectionConfig = {
         description: 'Numero per ordinare le pagine nel menu (più basso = prima)',
         condition: (data) => data.showInNavbar === true,
       },
-    },
-    {
-      name: 'gallery',
-      type: 'relationship',
-      relationTo: 'gallery',
-      label: 'Galleria',
-      admin: {
-        description: 'Collega una galleria di immagini a questa pagina (opzionale)',
-      },
-    },
-    // SEO Fields
-    {
-      name: 'seo',
-      type: 'group',
-      label: 'SEO',
-      fields: [
-        {
-          name: 'metaTitle',
-          type: 'text',
-          label: 'Meta Title',
-          admin: {
-            description: 'Titolo per i motori di ricerca (se vuoto, usa il titolo della pagina)',
-          },
-        },
-        {
-          name: 'metaDescription',
-          type: 'textarea',
-          label: 'Meta Description',
-          admin: {
-            description: 'Descrizione per i motori di ricerca (max 160 caratteri)',
-          },
-        },
-      ],
     },
   ],
 }

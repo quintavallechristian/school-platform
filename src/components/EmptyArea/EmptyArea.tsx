@@ -6,7 +6,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty'
-import { DicesIcon } from 'lucide-react'
+import { SchoolIcon } from 'lucide-react'
 export default function EmptyArea({
   children,
   title,
@@ -16,17 +16,17 @@ export default function EmptyArea({
 }: {
   children?: React.ReactNode
   title?: string
-  message?: string
+  message?: string | null
   className?: string
   icon?: React.ReactNode
 }) {
   return (
     <Empty className={`mx-auto w-full px-0 rounded-2xl ${className ? className : 'max-w-2xl'}`}>
       <EmptyHeader className="max-w-2xl">
-        <EmptyMedia variant="icon">{icon || <DicesIcon />}</EmptyMedia>
+        <EmptyMedia variant="icon">{icon || <SchoolIcon />}</EmptyMedia>
         <EmptyTitle className="text-2xl">{title || 'Zona vietata'}</EmptyTitle>
         <EmptyDescription className="text-lg px-8">
-          {message || 'Non hai i permessi per visualizzare questa pagina.'}
+          {message === null ? 'Non hai i permessi per visualizzare questa pagina.' : message}
         </EmptyDescription>
       </EmptyHeader>
       <EmptyContent className="mt-4">{children}</EmptyContent>

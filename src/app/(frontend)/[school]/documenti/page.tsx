@@ -8,6 +8,7 @@ import config from '@/payload.config'
 import { Document, Media } from '@/payload-types'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import { Download, Star, FileX } from 'lucide-react'
+import EmptyArea from '@/components/EmptyArea/EmptyArea'
 
 // Funzione per ottenere i documenti di una scuola
 async function getSchoolDocuments(schoolId: string) {
@@ -74,10 +75,7 @@ export default async function DocumentiPage({ params }: { params: Promise<{ scho
 
   return (
     <div className="min-h-screen">
-      <Hero
-        title="Documenti"
-        subtitle={`Area documenti di ${school.name} - Modulistica, regolamenti e risorse scaricabili`}
-      />
+      <Hero title="Documenti" />
       <Breadcrumbs />
 
       <div className="container mx-auto px-4 py-12">
@@ -170,13 +168,13 @@ export default async function DocumentiPage({ params }: { params: Promise<{ scho
             ))}
           </div>
         ) : (
-          <div className="text-center py-20">
-            <FileX className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-            <p className="text-2xl text-muted-foreground mb-4">Nessun documento disponibile</p>
-            <p className="text-muted-foreground">
-              I documenti verranno pubblicati qui non appena disponibili.
-            </p>
-          </div>
+          <SpotlightCard className="max-w-4xl mx-auto px-0 py-0">
+            <EmptyArea
+              title="Nessun documento disponibile"
+              icon={<FileX />}
+              message="I documenti verranno pubblicati qui non appena disponibili."
+            />
+          </SpotlightCard>
         )}
       </div>
     </div>

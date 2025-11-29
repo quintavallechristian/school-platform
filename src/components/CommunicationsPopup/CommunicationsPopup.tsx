@@ -41,6 +41,23 @@ const priorityConfig = {
 
 const STORAGE_KEY = 'dismissedCommunications'
 
+/**
+ * Filtra le comunicazioni mantenendo solo quelle pubblicate negli ultimi 7 giorni
+ * e non ancora chiuse dall'utente
+ */
+function filterRecentCommunications(
+  communications: Communication[],
+  dismissedIds: string[],
+): Communication[] {
+  const sevenDaysAgo = new Date()
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+
+  return communications.filter((comm) => {
+    const publishedDate = new Date(comm.publishedAt)
+    return publishedDate >= sevenDaysAgo && !dismissedIds.includes(comm.id)
+  })
+}
+
 export function CommunicationsPopup({ communications, schoolSlug }: CommunicationsPopupProps) {
   const [visibleComm, setVisibleComm] = useState<Communication | null>(null)
   const [isOpen, setIsOpen] = useState(false)
@@ -49,8 +66,11 @@ export function CommunicationsPopup({ communications, schoolSlug }: Communicatio
     // Leggi le comunicazioni già chiuse dal localStorage
     const dismissed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]') as string[]
 
-    // Trova la prima comunicazione non chiusa
-    const unreadComm = communications.find((comm) => !dismissed.includes(comm.id))
+    // Filtra le comunicazioni: solo quelle pubblicate negli ultimi 7 giorni e non chiuse
+    const recentCommunications = filterRecentCommunications(communications, dismissed)
+
+    // Trova la prima comunicazione recente non chiusa
+    const unreadComm = recentCommunications[0]
 
     if (unreadComm) {
       setVisibleComm(unreadComm)
@@ -70,7 +90,9 @@ export function CommunicationsPopup({ communications, schoolSlug }: Communicatio
 
     // Cerca la prossima comunicazione non letta
     setTimeout(() => {
-      const nextComm = communications.find((comm) => !dismissed.includes(comm.id))
+      // Filtra le comunicazioni recenti non chiuse
+      const recentCommunications = filterRecentCommunications(communications, dismissed)
+      const nextComm = recentCommunications[0]
       if (nextComm) {
         setVisibleComm(nextComm)
         setIsOpen(true)

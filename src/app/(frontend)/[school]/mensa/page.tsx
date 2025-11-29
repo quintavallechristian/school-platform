@@ -83,11 +83,7 @@ export default async function MensaPage({ params }: { params: Promise<{ school: 
     <div className="min-h-[calc(100vh-200px)]">
       <Hero
         title="Menù della Mensa"
-        subtitle={
-          activeMenu
-            ? `${activeMenu.name} - ${school.name}`
-            : `Scopri cosa mangiamo a scuola - ${school.name}`
-        }
+        subtitle={activeMenu ? `${activeMenu.name}` : `Scopri cosa mangiamo a scuola`}
       />
       <Breadcrumbs />
 
@@ -194,18 +190,34 @@ export default async function MensaPage({ params }: { params: Promise<{ school: 
           </SpotlightCard>
 
           <SpotlightCard className="mt-8 bg-card p-6 rounded-lg shadow-md">
-            <h3 className="text-xl font-semibold mb-4">Note Importanti</h3>
-            {activeMenu?.generalNotes ? (
-              <div className="mb-4 p-4 bg-primary/5 rounded-md">
-                <p className="text-sm whitespace-pre-line">{activeMenu.generalNotes}</p>
-              </div>
-            ) : null}
-            <ul className="space-y-2 text-sm">
-              <li>• Tutti i piatti sono preparati con ingredienti freschi e di stagione</li>
-              <li>• Il menù può subire variazioni in base alla disponibilità dei prodotti</li>
-              <li>• Sono disponibili menù alternativi per allergie e intolleranze</li>
-              <li>• L&apos;acqua e il pane sono sempre inclusi nel pasto</li>
-            </ul>
+            <h3 className="text-xl font-semibold">Note Importanti</h3>
+            <div className="rounded-md">
+              {weeks.length > 0 &&
+                weeks.map(
+                  (week) =>
+                    week.data?.notes && (
+                      <div
+                        key={`${week.number}-notes`}
+                        className="rounded-md bg-primary/5 p-3 mt-4"
+                      >
+                        <p className="text-sm font-medium mb-1">Note settimana {week.number}:</p>
+                        <p className="text-sm whitespace-pre-line text-muted-foreground">
+                          {week.data.notes}
+                        </p>
+                      </div>
+                    ),
+                )}
+              {activeMenu?.generalNotes ? (
+                <p className="text-sm whitespace-pre-line  mt-8">{activeMenu.generalNotes}</p>
+              ) : (
+                <ul className="space-y-2 text-sm mt-8">
+                  <li>• Tutti i piatti sono preparati con ingredienti freschi e di stagione</li>
+                  <li>• Il menù può subire variazioni in base alla disponibilità dei prodotti</li>
+                  <li>• Sono disponibili menù alternativi per allergie e intolleranze</li>
+                  <li>• L&apos;acqua e il pane sono sempre inclusi nel pasto</li>
+                </ul>
+              )}
+            </div>
           </SpotlightCard>
         </div>
       </section>
@@ -224,7 +236,7 @@ export async function generateMetadata({ params }: { params: Promise<{ school: s
   }
 
   return {
-    title: `Menù Mensa - ${school.name}`,
-    description: `Consulta il menù settimanale della mensa di ${school.name}`,
+    title: `Menù Mensa`,
+    description: `Consulta il menù settimanale della mensa`,
   }
 }
