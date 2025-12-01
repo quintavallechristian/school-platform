@@ -10,6 +10,14 @@ export default function ParentRegisterPage() {
   const params = useParams()
   const school = params.school as string
 
+  // Calculate baseHref client-side
+  const baseHref =
+    typeof window !== 'undefined'
+      ? window.location.hostname.startsWith(`${school}.`)
+        ? ''
+        : `/${school}`
+      : `/${school}`
+
   const handleDownloadForm = () => {
     // Apre il modulo in una nuova finestra per la stampa
     window.open('/modulo-registrazione-genitore.pdf', '_blank')
@@ -159,7 +167,7 @@ export default function ParentRegisterPage() {
           {/* Already have account */}
           <div className="text-center pt-6 border-t">
             <p className="text-sm text-muted-foreground mb-3">Hai già un account?</p>
-            <Link href={`/${school}/parents/login`}>
+            <Link href={`${baseHref}/parents/login`}>
               <Button variant="outline" className="gap-2">
                 Accedi all&apos;Area Genitori
               </Button>

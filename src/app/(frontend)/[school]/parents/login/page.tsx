@@ -3,31 +3,30 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { checkParentLimit } from '@/lib/check-parent-limit'
 import LoginForm from './LoginForm'
+import { getCurrentSchool } from '@/lib/school'
+import { getSchoolBaseHref } from '@/lib/linkUtils'
+import { headers } from 'next/headers'
 
 export default async function ParentLoginPage({ params }: { params: Promise<{ school: string }> }) {
-  const { school } = await params
+  const { school: schoolSlug } = await params
   const payload = await getPayload({ config })
 
-  // Get school data to check parent limit
+  // Get school data to check parent limit and baseHref
+  const school = await getCurrentSchool(schoolSlug)
   let canRegister = false
+  let baseHref = `/${schoolSlug}`
 
-  try {
-    const schoolQuery = await payload.find({
-      collection: 'schools',
-      where: {
-        slug: {
-          equals: school,
-        },
-      },
-    })
+  if (school) {
+    const headersList = await headers()
+    const host = headersList.get('host') || ''
+    baseHref = getSchoolBaseHref(school, host)
 
-    if (schoolQuery.docs.length > 0) {
-      const schoolData = schoolQuery.docs[0]
-      const limitCheck = await checkParentLimit(schoolData.id, payload)
+    try {
+      const limitCheck = await checkParentLimit(school.id, payload)
       canRegister = limitCheck.canAdd
+    } catch (error) {
+      console.error('Error checking parent limit:', error)
     }
-  } catch (error) {
-    console.error('Error checking parent limit:', error)
   }
 
   return (
@@ -38,12 +37,12 @@ export default async function ParentLoginPage({ params }: { params: Promise<{ sc
           <div className="text-center">Inserisci le tue credenziali per accedere</div>
         </div>
         <div>
-          <LoginForm school={school} />
+          <LoginForm school={schoolSlug} />
           {canRegister && (
             <div className="text-center text-sm mt-4">
               <span className="text-muted-foreground">Non hai un account? </span>
               <a
-                href={`/${school}/parents/register`}
+                href={`${baseHref}/parents/register`}
                 className="font-medium underline underline-offset-4 hover:text-primary"
               >
                 Registrati
