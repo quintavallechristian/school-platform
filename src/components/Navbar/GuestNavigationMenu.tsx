@@ -12,6 +12,7 @@ import {
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { MobileMenuSection } from './MobileMenuSection'
+import { Logo } from '../Logo'
 
 type MenuItem = {
   label: string
@@ -31,7 +32,23 @@ export function MobileGuestMenuButton({ menuItems }: { menuItems: MenuItem[] }) 
       </SheetTrigger>
       <SheetContent side="left" className="w-[300px] sm:w-[400px] flex flex-col">
         <SheetHeader>
-          <SheetTitle>Scuole infanzia</SheetTitle>
+          <SheetTitle>
+            <Link href="/" className="flex">
+              <Logo className="shrink-0 mt-[-8px] font-normal" width={40} height={40} />
+              <span
+                className="text-3xl font-bold text-gray-900 dark:text-white opacity-0 -ml-7"
+                style={{ fontFamily: 'var(--font-scuole)' }}
+              >
+                s
+              </span>
+              <span
+                className="text-3xl font-bold text-gray-900 dark:text-white"
+                style={{ fontFamily: 'var(--font-scuole)' }}
+              >
+                cuole Infanzia
+              </span>
+            </Link>
+          </SheetTitle>
         </SheetHeader>
         <nav className="flex flex-col gap-4 overflow-y-auto flex-1">
           {menuItems.map((item) => (

@@ -5,10 +5,11 @@ import { Toaster } from 'sonner'
 import { MyAurora } from '@/components/Aurora/MyAurora'
 import CookieBanner from '@/components/CookieBanner/CookieBanner'
 import 'leaflet/dist/leaflet.css'
-import { GenericNavbar } from '@/components/Navbar/GenericNavbar'
 import { getPayloadHMR } from '@payloadcms/next/utilities'
 import config from '@payload-config'
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
+import { scuoleFont } from '@/styles/fonts'
+import { ConditionalGenericNavbar } from '@/components/Navbar/ConditionalGenericNavbar'
 
 export const metadata: Metadata = {
   title: 'Scuole infanzia',
@@ -34,8 +35,12 @@ export default async function RootLayout({
     }
   }
 
+  // Ottieni l'URL corrente per verificare se siamo in una route di scuola
+  const headersList = await headers()
+  const pathname = headersList.get('x-pathname') || ''
+
   return (
-    <html lang="it" suppressHydrationWarning>
+    <html lang="it" suppressHydrationWarning className={`${scuoleFont.variable}`}>
       <head></head>
       <body>
         <ThemeProvider
@@ -47,7 +52,8 @@ export default async function RootLayout({
           <div className="h-full w-full fixed top-0 left-0 z-20 opacity-20 pointer-events-none">
             <MyAurora />
           </div>
-          <GenericNavbar user={user} />
+          {/* Mostra GenericNavbar solo per route generiche (non scuole) */}
+          <ConditionalGenericNavbar user={user} pathname={pathname} />
           {children}
           <Toaster
             position="top-right"

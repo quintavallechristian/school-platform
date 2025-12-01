@@ -3,11 +3,11 @@
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { DicesIcon } from 'lucide-react'
 import { GuestNavigationMenu, MobileGuestMenuButton } from './GuestNavigationMenu'
 import { NavbarWrapper } from './NavbarWrapper'
 import { User } from '@/payload-types'
 import { ModeToggle } from './ModeToggle'
+import { Logo } from '@/components/Logo'
 
 export function GenericNavbar({ user }: { user?: User | null }) {
   const pathname = usePathname()
@@ -42,12 +42,20 @@ export function GenericNavbar({ user }: { user?: User | null }) {
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-4">
             <MobileGuestMenuButton menuItems={menuItems} />
-            <Link href="/" className="flex items-center gap-2">
-              <DicesIcon
-                className="h-8 w-8 text-indigo-600 dark:text-indigo-400"
-                aria-hidden="true"
-              />
-              <span className="text-xl font-bold">Scuole Infanzia</span>
+            <Link href="/" className="flex">
+              <Logo className="shrink-0 mt-[-8px] font-normal" width={40} height={40} />
+              <span
+                className="text-3xl font-bold text-gray-900 dark:text-white opacity-0 -ml-7"
+                style={{ fontFamily: 'var(--font-scuole)' }}
+              >
+                s
+              </span>
+              <span
+                className="text-3xl font-bold text-gray-900 dark:text-white"
+                style={{ fontFamily: 'var(--font-scuole)' }}
+              >
+                cuole Infanzia
+              </span>
             </Link>
           </div>
           <GuestNavigationMenu menuItems={menuItems} />

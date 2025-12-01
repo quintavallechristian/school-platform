@@ -56,7 +56,9 @@ export function middleware(request: NextRequest) {
         const url = request.nextUrl.clone()
         url.pathname = `/${firstPart}${pathname}`
 
-        return NextResponse.rewrite(url)
+        const response = NextResponse.rewrite(url)
+        response.headers.set('x-pathname', url.pathname)
+        return response
       }
     }
   }
@@ -70,19 +72,25 @@ export function middleware(request: NextRequest) {
 
       // Ignora www e altri sottodomini di sistema
       if (subdomain === 'www' || subdomain === 'admin') {
-        return NextResponse.next()
+        const response = NextResponse.next()
+        response.headers.set('x-pathname', pathname)
+        return response
       }
 
       // Rewrite alla rotta della scuola
       const url = request.nextUrl.clone()
       url.pathname = `/${subdomain}${pathname}`
 
-      return NextResponse.rewrite(url)
+      const response = NextResponse.rewrite(url)
+      response.headers.set('x-pathname', url.pathname)
+      return response
     }
   }
 
   // Path-based routing (es. school-platform.vercel.app/bruno-pizzolato)
-  return NextResponse.next()
+  const response = NextResponse.next()
+  response.headers.set('x-pathname', pathname)
+  return response
 }
 
 export const config = {

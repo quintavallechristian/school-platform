@@ -83,8 +83,8 @@ export async function sendUserCredentialsEmail(
 
   await brevo.sendTransacEmail({
     sender: {
-      name: process.env.BREVO_SENDER_NAME || 'Scuola',
-      email: process.env.BREVO_SENDER_EMAIL || 'no-reply@scuola.it',
+      name: process.env.BREVO_SENDER_NAME || 'Scuole Infanzia',
+      email: process.env.BREVO_SENDER_EMAIL || 'no-reply@scuoleinfanzia.eu',
     },
     to: [{ email: to }],
     subject: '🎉 Benvenuto! Ecco le tue credenziali di accesso',
@@ -114,8 +114,8 @@ export async function sendCommunicationEmail(
 
   await brevo.sendTransacEmail({
     sender: {
-      name: process.env.BREVO_SENDER_NAME || 'Scuola',
-      email: process.env.BREVO_SENDER_EMAIL || 'no-reply@scuola.it',
+      name: process.env.BREVO_SENDER_NAME || 'Scuole Infanzia',
+      email: process.env.BREVO_SENDER_EMAIL || 'no-reply@scuoleinfanzia.eu',
     },
     to: [{ email: to }],
     subject,
@@ -133,8 +133,8 @@ export async function sendEmail(to: string, subject: string, htmlContent: string
 
   await brevo.sendTransacEmail({
     sender: {
-      name: process.env.BREVO_SENDER_NAME || 'Scuola',
-      email: process.env.BREVO_SENDER_EMAIL || 'no-reply@scuola.it',
+      name: process.env.BREVO_SENDER_NAME || 'Scuole Infanzia',
+      email: process.env.BREVO_SENDER_EMAIL || 'no-reply@scuoleinfanzia.eu',
     },
     to: [{ email: to }],
     subject,

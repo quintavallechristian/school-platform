@@ -38,6 +38,22 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    components: {
+      graphics: {
+        Icon: '/components/Logo#Logo',
+        Logo: '/components/LogoExtended#Logo',
+      },
+    },
+    meta: {
+      title: 'Scuole infanzia admin',
+      icons: [
+        {
+          rel: 'icon',
+          url: '/favicon.ico',
+          type: 'image/icon',
+        },
+      ],
+    },
   },
   i18n: {
     supportedLanguages: { it },
