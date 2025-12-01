@@ -5,11 +5,12 @@ import { Toaster } from 'sonner'
 import { MyAurora } from '@/components/Aurora/MyAurora'
 import CookieBanner from '@/components/CookieBanner/CookieBanner'
 import 'leaflet/dist/leaflet.css'
-import { getPayloadHMR } from '@payloadcms/next/utilities'
+
 import config from '@payload-config'
 import { cookies, headers } from 'next/headers'
 import { scuoleFont } from '@/styles/fonts'
 import { ConditionalGenericNavbar } from '@/components/Navbar/ConditionalGenericNavbar'
+import { getPayload } from 'payload'
 
 export const metadata: Metadata = {
   title: 'Scuole infanzia',
@@ -21,7 +22,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const payload = await getPayloadHMR({ config })
+  const payload = await getPayload({ config })
   const cookieStore = await cookies()
   const token = cookieStore.get('payload-token')?.value
   let user = null

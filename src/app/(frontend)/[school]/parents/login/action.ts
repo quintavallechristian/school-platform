@@ -1,9 +1,9 @@
 'use server'
 
-import { getPayloadHMR } from '@payloadcms/next/utilities'
 import config from '@payload-config'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
+import { getPayload } from 'payload'
 
 type FormState = {
   error?: string
@@ -18,7 +18,7 @@ export async function loginParent(prevState: FormState, formData: FormData) {
     return { error: 'Inserisci email e password' }
   }
 
-  const payload = await getPayloadHMR({ config })
+  const payload = await getPayload({ config })
 
   try {
     const result = await payload.login({

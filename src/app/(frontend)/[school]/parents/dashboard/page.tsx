@@ -1,4 +1,3 @@
-import { getPayloadHMR } from '@payloadcms/next/utilities'
 import config from '@payload-config'
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
@@ -10,6 +9,7 @@ import { LogoutButton } from '@/components/Auth/LogoutButton'
 import Link from 'next/link'
 import { Event } from '@/payload-types'
 import { Button } from '@/components/ui/button'
+import { getPayload } from 'payload'
 
 export default async function ParentsDashboardPage({
   params,
@@ -17,7 +17,7 @@ export default async function ParentsDashboardPage({
   params: Promise<{ school: string }>
 }) {
   const { school } = await params
-  const payload = await getPayloadHMR({ config })
+  const payload = await getPayload({ config })
 
   // Get user from payload-token cookie
   const cookieStore = await cookies()

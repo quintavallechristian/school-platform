@@ -1,12 +1,12 @@
-import { getPayloadHMR } from '@payloadcms/next/utilities'
 import config from '@payload-config'
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { richTextToPlainText } from '@/lib/richTextUtils'
+import { getPayload } from 'payload'
 
 export async function POST(req: Request) {
   try {
-    const payload = await getPayloadHMR({ config })
+    const payload = await getPayload({ config })
 
     // Get user from payload-token cookie
     const cookieStore = await cookies()

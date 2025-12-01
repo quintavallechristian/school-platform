@@ -19,7 +19,7 @@ type Props = {
   baseHref?: string
 }
 
-export default async function ArticleListBlock({ block, schoolId, schoolSlug, baseHref }: Props) {
+export default async function ArticleListBlock({ block, schoolId, baseHref }: Props) {
   const payloadConfig = await config
   const payload = await getPayload({ config: payloadConfig })
 

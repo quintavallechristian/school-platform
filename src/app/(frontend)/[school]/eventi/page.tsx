@@ -36,15 +36,7 @@ export default async function EventsPage({ params }: { params: Promise<{ school:
 
   return (
     <div className="min-h-[calc(100vh-200px)]">
-      <Hero
-        title="Eventi"
-        subtitle="Scopri i prossimi eventi della nostra scuola"
-        backgroundImage="/images/events-hero.jpg"
-        bottomDivider={{
-          style: 'wave',
-          height: '100px',
-        }}
-      />
+      <Hero title="Eventi" subtitle="Scopri i prossimi eventi della nostra scuola" />
       <Breadcrumbs baseHref={baseHref} />
 
       <section className="py-16">

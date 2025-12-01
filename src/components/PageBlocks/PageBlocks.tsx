@@ -115,11 +115,7 @@ export default function PageBlocks({ blocks, schoolId, schoolSlug, baseHref }: P
           return (
             <div key={index} className={wrapperClass} style={bgStyle.style}>
               <div className="max-w-5xl mx-auto px-4">
-                <ProjectListBlock
-                  block={block}
-                  schoolId={schoolId}
-                  baseHref={baseHref}
-                />
+                <ProjectListBlock block={block} schoolId={schoolId} baseHref={baseHref} />
               </div>
             </div>
           )
@@ -184,11 +180,7 @@ export default function PageBlocks({ blocks, schoolId, schoolSlug, baseHref }: P
           return (
             <div key={index} className={wrapperClass} style={bgStyle.style}>
               <div className="max-w-5xl mx-auto px-4">
-                <TestimonialsBlock
-                  block={block}
-                  schoolId={schoolId}
-                  baseHref={baseHref}
-                />
+                <TestimonialsBlock block={block} schoolId={schoolId} baseHref={baseHref} />
               </div>
             </div>
           )

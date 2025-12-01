@@ -1,5 +1,4 @@
 import { ModeToggle } from './ModeToggle'
-import { getPayloadHMR } from '@payloadcms/next/utilities'
 import config from '@payload-config'
 import { cookies } from 'next/headers'
 
@@ -12,6 +11,7 @@ import type { School } from '@/payload-types'
 import Image from 'next/image'
 import { NavbarWrapper } from './NavbarWrapper'
 import { isFeatureEnabled } from '@/lib/school'
+import { getPayload } from 'payload'
 
 export default async function Navbar({
   schoolName,
@@ -25,7 +25,7 @@ export default async function Navbar({
   schoolId?: string | number
   school?: School
 }) {
-  const payload = await getPayloadHMR({ config })
+  const payload = await getPayload({ config })
   // Menu items statici - filtrati in base alle impostazioni della scuola
   const staticMenuItems = [
     { label: 'Chi Siamo', href: `${baseHref}/chi-siamo`, feature: 'chiSiamo' as const },

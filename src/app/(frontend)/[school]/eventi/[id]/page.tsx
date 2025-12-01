@@ -8,11 +8,10 @@ import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import GalleryView from '@/components/GalleryView/GalleryView'
 import { RichTextRenderer } from '@/components/RichTextRenderer/RichTextRenderer'
 import { Breadcrumbs } from '@/components/Breadcrumbs/Breadcrumbs'
-
-import { getPayloadHMR } from '@payloadcms/next/utilities'
 import config from '@payload-config'
 import { cookies } from 'next/headers'
 import { EventBooking } from '@/components/Events/EventBooking'
+import { getPayload } from 'payload'
 
 export default async function EventPage({
   params,
@@ -50,7 +49,7 @@ export default async function EventPage({
   let userId: string | null = null
   let existingBooking = null
 
-  const payload = await getPayloadHMR({ config })
+  const payload = await getPayload({ config })
   const cookieStore = await cookies()
   const token = cookieStore.get('payload-token')?.value
 
