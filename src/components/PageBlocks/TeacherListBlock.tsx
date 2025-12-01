@@ -13,9 +13,10 @@ type Props = {
   block: TeacherListBlockType
   schoolId: string | number
   schoolSlug: string
+  baseHref?: string
 }
 
-export default async function TeacherListBlock({ block, schoolId, schoolSlug }: Props) {
+export default async function TeacherListBlock({ block, schoolId, schoolSlug, baseHref }: Props) {
   const teachers = await getSchoolTeachers(schoolId)
 
   // Se non ci sono insegnanti, non mostrare nulla o mostrare un messaggio
@@ -45,7 +46,7 @@ export default async function TeacherListBlock({ block, schoolId, schoolSlug }: 
           {teachers.docs.map((teacher) => (
             <Link
               key={teacher.id}
-              href={`/${schoolSlug}/insegnanti/${teacher.id}`}
+              href={`${baseHref}/insegnanti/${teacher.id}`}
               className="group bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all hover:scale-[1.02]"
             >
               {teacher.photo && typeof teacher.photo === 'object' && teacher.photo.url && (

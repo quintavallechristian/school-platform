@@ -15,10 +15,11 @@ export type TestimonialsBlockType = Extract<
 type Props = {
   block: TestimonialsBlockType
   schoolId: string | number
-  schoolSlug: string
+
+  baseHref?: string
 }
 
-export default async function TestimonialsBlock({ block, schoolId, schoolSlug }: Props) {
+export default async function TestimonialsBlock({ block, schoolId, baseHref }: Props) {
   const testimonials = await getSchoolTestimonials(schoolId, block.limit || 6)
   console.log('Testimonials fetched:', testimonials, schoolId)
 
@@ -65,7 +66,7 @@ export default async function TestimonialsBlock({ block, schoolId, schoolSlug }:
         </div>
         {block.showViewAll && (
           <div className="text-center mt-8">
-            <Link href={`/${schoolSlug}/testimonianze`}>
+            <Link href={`${baseHref}/testimonianze`}>
               <Button variant="outline" size="lg">
                 Vedi tutte le testimonianze →
               </Button>

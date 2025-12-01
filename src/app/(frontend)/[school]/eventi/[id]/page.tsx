@@ -1,5 +1,7 @@
 import { notFound, redirect } from 'next/navigation'
-import { getCurrentSchool, getSchoolEventById, isFeatureEnabled } from '@/lib/school'
+import { getCurrentSchool, getSchoolEvent, isFeatureEnabled } from '@/lib/school'
+import { getSchoolBaseHref } from '@/lib/linkUtils'
+import { headers } from 'next/headers'
 import React from 'react'
 import Hero from '@/components/Hero/Hero'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
@@ -24,12 +26,16 @@ export default async function EventPage({
     notFound()
   }
 
+  const headersList = await headers()
+  const host = headersList.get('host') || ''
+  const baseHref = getSchoolBaseHref(school, host)
+
   // Reindirizza alla homepage se la feature eventi è disabilitata
   if (!isFeatureEnabled(school, 'events')) {
     redirect(`/${schoolSlug}`)
   }
 
-  const event = await getSchoolEventById(school.id, id)
+  const event = await getSchoolEvent(school.id, id)
 
   if (!event) {
     notFound()
@@ -100,18 +106,22 @@ export default async function EventPage({
         <header>
           <Hero
             title={event.title}
-            subtitle={eventDate.toLocaleDateString('it-IT', {
+            subtitle={new Date(event.date).toLocaleDateString('it-IT', {
               weekday: 'long',
-              day: 'numeric',
-              month: 'long',
               year: 'numeric',
+              month: 'long',
+              day: 'numeric',
             })}
-            backgroundImage={event.cover}
+            backgroundImage={
+              event.cover && typeof event.cover === 'object'
+                ? event.cover.url || undefined
+                : undefined
+            }
             gradientOverlay={event.gradientOverlay || false}
           />
         </header>
 
-        <Breadcrumbs />
+        <Breadcrumbs baseHref={baseHref} />
 
         <div className="py-8 px-8">
           <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -199,7 +209,7 @@ export async function generateMetadata({
     }
   }
 
-  const event = await getSchoolEventById(school.id, id)
+  const event = await getSchoolEvent(school.id, id)
 
   if (!event) {
     return {

@@ -2,6 +2,8 @@ import { notFound, redirect } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { getCurrentSchool, getSchoolArticles, isFeatureEnabled } from '@/lib/school'
+import { getSchoolBaseHref } from '@/lib/linkUtils'
+import { headers } from 'next/headers'
 import Hero from '@/components/Hero/Hero'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import { Button } from '@/components/ui/button'
@@ -16,6 +18,10 @@ export default async function BlogPage({ params }: { params: Promise<{ school: s
     notFound()
   }
 
+  const headersList = await headers()
+  const host = headersList.get('host') || ''
+  const baseHref = getSchoolBaseHref(school, host)
+
   // Reindirizza alla homepage se la feature blog è disabilitata
   if (!isFeatureEnabled(school, 'blog')) {
     redirect(`/${schoolSlug}`)
@@ -25,8 +31,12 @@ export default async function BlogPage({ params }: { params: Promise<{ school: s
 
   return (
     <div className="min-h-screen">
-      <Hero title="Blog & Notizie" />
-      <Breadcrumbs />
+      <Hero
+        title="Blog & News"
+        subtitle="Resta aggiornato sulle ultime novità della scuola"
+        backgroundImage="/images/blog-hero.jpg"
+      />
+      <Breadcrumbs baseHref={baseHref} />
 
       <div className="container mx-auto px-4 py-12">
         {articles.length > 0 ? (

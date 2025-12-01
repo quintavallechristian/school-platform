@@ -15,10 +15,11 @@ type ProjectListBlockType = Extract<
 type Props = {
   block: ProjectListBlockType
   schoolId: string | number
-  schoolSlug: string
+
+  baseHref?: string
 }
 
-export default async function ProjectListBlock({ block, schoolId, schoolSlug }: Props) {
+export default async function ProjectListBlock({ block, schoolId, baseHref }: Props) {
   const payloadConfig = await config
   const payload = await getPayload({ config: payloadConfig })
 
@@ -53,7 +54,7 @@ export default async function ProjectListBlock({ block, schoolId, schoolSlug }: 
         {(projects as Project[]).map((project) => {
           return (
             <SpotlightCard key={project.id} className="px-0 py-0">
-              <Link href={`/${schoolSlug}/progetti/${project.id}`}>
+              <Link href={`${baseHref}/progetti/${project.id}`}>
                 {project.cover && typeof project.cover === 'object' && project.cover.url && (
                   <div className="relative h-48 w-full overflow-hidden">
                     <Image
@@ -78,7 +79,7 @@ export default async function ProjectListBlock({ block, schoolId, schoolSlug }: 
 
       {block.showViewAll && (
         <div className="text-center mt-8">
-          <Link href={`/${schoolSlug}/progetti`}>
+          <Link href={`${baseHref}/progetti`}>
             <Button variant="outline" size="lg">
               Vedi tutti i progetti →
             </Button>

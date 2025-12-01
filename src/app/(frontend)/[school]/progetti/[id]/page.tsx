@@ -1,5 +1,7 @@
 import { notFound, redirect } from 'next/navigation'
-import { getCurrentSchool, getSchoolProjectById, isFeatureEnabled } from '@/lib/school'
+import { getCurrentSchool, getSchoolProject, isFeatureEnabled } from '@/lib/school'
+import { getSchoolBaseHref } from '@/lib/linkUtils'
+import { headers } from 'next/headers'
 import React from 'react'
 import Hero from '@/components/Hero/Hero'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
@@ -24,13 +26,17 @@ export default async function ProjectPage({
     redirect(`/${schoolSlug}`)
   }
 
-  const project = await getSchoolProjectById(school.id, id)
+  const project = await getSchoolProject(school.id, id)
 
   if (!project) {
     notFound()
   }
 
   const gallery = project.gallery && typeof project.gallery === 'object' ? project.gallery : null
+
+  const headersList = await headers()
+  const host = headersList.get('host') || ''
+  const baseHref = getSchoolBaseHref(school, host)
 
   return (
     <div className="min-h-[calc(100vh-200px)]">
@@ -39,12 +45,15 @@ export default async function ProjectPage({
           <Hero
             title={project.title}
             subtitle="Progetto della scuola"
-            backgroundImage={project.cover}
-            gradientOverlay={project.gradientOverlay || false}
+            backgroundImage={
+              project.cover && typeof project.cover === 'object'
+                ? project.cover.url || undefined
+                : undefined
+            }
           />
         </header>
 
-        <Breadcrumbs />
+        <Breadcrumbs baseHref={baseHref} />
 
         <div className="py-8 px-8">
           <div className="max-w-4xl mx-auto">
@@ -87,7 +96,7 @@ export async function generateMetadata({
     }
   }
 
-  const project = await getSchoolProjectById(school.id, id)
+  const project = await getSchoolProject(school.id, id)
 
   if (!project) {
     return {

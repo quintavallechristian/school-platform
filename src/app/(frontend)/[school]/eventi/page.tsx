@@ -1,6 +1,8 @@
 import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import { getCurrentSchool, getSchoolEvents, isFeatureEnabled } from '@/lib/school'
+import { getSchoolBaseHref } from '@/lib/linkUtils'
+import { headers } from 'next/headers'
 import Hero from '@/components/Hero/Hero'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import type { Event } from '@/payload-types'
@@ -16,6 +18,10 @@ export default async function EventsPage({ params }: { params: Promise<{ school:
     notFound()
   }
 
+  const headersList = await headers()
+  const host = headersList.get('host') || ''
+  const baseHref = getSchoolBaseHref(school, host)
+
   // Reindirizza alla homepage se la feature eventi è disabilitata
   if (!isFeatureEnabled(school, 'events')) {
     redirect(`/${schoolSlug}`)
@@ -30,8 +36,16 @@ export default async function EventsPage({ params }: { params: Promise<{ school:
 
   return (
     <div className="min-h-[calc(100vh-200px)]">
-      <Hero title="Eventi della scuola" subtitle={`Scopri tutti i nostri eventi`} />
-      <Breadcrumbs />
+      <Hero
+        title="Eventi"
+        subtitle="Scopri i prossimi eventi della nostra scuola"
+        backgroundImage="/images/events-hero.jpg"
+        bottomDivider={{
+          style: 'wave',
+          height: '100px',
+        }}
+      />
+      <Breadcrumbs baseHref={baseHref} />
 
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-8">

@@ -2,6 +2,9 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { getCurrentSchool, getSchoolTeachers } from '@/lib/school'
+import { getSchoolBaseHref } from '@/lib/linkUtils'
+import { headers } from 'next/headers'
+import Hero from '@/components/Hero/Hero'
 import { Breadcrumbs } from '@/components/Breadcrumbs/Breadcrumbs'
 
 type PageProps = {
@@ -16,20 +19,21 @@ export default async function InsegnantiPage({ params }: PageProps) {
     notFound()
   }
 
+  const headersList = await headers()
+  const host = headersList.get('host') || ''
+  const baseHref = getSchoolBaseHref(school, host)
+
   const teachers = await getSchoolTeachers(school.id)
 
   return (
     <div className="min-h-screen py-12">
       <div className="container mx-auto px-4">
-        {/* Header */}
-        <header className="mb-12 text-center">
-          <h1 className="text-5xl font-bold mb-6">👨‍🏫 I Nostri Insegnanti</h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-            Conosci il team di {school.name}
-          </p>
-        </header>
-
-        <Breadcrumbs />
+        <Hero
+          title="I Nostri Insegnanti"
+          subtitle="Conosci il team che guida la crescita dei tuoi bambini"
+          backgroundImage="/images/teachers-hero.jpg"
+        />
+        <Breadcrumbs baseHref={baseHref} />
 
         {/* Teachers Grid */}
         {teachers.docs.length > 0 ? (

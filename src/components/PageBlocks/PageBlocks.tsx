@@ -17,6 +17,7 @@ type Props = {
   blocks: Page['blocks'] | Homepage['blocks']
   schoolId?: string | number
   schoolSlug?: string
+  baseHref?: string
 }
 
 // Helper function per mappare i colori di sfondo alle classi CSS
@@ -42,7 +43,7 @@ const getBackgroundStyle = (
   return { className: '' }
 }
 
-export default function PageBlocks({ blocks, schoolId, schoolSlug }: Props) {
+export default function PageBlocks({ blocks, schoolId, schoolSlug, baseHref }: Props) {
   if (!blocks || blocks.length === 0) {
     return null
   }
@@ -74,7 +75,12 @@ export default function PageBlocks({ blocks, schoolId, schoolSlug }: Props) {
           return (
             <div key={index} className={wrapperClass} style={bgStyle.style}>
               <div className="max-w-5xl mx-auto px-4">
-                <ArticleListBlock block={block} schoolId={schoolId} schoolSlug={schoolSlug} />
+                <ArticleListBlock
+                  block={block}
+                  schoolId={schoolId}
+                  schoolSlug={schoolSlug}
+                  baseHref={baseHref}
+                />
               </div>
             </div>
           )
@@ -89,7 +95,12 @@ export default function PageBlocks({ blocks, schoolId, schoolSlug }: Props) {
           return (
             <div key={index} className={wrapperClass} style={bgStyle.style}>
               <div className="max-w-5xl mx-auto px-4">
-                <EventListBlock block={block} schoolId={schoolId} schoolSlug={schoolSlug} />
+                <EventListBlock
+                  block={block}
+                  schoolId={schoolId}
+                  schoolSlug={schoolSlug}
+                  baseHref={baseHref}
+                />
               </div>
             </div>
           )
@@ -97,14 +108,18 @@ export default function PageBlocks({ blocks, schoolId, schoolSlug }: Props) {
 
         // ProjectList - wrapper interno max-w-5xl
         if (block.blockType === 'projectList') {
-          if (!schoolId || !schoolSlug) {
-            console.warn('ProjectListBlock requires schoolId and schoolSlug')
+          if (!schoolId) {
+            console.warn('ProjectListBlock requires schoolId')
             return null
           }
           return (
             <div key={index} className={wrapperClass} style={bgStyle.style}>
               <div className="max-w-5xl mx-auto px-4">
-                <ProjectListBlock block={block} schoolId={schoolId} schoolSlug={schoolSlug} />
+                <ProjectListBlock
+                  block={block}
+                  schoolId={schoolId}
+                  baseHref={baseHref}
+                />
               </div>
             </div>
           )
@@ -119,7 +134,12 @@ export default function PageBlocks({ blocks, schoolId, schoolSlug }: Props) {
           return (
             <div key={index} className={wrapperClass} style={bgStyle.style}>
               <div className="max-w-5xl mx-auto px-4">
-                <CommunicationsBlock block={block} schoolId={schoolId} schoolSlug={schoolSlug} />
+                <CommunicationsBlock
+                  block={block}
+                  schoolId={schoolId}
+                  schoolSlug={schoolSlug}
+                  baseHref={baseHref}
+                />
               </div>
             </div>
           )
@@ -134,7 +154,12 @@ export default function PageBlocks({ blocks, schoolId, schoolSlug }: Props) {
           return (
             <div key={index} className={wrapperClass} style={bgStyle.style}>
               <div className="max-w-5xl mx-auto px-4">
-                <TeacherListBlock block={block} schoolId={schoolId} schoolSlug={schoolSlug} />
+                <TeacherListBlock
+                  block={block}
+                  schoolId={schoolId}
+                  schoolSlug={schoolSlug}
+                  baseHref={baseHref}
+                />
               </div>
             </div>
           )
@@ -159,7 +184,11 @@ export default function PageBlocks({ blocks, schoolId, schoolSlug }: Props) {
           return (
             <div key={index} className={wrapperClass} style={bgStyle.style}>
               <div className="max-w-5xl mx-auto px-4">
-                <TestimonialsBlock block={block} schoolId={schoolId} schoolSlug={schoolSlug} />
+                <TestimonialsBlock
+                  block={block}
+                  schoolId={schoolId}
+                  baseHref={baseHref}
+                />
               </div>
             </div>
           )

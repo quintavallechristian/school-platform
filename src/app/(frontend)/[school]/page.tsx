@@ -8,6 +8,8 @@ import {
   getSchoolHomepage,
   isFeatureEnabled,
 } from '@/lib/school'
+import { getSchoolBaseHref } from '@/lib/linkUtils'
+import { headers } from 'next/headers'
 import Hero from '@/components/Hero/Hero'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import { Button } from '@/components/ui/button'
@@ -26,6 +28,10 @@ export default async function SchoolHomePage({ params }: PageProps) {
   if (!school) {
     notFound()
   }
+
+  const headersList = await headers()
+  const host = headersList.get('host') || ''
+  const baseHref = getSchoolBaseHref(school, host)
 
   const homepage = await getSchoolHomepage(school.id)
 
@@ -60,7 +66,12 @@ export default async function SchoolHomePage({ params }: PageProps) {
           />
         )}{' '}
         <section>
-          <PageBlocks blocks={typedPage.blocks} schoolId={school.id} schoolSlug={schoolSlug} />
+          <PageBlocks
+            blocks={typedPage.blocks}
+            schoolId={school.id}
+            schoolSlug={schoolSlug}
+            baseHref={baseHref}
+          />
         </section>
       </div>
     )
@@ -137,7 +148,7 @@ export default async function SchoolHomePage({ params }: PageProps) {
             )}
 
             <div className="mt-6 text-center">
-              <Link href={`/${schoolSlug}/comunicazioni`}>
+              <Link href={`${baseHref}/comunicazioni`}>
                 <Button>Vedi tutte le comunicazioni</Button>
               </Link>
             </div>
@@ -154,7 +165,7 @@ export default async function SchoolHomePage({ params }: PageProps) {
               {events.docs.length > 0 ? (
                 events.docs.map((event) => (
                   <SpotlightCard key={event.id}>
-                    <Link href={`/${schoolSlug}/eventi/${event.id}`}>
+                    <Link href={`${baseHref}/eventi/${event.id}`}>
                       <div className="text-emerald-600 font-semibold text-sm mb-2">
                         {new Date(event.date).toLocaleDateString('it-IT', {
                           day: 'numeric',
@@ -189,7 +200,7 @@ export default async function SchoolHomePage({ params }: PageProps) {
               {articles.docs.length > 0 ? (
                 articles.docs.map((article) => (
                   <SpotlightCard key={article.id}>
-                    <Link href={`/${schoolSlug}/blog/${article.slug}`}>
+                    <Link href={`${baseHref}/blog/${article.slug}`}>
                       <div className="text-sm mb-3">
                         {article.publishedAt && (
                           <time dateTime={article.publishedAt}>

@@ -1,5 +1,7 @@
 import { notFound, redirect } from 'next/navigation'
 import { getCurrentSchool, isFeatureEnabled } from '@/lib/school'
+import { getSchoolBaseHref } from '@/lib/linkUtils'
+import { headers } from 'next/headers'
 import Hero from '@/components/Hero/Hero'
 import { Breadcrumbs } from '@/components/Breadcrumbs/Breadcrumbs'
 import { Button } from '@/components/ui/button'
@@ -41,6 +43,10 @@ export default async function DocumentiPage({ params }: { params: Promise<{ scho
     notFound()
   }
 
+  const headersList = await headers()
+  const host = headersList.get('host') || ''
+  const baseHref = getSchoolBaseHref(school, host)
+
   // Reindirizza alla homepage se la feature documenti è disabilitata
   if (!isFeatureEnabled(school, 'documents')) {
     redirect(`/${schoolSlug}`)
@@ -75,8 +81,12 @@ export default async function DocumentiPage({ params }: { params: Promise<{ scho
 
   return (
     <div className="min-h-screen">
-      <Hero title="Documenti" />
-      <Breadcrumbs />
+      <Hero
+        title="Documenti"
+        subtitle="Scarica i documenti e la modulistica della scuola"
+        backgroundImage="/images/documents-hero.jpg"
+      />
+      <Breadcrumbs baseHref={baseHref} />
 
       <div className="container mx-auto px-4 py-12">
         {/* Sezione documenti in evidenza */}

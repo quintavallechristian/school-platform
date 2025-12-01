@@ -1,5 +1,7 @@
 import { notFound } from 'next/navigation'
 import { getCurrentSchool, getSchoolPage } from '@/lib/school'
+import { getSchoolBaseHref } from '@/lib/linkUtils'
+import { headers } from 'next/headers'
 import PageBlocks from '@/components/PageBlocks/PageBlocks'
 import Hero from '@/components/Hero/Hero'
 import type { Page as PageType } from '@/payload-types'
@@ -16,6 +18,10 @@ export default async function CustomPage({ params }: Props) {
   if (!school) {
     notFound()
   }
+
+  const headersList = await headers()
+  const host = headersList.get('host') || ''
+  const baseHref = getSchoolBaseHref(school, host)
 
   const page = await getSchoolPage(school.id, slug)
 
@@ -59,7 +65,12 @@ export default async function CustomPage({ params }: Props) {
       )}
 
       <section>
-        <PageBlocks blocks={page.blocks} schoolId={school.id} schoolSlug={schoolSlug} />
+        <PageBlocks
+          blocks={page.blocks}
+          schoolId={school.id}
+          schoolSlug={schoolSlug}
+          baseHref={baseHref}
+        />
       </section>
     </div>
   )

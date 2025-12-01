@@ -13,9 +13,10 @@ type Props = {
   block: EventListBlockType
   schoolId: string | number
   schoolSlug: string
+  baseHref?: string
 }
 
-export default async function EventListBlock({ block, schoolId, schoolSlug }: Props) {
+export default async function EventListBlock({ block, schoolId, schoolSlug, baseHref }: Props) {
   const payloadConfig = await config
   const payload = await getPayload({ config: payloadConfig })
 
@@ -75,7 +76,7 @@ export default async function EventListBlock({ block, schoolId, schoolSlug }: Pr
 
           return (
             <SpotlightCard key={event.id} className={`px-0 py-0 ${isPast ? 'opacity-80' : ''}`}>
-              <Link href={`/${schoolSlug}/eventi/${event.id}`}>
+              <Link href={`${baseHref}/eventi/${event.id}`}>
                 {event.cover && typeof event.cover === 'object' && event.cover.url && (
                   <div className="relative h-48 w-full overflow-hidden">
                     <Image
@@ -119,7 +120,7 @@ export default async function EventListBlock({ block, schoolId, schoolSlug }: Pr
 
       {block.showViewAll && (
         <div className="text-center mt-8">
-          <Link href={`/${schoolSlug}/eventi`}>
+          <Link href={`${baseHref}/eventi`}>
             <Button variant="outline" size="lg">
               Vedi tutti gli eventi →
             </Button>

@@ -1,5 +1,7 @@
 import { notFound, redirect } from 'next/navigation'
 import { getCurrentSchool, getSchoolActiveMenu, isFeatureEnabled } from '@/lib/school'
+import { getSchoolBaseHref } from '@/lib/linkUtils'
+import { headers } from 'next/headers'
 import Hero from '@/components/Hero/Hero'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import type { Menu } from '@/payload-types'
@@ -29,6 +31,10 @@ export default async function MensaPage({ params }: { params: Promise<{ school: 
   if (!school) {
     notFound()
   }
+
+  const headersList = await headers()
+  const host = headersList.get('host') || ''
+  const baseHref = getSchoolBaseHref(school, host)
 
   // Reindirizza alla homepage se la feature mensa è disabilitata
   if (!isFeatureEnabled(school, 'menu')) {
@@ -82,10 +88,11 @@ export default async function MensaPage({ params }: { params: Promise<{ school: 
   return (
     <div className="min-h-[calc(100vh-200px)]">
       <Hero
-        title="Menù della Mensa"
-        subtitle={activeMenu ? `${activeMenu.name}` : `Scopri cosa mangiamo a scuola`}
+        title="Mensa Scolastica"
+        subtitle="Scopri il menù settimanale e le informazioni sul servizio mensa"
+        backgroundImage="/images/canteen-hero.jpg"
       />
-      <Breadcrumbs />
+      <Breadcrumbs baseHref={baseHref} />
 
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

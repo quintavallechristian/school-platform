@@ -101,7 +101,7 @@ export default async function Navbar({
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-4">
             <MobileGuestMenuButton menuItems={menuItems} />
-            <Link href={baseHref} className="flex items-center gap-2">
+            <Link href={baseHref || '/'} className="flex items-center gap-2">
               {schoolLogo ? (
                 <div className="relative h-8 w-8">
                   <Image

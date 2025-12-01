@@ -15,9 +15,15 @@ type Props = {
   block: CommunicationsBlockType
   schoolId: string | number
   schoolSlug: string
+  baseHref?: string
 }
 
-export default async function CommunicationsBlock({ block, schoolId, schoolSlug }: Props) {
+export default async function CommunicationsBlock({
+  block,
+  schoolId,
+  schoolSlug,
+  baseHref,
+}: Props) {
   const payloadConfig = await config
   const payload = await getPayload({ config: payloadConfig })
 
@@ -70,7 +76,7 @@ export default async function CommunicationsBlock({ block, schoolId, schoolSlug 
 
       {block.showViewAll && (
         <div className="text-center mt-8">
-          <Link href={`/${schoolSlug}/comunicazioni`}>
+          <Link href={`${baseHref}/comunicazioni`}>
             <Button variant="outline" size="lg">
               Vedi tutte le comunicazioni →
             </Button>

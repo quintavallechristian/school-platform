@@ -16,9 +16,10 @@ type Props = {
   block: ArticleListBlockType
   schoolId: string | number
   schoolSlug: string
+  baseHref?: string
 }
 
-export default async function ArticleListBlock({ block, schoolId, schoolSlug }: Props) {
+export default async function ArticleListBlock({ block, schoolId, schoolSlug, baseHref }: Props) {
   const payloadConfig = await config
   const payload = await getPayload({ config: payloadConfig })
 
@@ -54,7 +55,7 @@ export default async function ArticleListBlock({ block, schoolId, schoolSlug }: 
           const typedArticle = article as Article
           return (
             <SpotlightCard key={article.id} className="px-0 py-0">
-              <Link href={`/${schoolSlug}/blog/${typedArticle.slug}`}>
+              <Link href={`${baseHref}/blog/${typedArticle.slug}`}>
                 {typedArticle.cover &&
                   typeof typedArticle.cover === 'object' &&
                   typedArticle.cover.url && (
@@ -96,7 +97,7 @@ export default async function ArticleListBlock({ block, schoolId, schoolSlug }: 
 
       {block.showViewAll && (
         <div className="text-center mt-8">
-          <Link href={`/${schoolSlug}/blog`}>
+          <Link href={`${baseHref}/blog`}>
             <Button variant="outline" size="lg">
               Vedi tutti gli articoli →
             </Button>

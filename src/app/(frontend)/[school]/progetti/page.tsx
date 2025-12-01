@@ -1,6 +1,8 @@
 import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import { getCurrentSchool, getSchoolProjects, isFeatureEnabled } from '@/lib/school'
+import { getSchoolBaseHref } from '@/lib/linkUtils'
+import { headers } from 'next/headers'
 import Hero from '@/components/Hero/Hero'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import type { Project } from '@/payload-types'
@@ -17,6 +19,10 @@ export default async function ProjectsPage({ params }: { params: Promise<{ schoo
     notFound()
   }
 
+  const headersList = await headers()
+  const host = headersList.get('host') || ''
+  const baseHref = getSchoolBaseHref(school, host)
+
   // Reindirizza alla homepage se la feature progetti è disabilitata
   if (!isFeatureEnabled(school, 'projects')) {
     redirect(`/${schoolSlug}`)
@@ -26,8 +32,12 @@ export default async function ProjectsPage({ params }: { params: Promise<{ schoo
 
   return (
     <div className="min-h-[calc(100vh-200px)]">
-      <Hero title="Progetti della scuola" />
-      <Breadcrumbs />
+      <Hero
+        title="I Nostri Progetti"
+        subtitle="Scopri le attività didattiche e creative della nostra scuola"
+        backgroundImage="/images/projects-hero.jpg"
+      />
+      <Breadcrumbs baseHref={baseHref} />
 
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-8">

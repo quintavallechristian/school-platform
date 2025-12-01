@@ -25,28 +25,31 @@ const labelMap: Record<string, string> = {
   testimonianze: 'Testimonianze',
 }
 
-export function Breadcrumbs() {
+export function Breadcrumbs({ baseHref = '' }: { baseHref?: string }) {
   const pathname = usePathname()
 
   // Non mostrare sulla home page o se non c'è pathname
   if (!pathname) return null
 
-  const segments = pathname.split('/').filter(Boolean)
+  // Rimuovi baseHref dal pathname per ottenere i segmenti relativi
+  // Esempio path-based: pathname = /slug/chi-siamo, baseHref = /slug -> relative = /chi-siamo
+  // Esempio subdomain: pathname = /chi-siamo, baseHref = '' -> relative = /chi-siamo
+  let relativePath = pathname
+  if (baseHref && pathname.startsWith(baseHref)) {
+    relativePath = pathname.slice(baseHref.length)
+  }
 
-  // Se siamo sulla home della scuola (es. /nome-scuola), non mostrare breadcrumbs
-  if (segments.length <= 1) return null
+  const segments = relativePath.split('/').filter(Boolean)
 
-  const schoolSlug = segments[0]
-
-  // Rimuovi lo slug della scuola dai segmenti da visualizzare
-  const displaySegments = segments.slice(1)
+  // Se siamo sulla home (nessun segmento dopo baseHref), non mostrare breadcrumbs
+  if (segments.length === 0) return null
 
   return (
     <nav aria-label="Breadcrumb" className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
       <ol className="flex items-center flex-wrap gap-2 text-sm text-muted-foreground">
         <li>
           <Link
-            href={`/${schoolSlug}`}
+            href={baseHref || '/'}
             className="flex items-center hover:text-primary transition-colors"
             aria-label="Home"
           >
@@ -54,10 +57,10 @@ export function Breadcrumbs() {
           </Link>
         </li>
 
-        {displaySegments.map((segment, index) => {
+        {segments.map((segment, index) => {
           // Costruisci il path accumulando i segmenti precedenti
-          const href = `/${schoolSlug}/${displaySegments.slice(0, index + 1).join('/')}`
-          const isLast = index === displaySegments.length - 1
+          const href = `${baseHref}/${segments.slice(0, index + 1).join('/')}`
+          const isLast = index === segments.length - 1
 
           // Formatta l'etichetta: usa la mappa o capitalizza
           let label = labelMap[segment]
