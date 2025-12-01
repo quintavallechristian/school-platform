@@ -69,7 +69,7 @@ export const ChiSiamo: CollectionConfig = {
       type: 'group',
       label: 'Configurazione copertina',
       admin: {
-        description: "Personalizza la copertina di default della pagina",
+        description: 'Personalizza la copertina di default della pagina',
       },
       fields: [
         {
@@ -97,7 +97,7 @@ export const ChiSiamo: CollectionConfig = {
           type: 'text',
           label: 'Sottotitolo',
           admin: {
-            description: "Testo che appare sotto il titolo nella copertina",
+            description: 'Testo che appare sotto il titolo nella copertina',
             condition: (data, siblingData) => siblingData?.showHero === true,
           },
         },
@@ -117,7 +117,7 @@ export const ChiSiamo: CollectionConfig = {
           relationTo: 'media',
           label: 'Immagine di sfondo',
           admin: {
-            description: "Immagine opzionale per lo sfondo della copertina",
+            description: 'Immagine opzionale per lo sfondo della copertina',
             condition: (data, siblingData) => siblingData?.showHero === true,
           },
           filterOptions: filterBySchool,

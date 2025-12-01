@@ -32,8 +32,6 @@ import { ParentAppointments } from './collections/ParentAppointments'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-const isProduction = process.env.NODE_ENV === 'production'
-
 export default buildConfig({
   admin: {
     user: Users.slug,

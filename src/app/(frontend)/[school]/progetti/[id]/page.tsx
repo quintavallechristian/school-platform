@@ -1,12 +1,9 @@
 import { notFound, redirect } from 'next/navigation'
-import Link from 'next/link'
 import { getCurrentSchool, getSchoolProjectById, isFeatureEnabled } from '@/lib/school'
 import React from 'react'
 import Hero from '@/components/Hero/Hero'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import GalleryView from '@/components/GalleryView/GalleryView'
-import { Button } from '@/components/ui/button'
-import { ArrowLeft } from 'lucide-react'
 import { RichTextRenderer } from '@/components/RichTextRenderer/RichTextRenderer'
 import { Breadcrumbs } from '@/components/Breadcrumbs/Breadcrumbs'
 
