@@ -16,7 +16,9 @@ export const ChiSiamo: CollectionConfig = {
     singular: 'Chi siamo',
     plural: 'Chi siamo',
   },
+
   admin: {
+    useAsTitle: 'name',
     group: 'Scuola',
     description: 'Configura i contenuti della pagina Chi Siamo',
     defaultColumns: ['name', 'school', 'isActive'],
@@ -52,7 +54,7 @@ export const ChiSiamo: CollectionConfig = {
       defaultValue: true,
       admin: {
         position: 'sidebar',
-        description: 'Se disattivata, la testimonianza non sarà visibile nel frontend',
+        description: 'Se disattivata, la pagina non sarà visibile nel frontend',
       },
     },
     {

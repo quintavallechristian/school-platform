@@ -5,11 +5,12 @@ import { getSchoolTestimonials } from '@/lib/school'
 import Link from 'next/link'
 import SpotlightCard from '../SpotlightCard/SpotlightCard'
 import { Button } from '../ui/button'
+import EmptyArea from '../EmptyArea/EmptyArea'
 
 // Tipi per il block
 export type TestimonialsBlockType = Extract<
   NonNullable<Homepage['blocks']>[number],
-  { blockType: 'testimonials' }
+  { blockType: 'testimonialsList' }
 >
 
 type Props = {
@@ -31,9 +32,7 @@ export default async function TestimonialsBlock({ block, schoolId, baseHref }: P
           {block.title && (
             <h2 className="text-3xl font-bold mb-8 text-center text-primary">{block.title}</h2>
           )}
-          <div className="text-center py-12">
-            <p className="text-gray-500">Testimonianze in arrivo...</p>
-          </div>
+          <EmptyArea title="Nessuna testimonianza disponibile" />
         </div>
       </section>
     )

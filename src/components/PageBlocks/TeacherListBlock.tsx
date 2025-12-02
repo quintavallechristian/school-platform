@@ -16,7 +16,7 @@ type Props = {
   baseHref?: string
 }
 
-export default async function TeacherListBlock({ block, schoolId, schoolSlug, baseHref }: Props) {
+export default async function TeacherListBlock({ block, schoolId, baseHref }: Props) {
   const teachers = await getSchoolTeachers(schoolId)
 
   // Se non ci sono insegnanti, non mostrare nulla o mostrare un messaggio

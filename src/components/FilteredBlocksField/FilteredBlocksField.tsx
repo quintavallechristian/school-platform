@@ -28,7 +28,7 @@ export const FilteredBlocksField: React.FC<BlocksFieldClientProps> = (props) => 
           'cardGrid',
           'fileDownload',
           'gallery',
-          'testimonials',
+          'testimonialsList',
         ]
         const filtered = props.field.blocks.filter((block) => generalBlocks.includes(block.slug))
         setFilteredBlocks(filtered)
@@ -82,7 +82,7 @@ export const FilteredBlocksField: React.FC<BlocksFieldClientProps> = (props) => 
           cardGrid: null,
           fileDownload: null,
           gallery: null,
-          testimonials: null,
+          testimonialsList: null,
           articleList: 'showBlog',
           eventList: 'showEvents',
           projectList: 'showProjects',

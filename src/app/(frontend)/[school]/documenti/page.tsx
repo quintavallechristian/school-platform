@@ -4,13 +4,14 @@ import { getSchoolBaseHref } from '@/lib/linkUtils'
 import { headers } from 'next/headers'
 import Hero from '@/components/Hero/Hero'
 import { Breadcrumbs } from '@/components/Breadcrumbs/Breadcrumbs'
-import { Button } from '@/components/ui/button'
+
 import { getPayload } from 'payload'
 import config from '@/payload.config'
 import { Document, Media } from '@/payload-types'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
-import { Download, Star, FileX } from 'lucide-react'
+import { Star, FileX } from 'lucide-react'
 import EmptyArea from '@/components/EmptyArea/EmptyArea'
+import DownloadLink from '@/components/DownloadLink/DownloadLink'
 
 // Funzione per ottenere i documenti di una scuola
 async function getSchoolDocuments(schoolId: string) {
@@ -115,12 +116,16 @@ export default async function DocumentiPage({ params }: { params: Promise<{ scho
                       )}
                     </div>
 
-                    <Button asChild className="mt-2">
-                      <a href={item.file.url || '#'} download>
-                        <Download className="h-4 w-4 mr-2" />
+                    <div className="mt-2">
+                      <DownloadLink
+                        url={item.file.url || '#'}
+                        fileName={item.fileItem.title || item.file.filename || 'Documento'}
+                        mimeType={item.file.mimeType || undefined}
+                        category={item.sectionTitle}
+                      >
                         Scarica
-                      </a>
-                    </Button>
+                      </DownloadLink>
+                    </div>
                   </div>
                 </SpotlightCard>
               ))}
@@ -164,11 +169,16 @@ export default async function DocumentiPage({ params }: { params: Promise<{ scho
                             )}
                           </div>
 
-                          <Button asChild size={'sm'} aria-label="Scarica documento">
-                            <a href={file.url || '#'} download>
-                              <Download className="h-4 w-4" />
-                            </a>
-                          </Button>
+                          <DownloadLink
+                            url={file.url || '#'}
+                            fileName={fileItem.title || file.filename || 'Documento'}
+                            mimeType={file.mimeType || undefined}
+                            category={section.title}
+                            size="sm"
+                            aria-label="Scarica documento"
+                          >
+                            <span className="sr-only">Scarica</span>
+                          </DownloadLink>
                         </div>
                       </SpotlightCard>
                     )

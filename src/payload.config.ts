@@ -1,7 +1,7 @@
 // storage-adapter-import-placeholder
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { s3Storage } from '@payloadcms/storage-s3'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { lexicalEditor, EXPERIMENTAL_TableFeature } from '@payloadcms/richtext-lexical'
 import { it } from '@payloadcms/translations/languages/it'
 import path from 'path'
 import { buildConfig } from 'payload'
@@ -21,13 +21,13 @@ import { Communications } from './collections/Communications'
 import { Gallery } from './collections/Gallery'
 import { EmailSubscribers } from './collections/EmailSubscribers'
 import { Documents } from './collections/Documents'
-import { Testimonials } from './collections/Testimonials'
 import { Homepage } from './collections/Homepage'
 import { ChiSiamo } from './collections/ChiSiamo'
 import { CalendarDays } from './collections/CalendarDays'
 import { PrivacyPolicy } from './collections/PrivacyPolicy'
 import { ChildUpdates } from './collections/ChildUpdates'
 import { ParentAppointments } from './collections/ParentAppointments'
+import { Testimonials } from './collections/Testimonials'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -87,7 +87,9 @@ export default buildConfig({
     // Utenti
     Users,
   ],
-  editor: lexicalEditor(),
+  editor: lexicalEditor({
+    features: ({ defaultFeatures }) => [...defaultFeatures, EXPERIMENTAL_TableFeature()],
+  }),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),

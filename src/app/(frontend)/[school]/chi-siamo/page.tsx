@@ -37,14 +37,14 @@ export default async function ChiSiamoPage({ params }: PageProps) {
 
     return (
       <div className="min-h-[calc(100vh-200px)]">
-        <Hero title="Chi Siamo" subtitle="Scopri il nostro team di insegnanti" big={false} />
+        <Hero title="Chi Siamo" subtitle="Scopri la nostra realtà" big={false} />
 
-        <section className="py-16">
-          <div className="max-w-7xl mx-auto px-8">
-            <h2 className="text-primary text-4xl font-bold text-center mb-12">Il Nostro Team</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {teachers.docs.length > 0 ? (
-                teachers.docs.map((teacher) => {
+        {teachers.docs.length > 0 && (
+          <section className="py-16">
+            <div className="max-w-7xl mx-auto px-8">
+              <h2 className="text-primary text-4xl font-bold text-center mb-12">Il Nostro Team</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {teachers.docs.map((teacher) => {
                   const imageUrl =
                     teacher.photo && typeof teacher.photo === 'object' ? teacher.photo.url : null
 
@@ -69,15 +69,11 @@ export default async function ChiSiamoPage({ params }: PageProps) {
                       )}
                     </SpotlightCard>
                   )
-                })
-              ) : (
-                <p className="text-center col-span-full py-8">
-                  Nessun insegnante disponibile al momento.
-                </p>
-              )}
+                })}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
       </div>
     )
   }
@@ -137,7 +133,7 @@ export default async function ChiSiamoPage({ params }: PageProps) {
   const teachers = shouldShowTeachers ? await getSchoolTeachers(school.id) : null
 
   return (
-    <div className="min-h-[calc(100vh-200px)]">
+    <div className="min-h-[calc(100vh-200px)] mb-20">
       {shouldShowDefaultHero && (
         <Hero
           title={typedPage.heroSettings?.title || 'Chi Siamo'}
@@ -153,7 +149,7 @@ export default async function ChiSiamoPage({ params }: PageProps) {
       <section>
         {hasContent && typedPage.content && (
           <SpotlightCard
-            className={`max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-0 ${shouldShowDefaultHero ? '-mt-16' : 'mt-8'}`}
+            className={`max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-0 ${shouldShowDefaultHero ? '-mt-16' : 'mt-8'}`}
           >
             <RichTextRenderer content={typedPage.content} />
           </SpotlightCard>

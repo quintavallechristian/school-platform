@@ -213,10 +213,10 @@ export const pageBlocks: Block[] = [
   },
   // Blocco Testimonials
   {
-    slug: 'testimonials',
+    slug: 'testimonialsList',
     labels: {
-      singular: 'Testimonianze',
-      plural: 'Testimonianze',
+      singular: 'Lista Testimonianze',
+      plural: 'Liste Testimonianze',
     },
     fields: [
       createBackgroundColorField(),

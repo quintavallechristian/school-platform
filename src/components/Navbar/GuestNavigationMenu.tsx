@@ -8,6 +8,9 @@ import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuList,
+  NavigationMenuTrigger,
+  NavigationMenuContent,
+  NavigationMenuLink,
 } from '@/components/ui/navigation-menu'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
@@ -16,7 +19,8 @@ import { Logo } from '../Logo'
 
 type MenuItem = {
   label: string
-  href: string
+  href?: string
+  items?: Array<{ label: string; href: string; description?: string }>
 }
 
 export function MobileGuestMenuButton({ menuItems }: { menuItems: MenuItem[] }) {
@@ -51,13 +55,35 @@ export function MobileGuestMenuButton({ menuItems }: { menuItems: MenuItem[] }) 
           </SheetTitle>
         </SheetHeader>
         <nav className="flex flex-col gap-4 overflow-y-auto flex-1">
-          {menuItems.map((item) => (
-            <MobileMenuSection
-              key={item.href}
-              title={item.label}
-              titleHref={item.href}
-              setOpen={setOpen}
-            />
+          {menuItems.map((item, index) => (
+            <div key={item.href || `dropdown-${index}`}>
+              {item.href ? (
+                // Link singolo
+                <MobileMenuSection title={item.label} titleHref={item.href} setOpen={setOpen} />
+              ) : item.items ? (
+                // Menu con sottoelementi
+                <div className="space-y-2">
+                  <h3 className="font-semibold text-sm text-muted-foreground px-2">{item.label}</h3>
+                  <div className="space-y-1 pl-4">
+                    {item.items.map((subItem) => (
+                      <Link
+                        key={subItem.href}
+                        href={subItem.href}
+                        onClick={() => setOpen(false)}
+                        className="block rounded-md px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground"
+                      >
+                        <div className="font-medium">{subItem.label}</div>
+                        {subItem.description && (
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {subItem.description}
+                          </p>
+                        )}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+            </div>
           ))}
         </nav>
       </SheetContent>
@@ -69,9 +95,38 @@ export function GuestNavigationMenu({ menuItems }: { menuItems: MenuItem[] }) {
   return (
     <NavigationMenu viewport={false} className="z-50 hidden md:flex">
       <NavigationMenuList className="gap-6">
-        {menuItems.map((item) => (
-          <NavigationMenuItem key={item.href}>
-            <Link href={item.href}>{item.label}</Link>
+        {menuItems.map((item, index) => (
+          <NavigationMenuItem key={item.href || `dropdown-${index}`}>
+            {item.href ? (
+              // Link singolo
+              <Link href={item.href}>{item.label}</Link>
+            ) : item.items ? (
+              // Menu dropdown
+              <>
+                <NavigationMenuTrigger>{item.label}</NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] px-0 py-0">
+                    {item.items.map((subItem) => (
+                      <li key={subItem.href}>
+                        <NavigationMenuLink asChild>
+                          <Link
+                            href={subItem.href}
+                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                          >
+                            <div className="text-sm font-medium leading-none">{subItem.label}</div>
+                            {subItem.description && (
+                              <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                                {subItem.description}
+                              </p>
+                            )}
+                          </Link>
+                        </NavigationMenuLink>
+                      </li>
+                    ))}
+                  </ul>
+                </NavigationMenuContent>
+              </>
+            ) : null}
           </NavigationMenuItem>
         ))}
       </NavigationMenuList>

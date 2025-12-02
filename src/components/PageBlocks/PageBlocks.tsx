@@ -172,7 +172,7 @@ export default function PageBlocks({ blocks, schoolId, schoolSlug, baseHref }: P
           )
         }
 
-        if (block.blockType === 'testimonials') {
+        if (block.blockType === 'testimonialsList') {
           if (!schoolId || !schoolSlug) {
             console.warn('TestimonialsBlock requires schoolId')
             return null

@@ -119,6 +119,80 @@ export const Schools: CollectionConfig = {
                 description: 'Logo della scuola',
               },
             },
+            {
+              name: 'navbarStructure',
+              type: 'array',
+              label: 'Struttura Navbar',
+              labels: {
+                singular: 'Voce Navbar',
+                plural: 'Voci Navbar',
+              },
+              admin: {
+                description:
+                  'Configura la struttura della navbar. Ogni voce può contenere più funzionalità.',
+                initCollapsed: true,
+              },
+              fields: [
+                {
+                  name: 'label',
+                  type: 'text',
+                  label: 'Etichetta Menu',
+                  required: true,
+                  admin: {
+                    description:
+                      'Testo mostrato nella navbar (es: "La Scuola", "Didattica", "Servizi")',
+                  },
+                },
+                {
+                  name: 'items',
+                  type: 'array',
+                  label: 'Funzionalità',
+                  labels: {
+                    singular: 'Elemento',
+                    plural: 'Elementi',
+                  },
+                  required: true,
+                  admin: {
+                    description: 'Funzionalità da includere in questo menu',
+                  },
+                  fields: [
+                    {
+                      name: 'feature',
+                      type: 'select',
+                      label: 'Funzionalità collegata',
+                      options: [
+                        { label: 'Chi Siamo', value: 'chiSiamo' },
+                        { label: 'Blog', value: 'blog' },
+                        { label: 'Eventi', value: 'events' },
+                        { label: 'Progetti', value: 'projects' },
+                        { label: 'Piano Offerta Formativa', value: 'educationalOfferings' },
+                        { label: 'Calendario', value: 'calendar' },
+                        { label: 'Comunicazioni', value: 'communications' },
+                        { label: 'Mensa', value: 'menu' },
+                        { label: 'Documenti', value: 'documents' },
+                      ],
+                    },
+                    {
+                      name: 'customPage',
+                      type: 'relationship',
+                      relationTo: 'pages',
+                      label: 'Pagina Custom',
+                      admin: {
+                        description: 'Oppure seleziona una pagina custom',
+                      },
+                    },
+                    {
+                      name: 'description',
+                      type: 'textarea',
+                      label: 'Descrizione',
+                      admin: {
+                        description: 'Breve descrizione mostrata nel dropdown (opzionale)',
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
           ],
         },
         {
@@ -359,7 +433,7 @@ export const Schools: CollectionConfig = {
                   name: 'showChiSiamo',
                   type: 'checkbox',
                   label: 'Mostra Chi Siamo',
-                  defaultValue: true,
+                  defaultValue: false,
                 },
                 {
                   name: 'showBlog',

@@ -6,6 +6,7 @@ import config from '@/payload.config'
 import type { Page, Article } from '@/payload-types'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import { Button } from '@/components/ui/button'
+import EmptyArea from '../EmptyArea/EmptyArea'
 
 type ArticleListBlockType = Extract<
   NonNullable<Page['blocks']>[number],
@@ -39,9 +40,7 @@ export default async function ArticleListBlock({ block, schoolId, baseHref }: Pr
     return (
       <div className="max-w-5xl mx-auto px-4 py-12">
         {block.title && <h2 className="text-3xl font-bold mb-8 text-primary">{block.title}</h2>}
-        <div className="text-center py-12 text-muted-foreground">
-          <p className="text-xl">📭 Nessun articolo disponibile</p>
-        </div>
+        <EmptyArea title="Nessun articolo disponibile" />
       </div>
     )
   }

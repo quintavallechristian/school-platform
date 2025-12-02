@@ -176,6 +176,45 @@ export interface School {
    */
   logo?: (string | null) | Media;
   /**
+   * Configura la struttura della navbar. Ogni voce può contenere più funzionalità.
+   */
+  navbarStructure?:
+    | {
+        /**
+         * Testo mostrato nella navbar (es: "La Scuola", "Didattica", "Servizi")
+         */
+        label: string;
+        /**
+         * Funzionalità da includere in questo menu
+         */
+        items: {
+          feature?:
+            | (
+                | 'chiSiamo'
+                | 'blog'
+                | 'events'
+                | 'projects'
+                | 'educationalOfferings'
+                | 'calendar'
+                | 'communications'
+                | 'menu'
+                | 'documents'
+              )
+            | null;
+          /**
+           * Oppure seleziona una pagina custom
+           */
+          customPage?: (string | null) | Page;
+          /**
+           * Breve descrizione mostrata nel dropdown (opzionale)
+           */
+          description?: string | null;
+          id?: string | null;
+        }[];
+        id?: string | null;
+      }[]
+    | null;
+  /**
    * Colori utilizzati quando il tema chiaro è attivo
    */
   lightTheme?: {
@@ -281,6 +320,427 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+}
+/**
+ * In questa sezione puoi creare pagine personalizzate per la tua scuola, che vadano oltre le pagine di default. Puoi, per esempio, creare una pagina "La nostra storia" o "I nostri valori".
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: string;
+  /**
+   * Scuola a cui appartiene questa pagina
+   */
+  school?: (string | null) | School;
+  title: string;
+  /**
+   * Es: chi-siamo, contatti, storia
+   */
+  slug: string;
+  /**
+   * Personalizza la copertina di default della pagina
+   */
+  heroSettings?: {
+    /**
+     * Se disabilitato, la copertina non verrà mostrata (utile se usi un immagini personalizzate)
+     */
+    showHero?: boolean | null;
+    /**
+     * Titolo che appare nella copertina
+     */
+    title?: string | null;
+    /**
+     * Testo che appare sotto il titolo nella copertina
+     */
+    subtitle?: string | null;
+    /**
+     * Se abilitato, la copertina occuperà l'intera altezza dello schermo
+     */
+    fullHeight?: boolean | null;
+    /**
+     * Immagine opzionale per lo sfondo della copertina
+     */
+    backgroundImage?: (string | null) | Media;
+    /**
+     * Se abilitato, l'immagine di sfondo avrà un effetto parallax durante lo scroll
+     */
+    parallax?: boolean | null;
+    /**
+     * Se abilitato, aggiunge uno sfondo sfumato sopra l'immagine per migliorare la leggibilità del testo
+     */
+    gradientOverlay?: boolean | null;
+    /**
+     * Aggiungi un divisore decorativo in fondo alla copertina
+     */
+    bottomDivider?: {
+      enabled?: boolean | null;
+      style?:
+        | (
+            | 'wave'
+            | 'wave-brush'
+            | 'waves'
+            | 'zigzag'
+            | 'triangle'
+            | 'triangle-asymmetric'
+            | 'curve'
+            | 'curve-asymmetric'
+            | 'tilt'
+            | 'arrow'
+            | 'split'
+            | 'clouds'
+            | 'mountains'
+          )
+        | null;
+      /**
+       * Altezza del divisore in pixel (30-300)
+       */
+      height?: number | null;
+      flip?: boolean | null;
+      invert?: boolean | null;
+    };
+  };
+  /**
+   * Aggiungi sezioni personalizzate: liste articoli, comunicazioni, gallerie, ecc. I blocchi disponibili dipendono dalle funzionalità attive nelle impostazioni della scuola.
+   */
+  blocks?:
+    | (
+        | {
+            backgroundColor?: string | null;
+            /**
+             * Titolo principale con effetto gradiente animato
+             */
+            title: string;
+            /**
+             * Testo secondario con animazione blur
+             */
+            subtitle?: string | null;
+            /**
+             * Se attivo, la copertina occuperà l'intera altezza dello schermo
+             */
+            fullHeight?: boolean | null;
+            /**
+             * Immagine opzionale per lo sfondo della copertina
+             */
+            backgroundImage?: (string | null) | Media;
+            /**
+             * Se abilitato, l'immagine di sfondo avrà un effetto parallax durante lo scroll
+             */
+            parallax?: boolean | null;
+            /**
+             * Se abilitato, aggiunge uno sfondo sfumato sopra l'immagine per migliorare la leggibilità del testo
+             */
+            gradientOverlay?: boolean | null;
+            buttons?:
+              | {
+                  text: string;
+                  href: string;
+                  variant?: ('default' | 'destructive' | 'outline' | 'link') | null;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Aggiungi un divisore decorativo in cima alla copertina
+             */
+            topDivider?: {
+              enabled?: boolean | null;
+              style?:
+                | (
+                    | 'wave'
+                    | 'wave-brush'
+                    | 'waves'
+                    | 'zigzag'
+                    | 'triangle'
+                    | 'triangle-asymmetric'
+                    | 'curve'
+                    | 'curve-asymmetric'
+                    | 'tilt'
+                    | 'arrow'
+                    | 'split'
+                    | 'clouds'
+                    | 'mountains'
+                  )
+                | null;
+              /**
+               * Altezza del divisore in pixel (30-300)
+               */
+              height?: number | null;
+              flip?: boolean | null;
+              invert?: boolean | null;
+            };
+            /**
+             * Aggiungi un divisore decorativo in fondo alla copertina
+             */
+            bottomDivider?: {
+              enabled?: boolean | null;
+              style?:
+                | (
+                    | 'wave'
+                    | 'wave-brush'
+                    | 'waves'
+                    | 'zigzag'
+                    | 'triangle'
+                    | 'triangle-asymmetric'
+                    | 'curve'
+                    | 'curve-asymmetric'
+                    | 'tilt'
+                    | 'arrow'
+                    | 'split'
+                    | 'clouds'
+                    | 'mountains'
+                  )
+                | null;
+              /**
+               * Altezza del divisore in pixel (30-300)
+               */
+              height?: number | null;
+              flip?: boolean | null;
+              invert?: boolean | null;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'hero';
+          }
+        | {
+            backgroundColor?: string | null;
+            title?: string | null;
+            limit: number;
+            showViewAll?: boolean | null;
+            featuredOnly?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'testimonialsList';
+          }
+        | {
+            backgroundColor?: string | null;
+            title: string;
+            subtitle?: string | null;
+            image?: (string | null) | Media;
+            buttons?:
+              | {
+                  text: string;
+                  href: string;
+                  variant?: ('default' | 'secondary' | 'outline' | 'ghost') | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'callToAction';
+          }
+        | {
+            backgroundColor?: string | null;
+            content: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'richText';
+          }
+        | {
+            backgroundColor?: string | null;
+            title?: string | null;
+            columns?: ('2' | '3' | '4') | null;
+            cards?:
+              | {
+                  title: string;
+                  description?: string | null;
+                  image?: (string | null) | Media;
+                  link?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cardGrid';
+          }
+        | {
+            backgroundColor?: string | null;
+            /**
+             * Es: "Documenti Utili", "Moduli da scaricare"
+             */
+            title?: string | null;
+            description?: string | null;
+            files?:
+              | {
+                  /**
+                   * PDF, DOC, XLS, o altri documenti
+                   */
+                  file: string | Media;
+                  /**
+                   * Se vuoto, usa il nome del file
+                   */
+                  title?: string | null;
+                  description?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'fileDownload';
+          }
+        | {
+            backgroundColor?: string | null;
+            /**
+             * Seleziona una galleria esistente da mostrare
+             */
+            gallery: string | Gallery;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'gallery';
+          }
+        | {
+            backgroundColor?: string | null;
+            /**
+             * Es: "Ultime Notizie", "Articoli in Evidenza"
+             */
+            title?: string | null;
+            /**
+             * Quanti articoli mostrare (max 12)
+             */
+            limit: number;
+            /**
+             * Mostra un pulsante per andare alla pagina blog completa
+             */
+            showViewAll?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'articleList';
+          }
+        | {
+            backgroundColor?: string | null;
+            /**
+             * Es: "Prossimi Eventi", "Eventi della Scuola"
+             */
+            title?: string | null;
+            /**
+             * Quanti eventi mostrare (max 12)
+             */
+            limit: number;
+            /**
+             * Scegli quali eventi mostrare in base alla data
+             */
+            filter?: ('all' | 'upcoming' | 'past') | null;
+            /**
+             * Mostra un pulsante per andare alla pagina eventi completa
+             */
+            showViewAll?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'eventList';
+          }
+        | {
+            backgroundColor?: string | null;
+            /**
+             * Es: "I Nostri Progetti", "Progetti della Scuola"
+             */
+            title?: string | null;
+            /**
+             * Quanti progetti mostrare (max 12)
+             */
+            limit: number;
+            /**
+             * Mostra un pulsante per andare alla pagina progetti completa
+             */
+            showViewAll?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'projectList';
+          }
+        | {
+            backgroundColor?: string | null;
+            /**
+             * Es: "Comunicazioni Importanti", "Avvisi"
+             */
+            title?: string | null;
+            /**
+             * Quante comunicazioni mostrare (max 20)
+             */
+            limit: number;
+            /**
+             * Seleziona le priorità da mostrare (se vuoto, mostra tutte)
+             */
+            priorityFilter?: ('low' | 'normal' | 'high' | 'urgent')[] | null;
+            /**
+             * Mostra un pulsante per andare alla pagina comunicazioni completa
+             */
+            showViewAll?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'communications';
+          }
+        | {
+            backgroundColor?: string | null;
+            /**
+             * Es: "Il Nostro Team", "I Nostri Insegnanti"
+             */
+            title?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'teacherList';
+          }
+      )[]
+    | null;
+  /**
+   * Se attivo, questa pagina apparirà automaticamente nel menu di navigazione
+   */
+  showInNavbar?: boolean | null;
+  /**
+   * Numero per ordinare le pagine nel menu (più basso = prima)
+   */
+  navbarOrder?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "gallery".
+ */
+export interface Gallery {
+  id: string;
+  /**
+   * Scuola a cui appartiene questa galleria
+   */
+  school?: (string | null) | School;
+  /**
+   * Nome identificativo della galleria
+   */
+  title: string;
+  /**
+   * Breve descrizione della galleria (opzionale)
+   */
+  description?: string | null;
+  /**
+   * Aggiungi le immagini alla galleria
+   */
+  images?:
+    | {
+        image: string | Media;
+        /**
+         * Testo descrittivo per l'immagine (opzionale)
+         */
+        caption?: string | null;
+        /**
+         * Numero per ordinare le immagini (più basso = prima)
+         */
+        order?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * Qui puoi configurare lo stile della tua homepage. Puoi creare più homepage diverse e attivarle una per volta. Se non imposti alcuna homepage personalizzata, verrà utilizzata una versione di default.
@@ -473,7 +933,7 @@ export interface Homepage {
             featuredOnly?: boolean | null;
             id?: string | null;
             blockName?: string | null;
-            blockType: 'testimonials';
+            blockType: 'testimonialsList';
           }
         | {
             backgroundColor?: string | null;
@@ -661,44 +1121,6 @@ export interface Homepage {
   createdAt: string;
 }
 /**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "gallery".
- */
-export interface Gallery {
-  id: string;
-  /**
-   * Scuola a cui appartiene questa galleria
-   */
-  school?: (string | null) | School;
-  /**
-   * Nome identificativo della galleria
-   */
-  title: string;
-  /**
-   * Breve descrizione della galleria (opzionale)
-   */
-  description?: string | null;
-  /**
-   * Aggiungi le immagini alla galleria
-   */
-  images?:
-    | {
-        image: string | Media;
-        /**
-         * Testo descrittivo per l'immagine (opzionale)
-         */
-        caption?: string | null;
-        /**
-         * Numero per ordinare le immagini (più basso = prima)
-         */
-        order?: number | null;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
  * Configura i contenuti della pagina Privacy Policy
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -752,7 +1174,7 @@ export interface ChiSiamo {
    */
   school?: (string | null) | School;
   /**
-   * Se disattivata, la testimonianza non sarà visibile nel frontend
+   * Se disattivata, la pagina non sarà visibile nel frontend
    */
   isActive?: boolean | null;
   /**
@@ -1619,389 +2041,6 @@ export interface ParentAppointment {
   createdAt: string;
 }
 /**
- * In questa sezione puoi creare pagine personalizzate per la tua scuola, che vadano oltre le pagine di default. Puoi, per esempio, creare una pagina "La nostra storia" o "I nostri valori".
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pages".
- */
-export interface Page {
-  id: string;
-  /**
-   * Scuola a cui appartiene questa pagina
-   */
-  school?: (string | null) | School;
-  title: string;
-  /**
-   * Es: chi-siamo, contatti, storia
-   */
-  slug: string;
-  /**
-   * Personalizza la copertina di default della pagina
-   */
-  heroSettings?: {
-    /**
-     * Se disabilitato, la copertina non verrà mostrata (utile se usi un immagini personalizzate)
-     */
-    showHero?: boolean | null;
-    /**
-     * Titolo che appare nella copertina
-     */
-    title?: string | null;
-    /**
-     * Testo che appare sotto il titolo nella copertina
-     */
-    subtitle?: string | null;
-    /**
-     * Se abilitato, la copertina occuperà l'intera altezza dello schermo
-     */
-    fullHeight?: boolean | null;
-    /**
-     * Immagine opzionale per lo sfondo della copertina
-     */
-    backgroundImage?: (string | null) | Media;
-    /**
-     * Se abilitato, l'immagine di sfondo avrà un effetto parallax durante lo scroll
-     */
-    parallax?: boolean | null;
-    /**
-     * Se abilitato, aggiunge uno sfondo sfumato sopra l'immagine per migliorare la leggibilità del testo
-     */
-    gradientOverlay?: boolean | null;
-    /**
-     * Aggiungi un divisore decorativo in fondo alla copertina
-     */
-    bottomDivider?: {
-      enabled?: boolean | null;
-      style?:
-        | (
-            | 'wave'
-            | 'wave-brush'
-            | 'waves'
-            | 'zigzag'
-            | 'triangle'
-            | 'triangle-asymmetric'
-            | 'curve'
-            | 'curve-asymmetric'
-            | 'tilt'
-            | 'arrow'
-            | 'split'
-            | 'clouds'
-            | 'mountains'
-          )
-        | null;
-      /**
-       * Altezza del divisore in pixel (30-300)
-       */
-      height?: number | null;
-      flip?: boolean | null;
-      invert?: boolean | null;
-    };
-  };
-  /**
-   * Aggiungi sezioni personalizzate: liste articoli, comunicazioni, gallerie, ecc. I blocchi disponibili dipendono dalle funzionalità attive nelle impostazioni della scuola.
-   */
-  blocks?:
-    | (
-        | {
-            backgroundColor?: string | null;
-            /**
-             * Titolo principale con effetto gradiente animato
-             */
-            title: string;
-            /**
-             * Testo secondario con animazione blur
-             */
-            subtitle?: string | null;
-            /**
-             * Se attivo, la copertina occuperà l'intera altezza dello schermo
-             */
-            fullHeight?: boolean | null;
-            /**
-             * Immagine opzionale per lo sfondo della copertina
-             */
-            backgroundImage?: (string | null) | Media;
-            /**
-             * Se abilitato, l'immagine di sfondo avrà un effetto parallax durante lo scroll
-             */
-            parallax?: boolean | null;
-            /**
-             * Se abilitato, aggiunge uno sfondo sfumato sopra l'immagine per migliorare la leggibilità del testo
-             */
-            gradientOverlay?: boolean | null;
-            buttons?:
-              | {
-                  text: string;
-                  href: string;
-                  variant?: ('default' | 'destructive' | 'outline' | 'link') | null;
-                  id?: string | null;
-                }[]
-              | null;
-            /**
-             * Aggiungi un divisore decorativo in cima alla copertina
-             */
-            topDivider?: {
-              enabled?: boolean | null;
-              style?:
-                | (
-                    | 'wave'
-                    | 'wave-brush'
-                    | 'waves'
-                    | 'zigzag'
-                    | 'triangle'
-                    | 'triangle-asymmetric'
-                    | 'curve'
-                    | 'curve-asymmetric'
-                    | 'tilt'
-                    | 'arrow'
-                    | 'split'
-                    | 'clouds'
-                    | 'mountains'
-                  )
-                | null;
-              /**
-               * Altezza del divisore in pixel (30-300)
-               */
-              height?: number | null;
-              flip?: boolean | null;
-              invert?: boolean | null;
-            };
-            /**
-             * Aggiungi un divisore decorativo in fondo alla copertina
-             */
-            bottomDivider?: {
-              enabled?: boolean | null;
-              style?:
-                | (
-                    | 'wave'
-                    | 'wave-brush'
-                    | 'waves'
-                    | 'zigzag'
-                    | 'triangle'
-                    | 'triangle-asymmetric'
-                    | 'curve'
-                    | 'curve-asymmetric'
-                    | 'tilt'
-                    | 'arrow'
-                    | 'split'
-                    | 'clouds'
-                    | 'mountains'
-                  )
-                | null;
-              /**
-               * Altezza del divisore in pixel (30-300)
-               */
-              height?: number | null;
-              flip?: boolean | null;
-              invert?: boolean | null;
-            };
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'hero';
-          }
-        | {
-            backgroundColor?: string | null;
-            title?: string | null;
-            limit: number;
-            showViewAll?: boolean | null;
-            featuredOnly?: boolean | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'testimonials';
-          }
-        | {
-            backgroundColor?: string | null;
-            title: string;
-            subtitle?: string | null;
-            image?: (string | null) | Media;
-            buttons?:
-              | {
-                  text: string;
-                  href: string;
-                  variant?: ('default' | 'secondary' | 'outline' | 'ghost') | null;
-                  id?: string | null;
-                }[]
-              | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'callToAction';
-          }
-        | {
-            backgroundColor?: string | null;
-            content: {
-              root: {
-                type: string;
-                children: {
-                  type: any;
-                  version: number;
-                  [k: string]: unknown;
-                }[];
-                direction: ('ltr' | 'rtl') | null;
-                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-                indent: number;
-                version: number;
-              };
-              [k: string]: unknown;
-            };
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'richText';
-          }
-        | {
-            backgroundColor?: string | null;
-            title?: string | null;
-            columns?: ('2' | '3' | '4') | null;
-            cards?:
-              | {
-                  title: string;
-                  description?: string | null;
-                  image?: (string | null) | Media;
-                  link?: string | null;
-                  id?: string | null;
-                }[]
-              | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'cardGrid';
-          }
-        | {
-            backgroundColor?: string | null;
-            /**
-             * Es: "Documenti Utili", "Moduli da scaricare"
-             */
-            title?: string | null;
-            description?: string | null;
-            files?:
-              | {
-                  /**
-                   * PDF, DOC, XLS, o altri documenti
-                   */
-                  file: string | Media;
-                  /**
-                   * Se vuoto, usa il nome del file
-                   */
-                  title?: string | null;
-                  description?: string | null;
-                  id?: string | null;
-                }[]
-              | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'fileDownload';
-          }
-        | {
-            backgroundColor?: string | null;
-            /**
-             * Seleziona una galleria esistente da mostrare
-             */
-            gallery: string | Gallery;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'gallery';
-          }
-        | {
-            backgroundColor?: string | null;
-            /**
-             * Es: "Ultime Notizie", "Articoli in Evidenza"
-             */
-            title?: string | null;
-            /**
-             * Quanti articoli mostrare (max 12)
-             */
-            limit: number;
-            /**
-             * Mostra un pulsante per andare alla pagina blog completa
-             */
-            showViewAll?: boolean | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'articleList';
-          }
-        | {
-            backgroundColor?: string | null;
-            /**
-             * Es: "Prossimi Eventi", "Eventi della Scuola"
-             */
-            title?: string | null;
-            /**
-             * Quanti eventi mostrare (max 12)
-             */
-            limit: number;
-            /**
-             * Scegli quali eventi mostrare in base alla data
-             */
-            filter?: ('all' | 'upcoming' | 'past') | null;
-            /**
-             * Mostra un pulsante per andare alla pagina eventi completa
-             */
-            showViewAll?: boolean | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'eventList';
-          }
-        | {
-            backgroundColor?: string | null;
-            /**
-             * Es: "I Nostri Progetti", "Progetti della Scuola"
-             */
-            title?: string | null;
-            /**
-             * Quanti progetti mostrare (max 12)
-             */
-            limit: number;
-            /**
-             * Mostra un pulsante per andare alla pagina progetti completa
-             */
-            showViewAll?: boolean | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'projectList';
-          }
-        | {
-            backgroundColor?: string | null;
-            /**
-             * Es: "Comunicazioni Importanti", "Avvisi"
-             */
-            title?: string | null;
-            /**
-             * Quante comunicazioni mostrare (max 20)
-             */
-            limit: number;
-            /**
-             * Seleziona le priorità da mostrare (se vuoto, mostra tutte)
-             */
-            priorityFilter?: ('low' | 'normal' | 'high' | 'urgent')[] | null;
-            /**
-             * Mostra un pulsante per andare alla pagina comunicazioni completa
-             */
-            showViewAll?: boolean | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'communications';
-          }
-        | {
-            backgroundColor?: string | null;
-            /**
-             * Es: "Il Nostro Team", "I Nostri Insegnanti"
-             */
-            title?: string | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'teacherList';
-          }
-      )[]
-    | null;
-  /**
-   * Se attivo, questa pagina apparirà automaticamente nel menu di navigazione
-   */
-  showInNavbar?: boolean | null;
-  /**
-   * Numero per ordinare le pagine nel menu (più basso = prima)
-   */
-  navbarOrder?: number | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -2160,6 +2199,20 @@ export interface SchoolsSelect<T extends boolean = true> {
   slug?: T;
   isActive?: T;
   logo?: T;
+  navbarStructure?:
+    | T
+    | {
+        label?: T;
+        items?:
+          | T
+          | {
+              feature?: T;
+              customPage?: T;
+              description?: T;
+              id?: T;
+            };
+        id?: T;
+      };
   lightTheme?:
     | T
     | {
@@ -2285,7 +2338,7 @@ export interface HomepageSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
-        testimonials?:
+        testimonialsList?:
           | T
           | {
               backgroundColor?: T;
@@ -2989,7 +3042,7 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
-        testimonials?:
+        testimonialsList?:
           | T
           | {
               backgroundColor?: T;

@@ -66,6 +66,7 @@ export async function getSchoolArticles(schoolId: string | number, limit = 10, p
     where: {
       school: { equals: schoolId },
     },
+    depth: 2,
     sort: '-publishedAt',
     limit,
     page,
@@ -83,6 +84,7 @@ export async function getSchoolEvents(schoolId: string | number, limit = 10, pag
     where: {
       school: { equals: schoolId },
     },
+    depth: 2,
     sort: '-date',
     limit,
     page,
@@ -100,6 +102,7 @@ export async function getSchoolProjects(schoolId: string | number, limit = 10, p
     where: {
       school: { equals: schoolId },
     },
+    depth: 2,
     sort: '-createdAt',
     limit,
     page,
@@ -121,6 +124,7 @@ export async function getSchoolEducationalOfferings(
     where: {
       school: { equals: schoolId },
     },
+    depth: 2,
     sort: '-createdAt',
     limit,
     page,
@@ -153,6 +157,7 @@ export async function getSchoolCommunications(
         },
       ],
     },
+    depth: 2,
     sort: '-publishedAt',
     limit,
     page,
@@ -315,6 +320,7 @@ export async function getSchoolHomepage(schoolId: string | number) {
     where: {
       and: [{ school: { equals: schoolId } }, { isActive: { equals: true } }],
     },
+    depth: 2,
     limit: 1,
   })
 
@@ -332,6 +338,7 @@ export async function getSchoolChiSiamo(schoolId: string | number) {
     where: {
       and: [{ school: { equals: schoolId } }, { isActive: { equals: true } }],
     },
+    depth: 2, // Popola le relazioni nei rich text (es. immagini)
     limit: 1,
   })
 
@@ -349,6 +356,7 @@ export async function getSchoolPrivacyPolicy(schoolId: string | number) {
     where: {
       and: [{ school: { equals: schoolId } }, { isActive: { equals: true } }],
     },
+    depth: 2,
     limit: 1,
   })
 
@@ -366,6 +374,7 @@ export async function getSchoolArticle(schoolId: string | number, articleSlug: s
     where: {
       and: [{ school: { equals: schoolId } }, { slug: { equals: articleSlug } }],
     },
+    depth: 2,
     limit: 1,
   })
 
@@ -450,6 +459,7 @@ export async function getSchoolEvent(schoolId: string | number, eventId: string 
     const event = await payload.findByID({
       collection: 'events',
       id: eventId,
+      depth: 2,
     })
 
     // Verifica che l'evento appartenga alla scuola
@@ -484,6 +494,7 @@ export async function getSchoolProject(schoolId: string | number, projectId: str
     const project = await payload.findByID({
       collection: 'projects',
       id: projectId,
+      depth: 2,
     })
 
     // Verifica che il progetto appartenga alla scuola
@@ -520,6 +531,7 @@ export async function getSchoolEducationalOffering(
     const offering = await payload.findByID({
       collection: 'educational-offerings',
       id: offeringId,
+      depth: 2,
     })
 
     // Verifica che il piano offerta formativa appartenga alla scuola
@@ -557,6 +569,7 @@ export async function getSchoolActiveEducationalOffering(schoolId: string | numb
     where: {
       and: [{ school: { equals: schoolId } }, { isActive: { equals: true } }],
     },
+    depth: 2,
     limit: 1,
     sort: '-createdAt',
   })

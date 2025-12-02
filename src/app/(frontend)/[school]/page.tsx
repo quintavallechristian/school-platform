@@ -17,6 +17,7 @@ import { CommunicationsList } from '@/components/CommunicationsList/Communicatio
 import PageBlocks from '@/components/PageBlocks/PageBlocks'
 import type { Homepage as HomepageType } from '@/payload-types'
 import type { ShapeDividerStyle } from '@/components/ShapeDivider/ShapeDivider'
+import EmptyArea from '@/components/EmptyArea/EmptyArea'
 
 type PageProps = {
   params: Promise<{ school: string }>
@@ -130,10 +131,7 @@ export default async function SchoolHomePage({ params }: PageProps) {
       <Hero
         title={school.name}
         subtitle="Scopri le ultime notizie, eventi e storie dalla nostra comunità scolastica"
-        buttons={[
-          { text: 'Leggi gli Articoli', href: '#articles' },
-          { text: 'Vedi gli Eventi', href: '#events', variant: 'outline' },
-        ]}
+        buttons={[{ text: 'Leggi gli Articoli', href: '#articles' }]}
         big={true}
       />
 
@@ -223,9 +221,7 @@ export default async function SchoolHomePage({ params }: PageProps) {
                   </SpotlightCard>
                 ))
               ) : (
-                <p className="text-center col-span-full py-8">
-                  Nessun articolo disponibile al momento.
-                </p>
+                <EmptyArea className="col-span-full" title="Nessun articolo disponibile" />
               )}
             </div>
           </div>

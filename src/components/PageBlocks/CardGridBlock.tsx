@@ -28,7 +28,7 @@ export default function CardGridBlock({ block }: Props) {
             card.image && typeof card.image === 'object' ? (card.image as Media).url : null
 
           const CardContent = (
-            <SpotlightCard key={index} className="p-6 h-full flex flex-col">
+            <SpotlightCard key={index} className="px-0 py-0 h-full flex flex-col">
               {imageUrl && (
                 <div className="relative w-full h-48 mb-4 rounded-lg overflow-hidden">
                   <Image
@@ -40,9 +40,11 @@ export default function CardGridBlock({ block }: Props) {
                   />
                 </div>
               )}
-              <h3 className="text-xl font-semibold mb-2 text-primary">{card.title}</h3>
+              <h3 className="text-xl font-semibold mb-2 text-primary px-4">{card.title}</h3>
               {card.description && (
-                <p className="text-muted-foreground grow whitespace-pre-line">{card.description}</p>
+                <p className="text-muted-foreground grow whitespace-pre-line p-4">
+                  {card.description}
+                </p>
               )}
             </SpotlightCard>
           )

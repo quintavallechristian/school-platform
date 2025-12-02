@@ -11,6 +11,14 @@ type TextNode = {
   backgroundColor?: string
 }
 
+type MediaValue = {
+  url?: string
+  alt?: string
+  width?: number
+  height?: number
+  [key: string]: unknown
+}
+
 type ElementNode = {
   type: string
   children?: RichTextNode[]
@@ -31,6 +39,7 @@ type ElementNode = {
   alt?: string
   width?: number
   height?: number
+  value?: string | MediaValue
 }
 
 type LineBreakNode = {
@@ -53,6 +62,78 @@ type _RichTextContent = {
 
 interface RichTextRendererProps {
   content: unknown
+}
+
+function renderImageNode(
+  node: ElementNode,
+  index: number,
+  hasBlockStyle: boolean,
+  blockStyle: React.CSSProperties,
+): React.ReactNode {
+  // Handle Payload CMS upload nodes - value can be a Media object or string ID
+  let src = ''
+  let alt = ''
+  let width: number | undefined
+  let height: number | undefined
+
+  // Check if node has a value property (Payload upload format)
+  if ('value' in node && node.value) {
+    const value = node.value
+    if (typeof value === 'object' && value !== null) {
+      // It's a populated Media object
+      src = value.url || ''
+      alt = value.alt || ''
+      width = value.width
+      height = value.height
+    } else if (typeof value === 'string') {
+      // It's just an ID - the relation wasn't populated
+      // This shouldn't happen with depth: 2, but we handle it gracefully
+      console.warn('Upload node value is an unpopulated ID:', value)
+      return null
+    }
+  }
+
+  // Fallback to old format if value wasn't found
+  if (!src) {
+    src = node.src || node.url || (node.fields && (node.fields.src || node.fields.url)) || ''
+    alt = node.alt || (node.fields && node.fields.alt) || ''
+    width = node.width || (node.fields && node.fields.width)
+    height = node.height || (node.fields && node.fields.height)
+  }
+
+  if (!src) return null
+
+  const imgStyle = hasBlockStyle ? blockStyle : undefined
+
+  // If width and height are provided, use them
+  if (width && height) {
+    return (
+      <Image
+        key={index}
+        src={src}
+        alt={alt}
+        style={imgStyle}
+        width={width}
+        height={height}
+        loading="lazy"
+      />
+    )
+  }
+
+  // Otherwise, make it responsive with max-w-full
+  return (
+    <div key={index} className="my-8">
+      <Image
+        src={src}
+        alt={alt}
+        style={imgStyle}
+        width={width || 800}
+        height={height || 600}
+        className="rounded-lg max-w-full h-auto"
+        loading="lazy"
+      />
+    </div>
+  )
 }
 
 export function RichTextRenderer({ content }: RichTextRendererProps) {
@@ -126,6 +207,9 @@ export function RichTextRenderer({ content }: RichTextRendererProps) {
     // Handle linebreak nodes
     if (node.type === 'linebreak') {
       return <br key={index} />
+    }
+    if (node.type === 'upload' || node.type === 'image' || node.type === 'img') {
+      return renderImageNode(node, index, false, {})
     }
 
     // Handle element nodes with children
@@ -239,25 +323,39 @@ export function RichTextRenderer({ content }: RichTextRendererProps) {
           )
         }
 
+        case 'upload':
         case 'image':
         case 'img': {
-          const src =
-            node.src || node.url || (node.fields && (node.fields.src || node.fields.url)) || ''
-          const alt = node.alt || (node.fields && node.fields.alt) || ''
-          const imgStyle = hasBlockStyle ? blockStyle : undefined
+          return renderImageNode(node, index, hasBlockStyle, blockStyle)
+        }
 
-          const width = node.width || (node.fields && node.fields.width)
-          const height = node.height || (node.fields && node.fields.height)
+        case 'table':
           return (
-            <Image
+            <div key={index} className="overflow-x-auto">
+              <table
+                className="min-w-full border-collapse border border-border rounded-lg overflow-hidden"
+                style={{ tableLayout: 'fixed', width: '100%' }}
+              >
+                <tbody>{children}</tbody>
+              </table>
+            </div>
+          )
+
+        case 'tablerow':
+          return <tr key={index}>{children}</tr>
+
+        case 'tablecell':
+        case 'tableheadercell': {
+          const Tag = node.type === 'tableheadercell' ? 'th' : 'td'
+          return (
+            <Tag
               key={index}
-              src={src}
-              alt={alt}
-              style={imgStyle}
-              width={width}
-              height={height}
-              loading="lazy"
-            />
+              className={` px-4 py-2 ${
+                node.type === 'tableheadercell' ? 'bg-muted font-semibold' : ''
+              }`}
+            >
+              {children}
+            </Tag>
           )
         }
 

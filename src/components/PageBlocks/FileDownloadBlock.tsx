@@ -3,6 +3,7 @@ import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import type { Page, Media } from '@/payload-types'
 import { Download, FileText } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { trackFileDownload } from '@/lib/analytics'
 
 type FileDownloadBlock = Extract<NonNullable<Page['blocks']>[number], { blockType: 'fileDownload' }>
 
@@ -81,6 +82,14 @@ export default function FileDownloadBlock({ block }: Props) {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-block"
+                    onClick={() => {
+                      trackFileDownload(
+                        fileName,
+                        file.url || '',
+                        mimeType?.split('/').pop() || undefined,
+                        block.title || 'File Download Block',
+                      )
+                    }}
                   >
                     <Button variant="default" className="w-full flex items-center sm:w-auto gap-2">
                       <Download className="w-4 h-4" />
