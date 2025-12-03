@@ -24,7 +24,7 @@ export default async function HomePage() {
         <PricingSection />
       </div>
 
-      <TestimonialsSection />
+      {/* <TestimonialsSection /> */}
 
       <LandingFooter />
     </div>

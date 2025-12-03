@@ -6,22 +6,22 @@ import { Bell, Calendar, FileText, UtensilsCrossed, Users, Palette } from 'lucid
 
 const features = [
   {
-    icon: Bell,
-    title: 'Comunicazione Istantanea',
+    icon: FileText,
+    title: 'Blog e Articoli',
     description:
-      'Invia notifiche e comunicazioni importanti direttamente alle famiglie in tempo reale.',
+      'Condividi storie, progetti didattici e aggiornamenti attraverso articoli multimediali.',
+  },
+  {
+    icon: Bell,
+    title: 'Comunicazioni scuola famiglia',
+    description:
+      'Invia comunicazioni importanti, newsletter e avvisi personalizzati direttamente ai genitori.',
   },
   {
     icon: Calendar,
     title: 'Calendario Eventi',
     description:
       'Gestisci eventi, gite e appuntamenti in un calendario condiviso e sempre aggiornato.',
-  },
-  {
-    icon: FileText,
-    title: 'Blog e Articoli',
-    description:
-      'Condividi storie, progetti didattici e aggiornamenti attraverso articoli multimediali.',
   },
   {
     icon: UtensilsCrossed,
@@ -40,8 +40,8 @@ const features = [
   },
   {
     icon: Palette,
-    title: 'Personalizzazione Completa',
-    description: 'Brand identity personalizzabile con colori, logo e layout su misura.',
+    title: 'Personalizzazione',
+    description: "Aggiungi pagine personalizzate e adatta il sito all'identità della tua scuola.",
   },
   // {
   //   icon: BarChart3,
@@ -57,7 +57,7 @@ const features = [
 
 export function FeaturesSection() {
   return (
-    <section className="py-24 px-8">
+    <section className="py-24 px-8" id="features">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
