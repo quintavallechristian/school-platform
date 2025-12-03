@@ -3,6 +3,7 @@
 import { useFormState, useFormStatus } from 'react-dom'
 import { loginParent } from './action'
 import { Input } from '@/components/ui/input'
+import { PasswordInput } from '@/components/ui/password-input'
 import { Button } from '@/components/ui/button'
 
 function SubmitButton() {
@@ -33,7 +34,7 @@ export default function LoginForm({ school }: { school: string }) {
       </div>
       <div className="space-y-2">
         <label htmlFor="password">Password</label>
-        <Input id="password" name="password" type="password" required />
+        <PasswordInput id="password" name="password" required />
       </div>
       {state?.error && (
         <div className="text-sm text-red-500 font-medium text-center">{state.error}</div>

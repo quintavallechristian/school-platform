@@ -1914,6 +1914,18 @@ export interface User {
   firstName?: string | null;
   lastName?: string | null;
   phone?: string | null;
+  /**
+   * Indica se l'utente ha accettato la Privacy Policy
+   */
+  acceptedPrivacyPolicy?: boolean | null;
+  /**
+   * Indica se l'utente ha accettato i Termini di Servizio
+   */
+  acceptedTermsOfService?: boolean | null;
+  /**
+   * Data in cui l'utente ha accettato Privacy Policy e ToS
+   */
+  acceptanceDate?: string | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -1973,7 +1985,7 @@ export interface ChildUpdate {
   /**
    * Il genitore a cui si riferisce questo aggiornamento
    */
-  parent?: (string | null) | User;
+  parent: string | User;
   title: string;
   content: {
     root: {
@@ -2012,7 +2024,7 @@ export interface ParentAppointment {
   /**
    * Il genitore per cui è l'appuntamento
    */
-  parent?: (string | null) | User;
+  parent: string | User;
   /**
    * Evento a cui si riferisce questo appuntamento (se è una prenotazione)
    */
@@ -3226,6 +3238,9 @@ export interface UsersSelect<T extends boolean = true> {
   firstName?: T;
   lastName?: T;
   phone?: T;
+  acceptedPrivacyPolicy?: T;
+  acceptedTermsOfService?: T;
+  acceptanceDate?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;

@@ -1,5 +1,9 @@
 import { getCurrentSchool, isFeatureEnabled } from '@/lib/school'
 import { redirect } from 'next/navigation'
+import { ParentsTermsGuard } from '@/components/ParentsTermsGuard'
+import { cookies } from 'next/headers'
+import { getPayload } from 'payload'
+import config from '@payload-config'
 
 export default async function ParentsLayout({
   children,
@@ -23,5 +27,24 @@ export default async function ParentsLayout({
     redirect(`/${schoolSlug}`)
   }
 
-  return <>{children}</>
+  // Get user from payload-token cookie (only for authenticated pages)
+  const cookieStore = await cookies()
+  const token = cookieStore.get('payload-token')?.value
+  let user = null
+
+  if (token) {
+    const payload = await getPayload({ config })
+    try {
+      const result = await payload.auth({ headers: new Headers({ Authorization: `JWT ${token}` }) })
+      user = result.user
+    } catch (error) {
+      console.error('Auth error in parents layout:', error)
+    }
+  }
+
+  return (
+    <ParentsTermsGuard initialUser={user} schoolSlug={schoolSlug}>
+      {children}
+    </ParentsTermsGuard>
+  )
 }

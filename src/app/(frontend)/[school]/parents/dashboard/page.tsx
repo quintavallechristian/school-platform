@@ -6,10 +6,12 @@ import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import { RichTextRenderer } from '@/components/RichTextRenderer/RichTextRenderer'
 import Image from 'next/image'
 import { LogoutButton } from '@/components/Auth/LogoutButton'
+import { ParentLoginTracker } from '@/components/Auth/ParentLoginTracker'
 import Link from 'next/link'
 import { Event } from '@/payload-types'
 import { Button } from '@/components/ui/button'
 import { getPayload } from 'payload'
+import { Settings } from 'lucide-react'
 
 export default async function ParentsDashboardPage({
   params,
@@ -70,6 +72,7 @@ export default async function ParentsDashboardPage({
 
   return (
     <div className="min-h-screen bg-background">
+      <ParentLoginTracker />
       <Hero
         title="Area Genitori"
         subtitle={`Benvenuto/a ${user.firstName || user.email}`}
@@ -80,7 +83,15 @@ export default async function ParentsDashboardPage({
           flip: true,
         }}
       >
-        <LogoutButton schoolSlug={school} />
+        <div className="flex flex-wrap gap-3">
+          <Link href={`/${school}/parents/settings`}>
+            <Button variant="outline" className="gap-2">
+              <Settings className="h-4 w-4" />
+              Impostazioni
+            </Button>
+          </Link>
+          <LogoutButton schoolSlug={school} />
+        </div>
       </Hero>
 
       <div className="container mx-auto px-4 py-12 max-w-7xl">

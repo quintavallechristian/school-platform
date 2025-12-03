@@ -1,12 +1,12 @@
 import type { CollectionConfig } from 'payload'
 import {
-  publicRead,
   tenantCreate,
   tenantUpdate,
   tenantDelete,
   getSchoolField,
   assignSchoolBeforeChange,
   filterBySchool,
+  tenantRead,
 } from '@/lib/access'
 
 export const Testimonials: CollectionConfig = {
@@ -16,7 +16,7 @@ export const Testimonials: CollectionConfig = {
     plural: 'Testimonianze',
   },
   access: {
-    read: publicRead,
+    read: tenantRead,
     create: tenantCreate,
     update: tenantUpdate,
     delete: tenantDelete,

@@ -99,7 +99,7 @@ export const PLAN_LIMITS = {
     maxParents: null, // No parent area for starter
   },
   professional: {
-    maxParents: 1,
+    maxParents: 100,
   },
   enterprise: {
     maxParents: null, // Unlimited

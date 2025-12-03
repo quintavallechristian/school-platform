@@ -2,7 +2,7 @@
 
 ## Descrizione
 
-Sistema completo di gestione cookie GDPR compliant implementato nella piattaforma School Platform.
+Sistema completo di gestione cookie GDPR compliant implementato nella piattaforma ScuoleInfanzia.
 
 ## Funzionalità
 

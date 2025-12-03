@@ -25,7 +25,9 @@ export const canEdit: Access = ({ req: { user } }) => {
  * Super-admin può vedere tutto
  */
 export const tenantRead: Access = ({ req: { user } }) => {
-  if (!user) return false
+  if (!user) {
+    return false
+  }
 
   // Super-admin può vedere tutto
   if (user.role === 'super-admin') {

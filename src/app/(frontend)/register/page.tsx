@@ -1,6 +1,7 @@
 'use client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { PasswordInput } from '@/components/ui/password-input'
 import { toast } from 'sonner'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import { useSearchParams } from 'next/navigation'
@@ -12,6 +13,7 @@ import { z } from 'zod'
 import { PrivacyPolicyModal } from '@/components/PrivacyPolicy/PrivacyPolicyModal'
 import { TermsOfServiceModal } from '@/components/TermsOfService/TermsOfServiceModal'
 import { DpaModal } from '@/components/Dpa/DpaModal'
+import { trackEvent } from '@/lib/analytics'
 
 async function handleCheckout(
   priceId: string,
@@ -115,6 +117,13 @@ function SignupContent() {
       const data = await response.json()
 
       if (response.ok) {
+        // Track successful registration
+        trackEvent('sign_up', {
+          method: 'email',
+          school_name: validatedData.schoolName,
+          plan_selected: getPlanFromPrice(priceId!),
+        })
+
         handleCheckout(priceId!, data.schoolId, data.schoolSlug, data.userId)
         toast(data.message || 'Iscrizione completata con successo!')
       } else {
@@ -241,8 +250,7 @@ function SignupContent() {
                 >
                   Password
                 </label>
-                <Input
-                  type="password"
+                <PasswordInput
                   id="password"
                   name="password"
                   value={formData.password}
@@ -259,8 +267,7 @@ function SignupContent() {
                 >
                   Conferma Password
                 </label>
-                <Input
-                  type="password"
+                <PasswordInput
                   id="confirmPassword"
                   name="confirmPassword"
                   value={formData.confirmPassword}

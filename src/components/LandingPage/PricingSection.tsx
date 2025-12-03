@@ -5,6 +5,7 @@ import Link from 'next/link'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import { Button } from '@/components/ui/button'
 import { planDetails } from '@/lib/plans'
+import { trackEvent } from '@/lib/analytics'
 
 export function PricingSection() {
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('yearly')
@@ -96,6 +97,14 @@ export function PricingSection() {
                     (billingPeriod === 'monthly' ? plan.monthlyPriceId : plan.yearlyPriceId)
                   }
                   className="block w-full text-center text-blue-600 hover:underline text-sm mt-1"
+                  onClick={() => {
+                    trackEvent('start_free_trial_click', {
+                      plan_name: plan.name,
+                      billing_period: billingPeriod,
+                      price: billingPeriod === 'monthly' ? plan.monthlyPrice : plan.yearlyPrice,
+                      location: 'pricing_section',
+                    })
+                  }}
                 >
                   <Button
                     className="w-full mb-2"

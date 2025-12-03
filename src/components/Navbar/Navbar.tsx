@@ -3,7 +3,6 @@ import config from '@payload-config'
 import { cookies } from 'next/headers'
 
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
 
 import { GuestNavigationMenu, MobileGuestMenuButton } from './GuestNavigationMenu'
 import type { School } from '@/payload-types'
@@ -12,6 +11,7 @@ import { NavbarWrapper } from './NavbarWrapper'
 import { isFeatureEnabled } from '@/lib/school'
 import { getPayload } from 'payload'
 import { Logo } from '../Logo'
+import { ParentsAreaButton } from './ParentsAreaButton'
 
 export default async function Navbar({
   schoolName,
@@ -227,11 +227,10 @@ export default async function Navbar({
           <GuestNavigationMenu menuItems={menuItems} />
           <div className="flex items-center gap-4">
             {school && isFeatureEnabled(school, 'parentsArea') && (
-              <Link href={user ? `${baseHref}/parents/dashboard` : `${baseHref}/parents/login`}>
-                <Button variant="outline" size="sm" className="hidden md:flex">
-                  {user ? 'Area Genitori' : "Accedi all'area genitori"}
-                </Button>
-              </Link>
+              <ParentsAreaButton
+                href={user ? `${baseHref}/parents/dashboard` : `${baseHref}/parents/login`}
+                isLoggedIn={!!user}
+              />
             )}
             <ModeToggle />
           </div>

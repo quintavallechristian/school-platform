@@ -1,4 +1,4 @@
-# 🏫 School Platform - Multi-Tenant SaaS
+# 🏫 ScuoleInfanzia - Multi-Tenant SaaS
 
 Una piattaforma completa multi-tenant per la gestione di scuole, costruita con Payload CMS 3.x e Next.js 15.
 

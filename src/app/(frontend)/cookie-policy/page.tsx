@@ -25,7 +25,7 @@ export default async function CookiePolicyPage() {
               <p className="text-lg leading-relaxed m-0">
                 La presente Cookie Policy descrive l&apos;uso dei cookie e tecnologie simili da
                 parte della piattaforma
-                <strong> School Platform</strong> (&quot;Sito&quot;, &quot;Piattaforma&quot;).
+                <strong> ScuoleInfanzia</strong> (&quot;Sito&quot;, &quot;Piattaforma&quot;).
               </p>
             </div>
 

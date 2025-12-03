@@ -16,11 +16,10 @@ export function PrivacyPolicyContent() {
       {/* Introduzione */}
       <div className="mb-10 p-6 bg-linear-to-br from-neutral-50 to-neutral-100 dark:from-neutral-800/50 dark:to-neutral-900/50 rounded-lg border border-neutral-200 dark:border-neutral-700">
         <p className="text-lg leading-relaxed m-0">
-          La presente informativa descrive le modalità con cui{' '}
-          <strong>Christian Quintavalle</strong>, con sede in
-          <strong> via R.A. Livatino 10/D</strong>, Codice Fiscale <strong>QNTCRS92E05G888C</strong>{' '}
-          (“Titolare”), tratta i dati personali degli utenti che utilizzano la piattaforma{' '}
-          <strong>scuoleinfanzia</strong>.
+          La presente informativa descrive le modalità con cui <strong>ScuoleInfanzia</strong>,
+          nella figura di Quintavalle Christian con Codice Fiscale <strong>QNTCRS92E05G888C</strong>{' '}
+          (d&apos;ora in avanti &#34;ScuoleInfanzia&#34;), tratta i dati personali degli utenti che
+          utilizzano la piattaforma <strong>ScuoleInfanzia</strong>.
         </p>
       </div>
 
@@ -35,7 +34,7 @@ export function PrivacyPolicyContent() {
               <strong>Titolare:</strong> Christian Quintavalle
             </li>
             <li>
-              <strong>Indirizzo:</strong> via R.A. Livatino 10/D
+              <strong>CF:</strong> QNTCRS92E05G888C
             </li>
             <li>
               <strong>Email:</strong> privacy@scuoleinfanzia.eu
@@ -44,17 +43,73 @@ export function PrivacyPolicyContent() {
         </div>
       </section>
 
-      {/* Sezione 2: Dati raccolti */}
+      {/* Sezione 2: Figure coinvolte */}
+      <section className="mb-10">
+        <h3 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100 mb-4 pb-2 border-b-2 border-blue-500">
+          2. Figure coinvolte
+        </h3>
+        <div className="p-6 bg-blue-50 dark:bg-blue-950/20 rounded-lg border-l-4 border-blue-500">
+          <ul className="space-y-2 text-neutral-700 dark:text-neutral-300 m-0 list-none pl-0">
+            <li>
+              <strong>Amministratore scuola:</strong> Persona fisica che si occupa di registrare una
+              scuola e gestire i contenuti, la struttura, i permessi e la privacy di una scuola
+              nella piattaforma <strong>ScuoleInfanzia</strong>.
+            </li>
+            <li>
+              <strong>Editor:</strong> Persona fisica che si occupa di gestire i contenuti di una
+              scuola nella piattaforma <strong>ScuoleInfanzia</strong>.
+            </li>
+            <li>
+              <strong>Utente Registrato:</strong> Persona fisica che si registra all&apos;area
+              riservata di una singola scuola nella piattaforma <strong>ScuoleInfanzia</strong>.
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      {/* Sezione 3: Ruolo */}
+      <section className="mb-10">
+        <h3 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100 mb-4 pb-2 border-b-2 border-orange-500">
+          3. Ruolo della piattaforma e dei suoi utenti
+        </h3>
+        <div className="space-y-4">
+          <div className="p-4 bg-orange-50 dark:bg-orange-950/20 rounded-lg border border-orange-200 dark:border-orange-900">
+            <p className="text-neutral-700 dark:text-neutral-300 m-0">
+              Per i dati personali degli amministratori, docenti e genitori, ScuoleInfanzia opera
+              come <strong>Titolare del trattamento</strong>.
+            </p>
+            <p className="text-neutral-700 dark:text-neutral-300 m-0">
+              ScuoleInfanzia opera altresì come <strong>Titolare del trattamento</strong> per i dati
+              inseriti in form di contatto o form di iscrizione a newsletter e per qualunque
+              statistica relativa all&apos;utilizzo della piattaforma.
+            </p>
+          </div>
+          <div className="p-4 bg-white dark:bg-neutral-800 rounded-lg border border-neutral-200 dark:border-neutral-700">
+            <p className="text-neutral-700 dark:text-neutral-300 m-0">
+              Per i contenuti caricati dalle scuole (es. foto, video, documenti, testi), ogni
+              Amministratore scuola agisce come <strong>Titolare autonomo</strong>, mentre
+              ScuoleInfanzia opera come <strong>Responsabile del trattamento</strong> ai sensi
+              dell’art. 28 GDPR. Gli Amministratori scuola hanno la responsabilità di raccogliere
+              eventuali consensi necessari (es. foto minori). L’Amministratore scuola libera fin
+              d’ora ScuoleInfanzia da qualsiasi responsabilità verso terzi circa i dati personali
+              ottenuti, archiviati o condivisi tramite il Servizio e garantisce di avere ottenuto da
+              ogni soggetto il diritto di raccoglierli, comunicarli o diffonderli.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Sezione 4: Dati raccolti */}
       <section className="mb-10">
         <h3 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100 mb-6 pb-2 border-b-2 border-purple-500">
-          2. Tipologie di dati raccolti
+          4. Tipologie di dati raccolti
         </h3>
 
-        {/* 2.1 Dati forniti direttamente */}
+        {/* 4.1 Dati forniti direttamente */}
         <div className="mb-8 p-6 bg-green-50 dark:bg-green-950/20 rounded-lg border-l-4 border-green-500">
           <h4 className="text-xl font-semibold text-green-800 dark:text-green-400 mb-3 flex items-center gap-2">
             <span className="text-2xl">📝</span>
-            2.1 Dati forniti direttamente dall’utente
+            4.1 Dati forniti direttamente dall’utente
           </h4>
           <p className="mb-3 text-neutral-700 dark:text-neutral-300">
             Durante la registrazione o utilizzo della piattaforma vengono raccolti:
@@ -71,24 +126,25 @@ export function PrivacyPolicyContent() {
           </p>
         </div>
 
-        {/* 2.2 Contenuti caricati */}
+        {/* 4.2 Contenuti caricati */}
         <div className="mb-8 p-6 bg-purple-50 dark:bg-purple-950/20 rounded-lg border-l-4 border-purple-500">
           <h4 className="text-xl font-semibold text-purple-800 dark:text-purple-400 mb-3 flex items-center gap-2">
             <span className="text-2xl">📁</span>
-            2.2 Contenuti caricati dagli utenti
+            4.2 Contenuti caricati dagli utenti
           </h4>
           <p className="text-neutral-700 dark:text-neutral-300 m-0">
             Gli utenti possono caricare documenti, foto o materiali multimediali. Il contenuto è
-            deciso e gestito esclusivamente dagli utenti/singole scuole. Il Titolare non determina
-            le finalità né il contenuto dei file caricati.
+            deciso e gestito esclusivamente dagli utenti/singole scuole nelle figure di
+            Amministratore scuola o Editor. Il Titolare non determina le finalità né il contenuto
+            dei file caricati.
           </p>
         </div>
 
-        {/* 2.3 Dati automatici */}
+        {/* 4.3 Dati automatici */}
         <div className="mb-8 p-6 bg-blue-50 dark:bg-blue-950/20 rounded-lg border-l-4 border-blue-500">
           <h4 className="text-xl font-semibold text-blue-800 dark:text-blue-400 mb-3 flex items-center gap-2">
             <span className="text-2xl">🤖</span>
-            2.3 Dati raccolti automaticamente
+            4.3 Dati raccolti automaticamente
           </h4>
           <p className="text-neutral-700 dark:text-neutral-300 m-0">
             Non raccogliamo indirizzi IP, user agent o log di navigazione personalizzati.
@@ -98,10 +154,10 @@ export function PrivacyPolicyContent() {
         </div>
       </section>
 
-      {/* Sezione 3: Finalità */}
+      {/* Sezione 5: Finalità */}
       <section className="mb-10">
         <h3 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100 mb-4 pb-2 border-b-2 border-teal-500">
-          3. Finalità del trattamento
+          5. Finalità del trattamento
         </h3>
         <div className="p-6 bg-teal-50 dark:bg-teal-950/20 rounded-lg border border-teal-200 dark:border-teal-900">
           <p className="mb-4 text-neutral-700 dark:text-neutral-300">
@@ -155,33 +211,10 @@ export function PrivacyPolicyContent() {
         </div>
       </section>
 
-      {/* Sezione 4: Ruolo */}
-      <section className="mb-10">
-        <h3 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100 mb-4 pb-2 border-b-2 border-orange-500">
-          4. Ruolo della piattaforma e dei suoi utenti
-        </h3>
-        <div className="space-y-4">
-          <div className="p-4 bg-orange-50 dark:bg-orange-950/20 rounded-lg border border-orange-200 dark:border-orange-900">
-            <p className="text-neutral-700 dark:text-neutral-300 m-0">
-              Per i dati personali degli amministratori, docenti e genitori, il Titolare opera come{' '}
-              <strong>Titolare del trattamento</strong>.
-            </p>
-          </div>
-          <div className="p-4 bg-white dark:bg-neutral-800 rounded-lg border border-neutral-200 dark:border-neutral-700">
-            <p className="text-neutral-700 dark:text-neutral-300 m-0">
-              Per i contenuti caricati dalle scuole (es. foto, documenti), ogni scuola agisce come{' '}
-              <strong>Titolare autonomo</strong>, mentre scuoleinfanzia opera come{' '}
-              <strong>Responsabile del trattamento</strong> ai sensi dell’art. 28 GDPR. Le scuole
-              hanno la responsabilità di raccogliere eventuali consensi necessari (es. foto minori).
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Sezione 5: Servizi terzi */}
+      {/* Sezione 6: Servizi terzi */}
       <section className="mb-10">
         <h3 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100 mb-4 pb-2 border-b-2 border-indigo-500">
-          5. Servizi terzi che trattano dati personali
+          6. Servizi terzi che trattano dati personali
         </h3>
         <div className="p-6 bg-indigo-50 dark:bg-indigo-950/20 rounded-lg border-l-4 border-indigo-500">
           <p className="mb-4 text-neutral-700 dark:text-neutral-300">
@@ -208,10 +241,10 @@ export function PrivacyPolicyContent() {
         </div>
       </section>
 
-      {/* Sezione 6: Trasferimenti */}
+      {/* Sezione 7: Trasferimenti */}
       <section className="mb-10">
         <h3 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100 mb-4 pb-2 border-b-2 border-red-500">
-          6. Trasferimenti extra UE
+          7. Trasferimenti extra UE
         </h3>
         <div className="p-6 bg-red-50 dark:bg-red-950/20 rounded-lg border border-red-200 dark:border-red-900">
           <p className="text-neutral-700 dark:text-neutral-300 mb-3">
@@ -226,10 +259,10 @@ export function PrivacyPolicyContent() {
         </div>
       </section>
 
-      {/* Sezione 7: Conservazione */}
+      {/* Sezione 8: Conservazione */}
       <section className="mb-10">
         <h3 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100 mb-4 pb-2 border-b-2 border-cyan-500">
-          7. Conservazione dei dati
+          8. Conservazione dei dati
         </h3>
         <div className="p-6 bg-cyan-50 dark:bg-cyan-950/20 rounded-lg border border-cyan-200 dark:border-cyan-900">
           <p className="mb-3 text-neutral-700 dark:text-neutral-300">
@@ -243,10 +276,10 @@ export function PrivacyPolicyContent() {
         </div>
       </section>
 
-      {/* Sezione 8: Diritti */}
+      {/* Sezione 9: Diritti */}
       <section className="mb-10">
         <h3 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100 mb-4 pb-2 border-b-2 border-emerald-500">
-          8. Diritti dell’utente
+          9. Diritti dell’utente
         </h3>
         <div className="p-6 bg-emerald-50 dark:bg-emerald-950/20 rounded-lg border border-emerald-200 dark:border-emerald-900">
           <p className="mb-3 text-neutral-700 dark:text-neutral-300">
@@ -281,10 +314,10 @@ export function PrivacyPolicyContent() {
         </div>
       </section>
 
-      {/* Sezione 9: Sicurezza */}
+      {/* Sezione 10: Sicurezza */}
       <section className="mb-10">
         <h3 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100 mb-4 pb-2 border-b-2 border-rose-500">
-          9. Sicurezza dei dati
+          10. Sicurezza dei dati
         </h3>
         <div className="p-6 bg-rose-50 dark:bg-rose-950/20 rounded-lg border border-rose-200 dark:border-rose-900">
           <p className="mb-3 text-neutral-700 dark:text-neutral-300">
@@ -301,10 +334,10 @@ export function PrivacyPolicyContent() {
         </div>
       </section>
 
-      {/* Sezione 10: Contatti */}
+      {/* Sezione 11: Contatti */}
       <section className="mb-6">
         <h3 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100 mb-4 pb-2 border-b-2 border-indigo-500">
-          10. Contatti
+          11. Contatti
         </h3>
         <div className="p-6 bg-linear-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/20 dark:to-purple-950/20 rounded-lg border border-indigo-200 dark:border-indigo-900">
           <p className="text-neutral-700 dark:text-neutral-300 m-0">

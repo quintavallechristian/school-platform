@@ -42,6 +42,9 @@ export async function loginParent(prevState: FormState, formData: FormData) {
         path: '/',
         maxAge: 60 * 60 * 24 * 7, // 1 week
       })
+
+      // Track successful login
+      // Note: Il tracking avverrà client-side nella pagina di dashboard
     }
   } catch (error) {
     console.error('Login error:', error)

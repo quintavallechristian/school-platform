@@ -103,15 +103,23 @@ export const ChildUpdates: CollectionConfig = {
       label: 'Genitore',
       admin: {
         description: 'Il genitore a cui si riferisce questo aggiornamento',
-        condition: (data) => {
-          // Mostra il campo solo se è stata selezionata una scuola
-          return !!data.school
-        },
       },
-      filterOptions: ({ data }) => {
-        // Filtra i genitori per mostrare solo quelli della scuola selezionata con role parent
+      filterOptions: ({ data, user }) => {
+        // Determina la scuola da usare per il filtro
+        let schoolId: string | undefined
+
+        // Prima prova con data.school (se è stato selezionato nel form)
         if (data?.school) {
-          const schoolId = typeof data.school === 'string' ? data.school : data.school.id
+          schoolId = typeof data.school === 'string' ? data.school : data.school.id
+        }
+        // Altrimenti usa la scuola dell'utente (per school-admin con una sola scuola)
+        else if (user?.schools && user.schools.length > 0) {
+          const firstSchool = user.schools[0]
+          schoolId = typeof firstSchool === 'string' ? firstSchool : firstSchool.id
+        }
+
+        // Se abbiamo una scuola, filtra i genitori
+        if (schoolId) {
           return {
             and: [
               {
@@ -127,7 +135,8 @@ export const ChildUpdates: CollectionConfig = {
             ],
           } as any
         }
-        // Se non c'è scuola selezionata, restituisci false per non mostrare nessun genitore
+
+        // Se non c'è scuola disponibile, non mostrare nessun genitore
         return false
       },
     },

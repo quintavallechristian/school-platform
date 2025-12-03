@@ -225,6 +225,41 @@ export const Users: CollectionConfig = {
       type: 'text',
       label: 'Telefono',
     },
+    {
+      name: 'acceptedPrivacyPolicy',
+      type: 'checkbox',
+      label: 'Privacy Policy Accettata',
+      defaultValue: false,
+      admin: {
+        readOnly: true,
+        position: 'sidebar',
+        description: "Indica se l'utente ha accettato la Privacy Policy",
+      },
+    },
+    {
+      name: 'acceptedTermsOfService',
+      type: 'checkbox',
+      label: 'Termini di Servizio Accettati',
+      defaultValue: false,
+      admin: {
+        readOnly: true,
+        position: 'sidebar',
+        description: "Indica se l'utente ha accettato i Termini di Servizio",
+      },
+    },
+    {
+      name: 'acceptanceDate',
+      type: 'date',
+      label: 'Data Accettazione',
+      admin: {
+        readOnly: true,
+        position: 'sidebar',
+        description: "Data in cui l'utente ha accettato Privacy Policy e ToS",
+        date: {
+          displayFormat: 'dd/MM/yyyy HH:mm',
+        },
+      },
+    },
   ],
   hooks: {
     beforeChange: [

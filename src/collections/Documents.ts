@@ -1,11 +1,11 @@
 import { CollectionConfig } from 'payload'
 import {
-  publicRead,
   tenantCreate,
   tenantUpdate,
   tenantDelete,
   assignSchoolBeforeChange,
   getSchoolField,
+  tenantRead,
 } from '../lib/access'
 
 export const Documents: CollectionConfig = {
@@ -33,7 +33,7 @@ export const Documents: CollectionConfig = {
     },
   },
   access: {
-    read: publicRead,
+    read: tenantRead,
     create: tenantCreate,
     update: tenantUpdate,
     delete: tenantDelete,

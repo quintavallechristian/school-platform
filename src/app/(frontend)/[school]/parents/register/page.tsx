@@ -5,6 +5,7 @@ import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
+import { trackFileDownload } from '@/lib/analytics'
 
 export default function ParentRegisterPage() {
   const params = useParams()
@@ -19,6 +20,14 @@ export default function ParentRegisterPage() {
       : `/${school}`
 
   const handleDownloadForm = () => {
+    // Track file download
+    trackFileDownload(
+      'Modulo Registrazione Genitore',
+      '/modulo-registrazione-genitore.pdf',
+      'pdf',
+      'Modulistica Area Genitori',
+    )
+
     // Apre il modulo in una nuova finestra per la stampa
     window.open('/modulo-registrazione-genitore.pdf', '_blank')
   }

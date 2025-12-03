@@ -3,6 +3,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { trackEvent } from '@/lib/analytics'
 
 export function LandingFooter() {
   return (
@@ -17,9 +18,19 @@ export function LandingFooter() {
             Inizia subito con 30 giorni di prova gratuita. Nessuna carta di credito richiesta.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="text-lg px-8">
-              Inizia la prova gratuita
-            </Button>
+            <Link href="/#pricing">
+              <Button
+                size="lg"
+                className="text-lg px-8"
+                onClick={() => {
+                  trackEvent('start_free_trial_click', {
+                    location: 'footer_cta',
+                  })
+                }}
+              >
+                Inizia la prova gratuita
+              </Button>
+            </Link>
             <Button size="lg" variant="outline" className="text-lg px-8">
               Prenota una demo
             </Button>
@@ -32,7 +43,7 @@ export function LandingFooter() {
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
           <div>
-            <h3 className="font-bold text-lg mb-4">School Platform</h3>
+            <h3 className="font-bold text-lg mb-4">ScuoleInfanzia</h3>
             <p className="text-sm text-muted-foreground mb-4">
               La piattaforma digitale completa per scuole dell&apos;infanzia.
             </p>
