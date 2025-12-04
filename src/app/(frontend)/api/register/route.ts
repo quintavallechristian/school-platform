@@ -4,6 +4,7 @@ import config from '@payload-config'
 import { cookies } from 'next/headers'
 import { generateUniqueSlug } from '@/lib/slug'
 import { registerSchoolSchema } from '@/lib/validations/register'
+import { getPlanFromPrice } from '@/lib/plans'
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,7 +19,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: firstError.message }, { status: 400 })
     }
 
-    const { email, firstName, lastName, schoolName, password } = validationResult.data
+    const { email, firstName, lastName, schoolName, password, priceId } = body
 
     const payload = await getPayload({ config })
 
@@ -64,12 +65,25 @@ export async function POST(request: NextRequest) {
         { status: 409 },
       )
     }
+    // Calculate trial expiration date (30 days from now)
+    const trialExpiresAt = new Date()
+    trialExpiresAt.setDate(trialExpiresAt.getDate() + 30)
+
+    // Determine the plan from the priceId
+    const plan = priceId ? getPlanFromPrice(priceId) : 'starter'
+
     const { id: schoolId } = await payload.create({
       collection: 'schools',
       data: {
         name: schoolName,
         slug: schoolSlug,
-        isActive: false,
+        isActive: true, // Attiva immediatamente la scuola
+        subscription: {
+          plan: plan,
+          isTrial: true,
+          expiresAt: trialExpiresAt.toISOString(),
+          selectedPriceId: priceId, // Salva il priceId selezionato per dopo
+        },
       },
     })
 
@@ -82,6 +96,10 @@ export async function POST(request: NextRequest) {
         password,
         role: 'school-admin',
         schools: [schoolId],
+        // Salva l'accettazione dei termini durante la registrazione
+        acceptedPrivacyPolicy: true,
+        acceptedTermsOfService: true,
+        acceptanceDate: new Date().toISOString(),
       },
     })
 

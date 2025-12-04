@@ -558,9 +558,32 @@ export const Schools: CollectionConfig = {
                       label: 'Scadenza Abbonamento',
                       admin: {
                         width: '33%',
-                        description: 'Data di scadenza del piano corrente',
+                        description: 'Data di scadenza definitiva',
                         date: {
                           displayFormat: 'dd/MM/YYYY',
+                        },
+                        condition: (data) => {
+                          return !!data?.subscription?.expiresAt
+                        },
+                      },
+                      access: {
+                        read: ({ req: { user } }) =>
+                          user?.role === 'super-admin' || user?.role === 'school-admin',
+                        update: ({ req: { user } }) => user?.role === 'super-admin',
+                      },
+                    },
+                    {
+                      name: 'renewsAt',
+                      type: 'date',
+                      label: 'Prossimo Rinnovo',
+                      admin: {
+                        width: '33%',
+                        description: 'Data del prossimo rinnovo automatico',
+                        date: {
+                          displayFormat: 'dd/MM/YYYY',
+                        },
+                        condition: (data) => {
+                          return !!data?.subscription?.renewsAt
                         },
                       },
                       access: {
@@ -573,6 +596,20 @@ export const Schools: CollectionConfig = {
                       name: 'stripeCustomerId',
                       type: 'text',
                       admin: {
+                        readOnly: true,
+                      },
+                      access: {
+                        read: ({ req: { user } }) =>
+                          user?.role === 'super-admin' || user?.role === 'school-admin',
+                        update: ({ req }) => req.user?.role === 'super-admin',
+                      },
+                    },
+                    {
+                      name: 'selectedPriceId',
+                      type: 'text',
+                      label: 'Price ID Selezionato',
+                      admin: {
+                        description: 'Il priceId Stripe selezionato durante la registrazione',
                         readOnly: true,
                       },
                       access: {

@@ -43,7 +43,10 @@ export default buildConfig({
         Icon: '/components/Logo#Logo',
         Logo: '/components/LogoExtended#Logo',
       },
-      providers: ['/components/TermsAcceptanceProvider#TermsAcceptanceProvider'],
+      providers: [
+        '/components/TermsAcceptanceProvider#TermsAcceptanceProvider',
+        '/components/AdminTrialGuard#AdminTrialGuard',
+      ],
     },
     meta: {
       title: 'Scuole infanzia admin',

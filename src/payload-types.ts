@@ -290,10 +290,18 @@ export interface School {
     plan?: ('starter' | 'professional' | 'enterprise') | null;
     isTrial?: boolean | null;
     /**
-     * Data di scadenza del piano corrente
+     * Data di scadenza definitiva
      */
     expiresAt?: string | null;
+    /**
+     * Data del prossimo rinnovo automatico
+     */
+    renewsAt?: string | null;
     stripeCustomerId?: string | null;
+    /**
+     * Il priceId Stripe selezionato durante la registrazione
+     */
+    selectedPriceId?: string | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -2275,7 +2283,9 @@ export interface SchoolsSelect<T extends boolean = true> {
         plan?: T;
         isTrial?: T;
         expiresAt?: T;
+        renewsAt?: T;
         stripeCustomerId?: T;
+        selectedPriceId?: T;
       };
   updatedAt?: T;
   createdAt?: T;

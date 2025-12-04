@@ -4,6 +4,7 @@ import { usePayloadUser } from '@/hooks/usePayloadUser'
 import EmptyArea from '@/components/EmptyArea/EmptyArea'
 import ScrollStack, { ScrollStackItem } from '@/components/ScrollStack'
 import { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import {
   School,
@@ -19,6 +20,7 @@ import {
   Check,
   ArrowRight,
   PartyPopper,
+  Sparkles,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -38,6 +40,9 @@ interface WelcomeContentProps {
 
 export default function WelcomeContent({ schoolId }: WelcomeContentProps) {
   const { user, loading } = usePayloadUser()
+  const searchParams = useSearchParams()
+  const isNewTrial = searchParams.get('trial') === '1'
+  const isSubscribed = searchParams.get('subscribed') === '1'
 
   // Onboarding checklist
   const [steps, setSteps] = useState<OnboardingStep[]>([
@@ -111,12 +116,50 @@ export default function WelcomeContent({ schoolId }: WelcomeContentProps) {
   return (
     <div className="h-screen w-full overflow-hidden">
       <ScrollStack className="-mt-24 h-[calc(100vh+6rem)] px-4 md:px-0">
+        {/* Welcome Message */}
         <ScrollStackItem>
-          <div className="space-y-2">
+          <div className="space-y-4">
             <h2 className="text-4xl font-bold flex items-center gap-3">
               <Target className="w-10 h-10" />
               Benvenuto a bardo!
             </h2>
+
+            {/* Success message for new trial or subscription */}
+            {isNewTrial && (
+              <div className="p-6 rounded-2xl bg-linear-to-r from-emerald-500/20 to-teal-500/20 border border-emerald-500/30">
+                <div className="flex items-start gap-4">
+                  <Sparkles className="w-8 h-8 text-emerald-600 dark:text-emerald-400 shrink-0 mt-1" />
+                  <div className="space-y-2">
+                    <p className="text-emerald-900 dark:text-emerald-100 font-bold text-xl">
+                      🎉 Il tuo trial di 30 giorni è iniziato!
+                    </p>
+                    <p className="text-emerald-800 dark:text-emerald-200">
+                      Hai accesso completo a tutte le funzionalità della piattaforma per i prossimi
+                      30 giorni. Al termine del periodo di prova, ti verrà chiesto di attivare
+                      l&apos;abbonamento per continuare.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {isSubscribed && (
+              <div className="p-6 rounded-2xl bg-linear-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30">
+                <div className="flex items-start gap-4">
+                  <Check className="w-8 h-8 text-green-600 dark:text-green-400 shrink-0 mt-1" />
+                  <div className="space-y-2">
+                    <p className="text-green-900 dark:text-green-100 font-bold text-xl">
+                      ✅ Abbonamento attivato con successo!
+                    </p>
+                    <p className="text-green-800 dark:text-green-200">
+                      Il tuo abbonamento è ora attivo. Continua a utilizzare tutte le funzionalità
+                      della piattaforma.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <p className="text-xl text-gray-700 dark:text-gray-300">
               Completa questi passaggi per iniziare a utilizzare la piattaforma
             </p>

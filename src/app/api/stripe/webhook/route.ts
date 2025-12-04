@@ -36,20 +36,44 @@ export async function POST(req: Request) {
         }
 
         try {
+          // Get current school to preserve selectedPriceId
+          const school = await payload.findByID({
+            collection: 'schools',
+            id: schoolId,
+          })
+
+          // When subscription is created from activate-subscription endpoint (no trial)
+          // the subscription starts immediately as active
+          const updateData: any = {
+            isActive: true,
+            subscription: {
+              isTrial: false, // No more trial when activating subscription
+              stripeCustomerId: subscription.customer as string,
+              plan: getPlanFromPrice(subscription.items.data[0].price.id),
+              selectedPriceId: school.subscription?.selectedPriceId || null,
+              expiresAt: null, // Active subscription doesn't have expiration
+            },
+          }
+
+          // Get current_period_end from subscription or from items
+          // Stripe API v2024+ moved this field into items.data[0]
+          const currentPeriodEnd = subscription.items.data[0]?.current_period_end
+
+          if (currentPeriodEnd) {
+            const renewsAtDate = new Date(currentPeriodEnd * 1000)
+            updateData.subscription.renewsAt = renewsAtDate.toISOString()
+            console.log('[Webhook] Set subscription renewsAt:', {
+              timestamp: currentPeriodEnd,
+              date: renewsAtDate,
+              iso: updateData.subscription.renewsAt,
+            })
+          }
+
           await payload.update({
             collection: 'schools',
             id: schoolId,
-            data: {
-              isActive: true,
-              subscription: {
-                isTrial: true,
-                expiresAt: new Date(subscription.trial_end! * 1000).toISOString(),
-                stripeCustomerId: subscription.customer as string,
-                plan: getPlanFromPrice(subscription.items.data[0].price.id),
-              },
-            },
+            data: updateData,
           })
-          console.log(`[Webhook] School ${schoolId} activated with trial`)
         } catch (error: unknown) {
           const message = error instanceof Error ? error.message : 'Unknown error'
           console.error(`[Webhook] Failed to update school ${schoolId}:`, message)
@@ -68,25 +92,72 @@ export async function POST(req: Request) {
         }
 
         try {
-          // Extract current_period_end with proper type handling
-          // The Stripe SDK types may not include all properties, so we use unknown as intermediate
-          const currentPeriodEnd = subscription.items.data[0].current_period_end
+          // Get current school to preserve selectedPriceId
+          const school = await payload.findByID({
+            collection: 'schools',
+            id: schoolId,
+          })
+
+          // Get current_period_end from subscription or from items
+          // Stripe API v2024+ moved this field into items.data[0]
+          const currentPeriodEnd = subscription.items.data[0]?.current_period_end
+
+          const updateData: any = {
+            isActive: subscription.status === 'active',
+            subscription: {
+              isTrial: false,
+              stripeCustomerId: subscription.customer as string, // Ensure customer ID is always set
+              plan: getPlanFromPrice(subscription.items.data[0].price.id),
+              selectedPriceId: school.subscription?.selectedPriceId || null,
+            },
+          }
+
+          // Handle renewsAt and expiresAt based on subscription status
+          if (subscription.cancel_at) {
+            // Subscription is cancelled but still active until period end
+            updateData.subscription.renewsAt = null
+            if (subscription.cancel_at) {
+              const expiresAtDate = new Date(subscription.cancel_at * 1000)
+              updateData.subscription.expiresAt = expiresAtDate.toISOString()
+              console.log('[Webhook] Subscription cancelled, set expiresAt:', {
+                timestamp: subscription.cancel_at,
+                date: expiresAtDate,
+                iso: updateData.subscription.expiresAt,
+              })
+            }
+          } else if (subscription.status === 'active') {
+            // Subscription is active and will renew
+            updateData.subscription.expiresAt = null
+            if (currentPeriodEnd) {
+              const renewsAtDate = new Date(currentPeriodEnd * 1000)
+              updateData.subscription.renewsAt = renewsAtDate.toISOString()
+              console.log('[Webhook] Subscription active, set renewsAt:', {
+                timestamp: currentPeriodEnd,
+                date: renewsAtDate,
+                iso: updateData.subscription.renewsAt,
+              })
+            }
+          } else {
+            // Other statuses (past_due, unpaid, etc.) - keep expiresAt if available
+            updateData.subscription.renewsAt = null
+            if (currentPeriodEnd) {
+              const expiresAtDate = new Date(currentPeriodEnd * 1000)
+              updateData.subscription.expiresAt = expiresAtDate.toISOString()
+            }
+          }
 
           await payload.update({
             collection: 'schools',
             id: schoolId,
-            data: {
-              isActive: subscription.status === 'active',
-              subscription: {
-                isTrial: false,
-                expiresAt: new Date(currentPeriodEnd * 1000).toISOString(),
-                plan: getPlanFromPrice(subscription.items.data[0].price.id),
-              },
-            },
+            data: updateData,
           })
+
           console.log(`[Webhook] School ${schoolId} subscription updated`, {
             status: subscription.status,
+            cancelAt: subscription.cancel_at,
             plan: getPlanFromPrice(subscription.items.data[0].price.id),
+            renewsAt: updateData.subscription.renewsAt || 'N/A',
+            expiresAt: updateData.subscription.expiresAt || 'N/A',
           })
         } catch (error: unknown) {
           const message = error instanceof Error ? error.message : 'Unknown error'
@@ -114,6 +185,7 @@ export async function POST(req: Request) {
               subscription: {
                 isTrial: false,
                 expiresAt: new Date().toISOString(),
+                renewsAt: null, // No renewal for deleted subscription
               },
             },
           })

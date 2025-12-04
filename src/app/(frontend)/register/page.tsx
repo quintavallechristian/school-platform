@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/ui/password-input'
 import { toast } from 'sonner'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import EmptyArea from '@/components/EmptyArea/EmptyArea'
 import { getPlanFromPrice, priceIdList } from '@/lib/plans'
 import { registerSchoolSchema } from '@/lib/validations/register'
@@ -15,22 +15,9 @@ import { TermsOfServiceModal } from '@/components/TermsOfService/TermsOfServiceM
 import { DpaModal } from '@/components/Dpa/DpaModal'
 import { trackEvent } from '@/lib/analytics'
 
-async function handleCheckout(
-  priceId: string,
-  schoolId: string,
-  schoolSlug: string,
-  userId: string,
-) {
-  const res = await fetch('/api/checkout', {
-    method: 'POST',
-    body: JSON.stringify({ priceId, schoolId, schoolSlug, userId }),
-  })
-  const data = await res.json()
-  window.location.href = data.url // redirect al checkout
-}
-
 function SignupContent() {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const priceId = searchParams.get('priceId')
 
   // State per i dati del form e gli errori
@@ -111,7 +98,7 @@ function SignupContent() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(validatedData),
+        body: JSON.stringify({ ...validatedData, priceId }),
       })
 
       const data = await response.json()
@@ -124,8 +111,9 @@ function SignupContent() {
           plan_selected: getPlanFromPrice(priceId!),
         })
 
-        handleCheckout(priceId!, data.schoolId, data.schoolSlug, data.userId)
-        toast(data.message || 'Iscrizione completata con successo!')
+        // Redirect direttamente alla pagina di benvenuto con trial attivo
+        toast('Registrazione completata! Il tuo trial di 30 giorni è iniziato.')
+        router.push(`/${data.schoolSlug}/welcome?trial=1`)
       } else {
         toast(data.error || "Errore durante l'iscrizione")
       }

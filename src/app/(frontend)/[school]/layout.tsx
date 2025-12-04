@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { CommunicationsPopup } from '@/components/CommunicationsPopup/CommunicationsPopup'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
+import { SchoolAdminTrialGuard } from '@/components/TrialGuard/SchoolAdminTrialGuard'
 
 export default async function SchoolLayout({
   children,
@@ -69,7 +70,7 @@ export default async function SchoolLayout({
   const baseHref = getSchoolBaseHref(school, host)
 
   return (
-    <>
+    <SchoolAdminTrialGuard schoolSlug={schoolSlug}>
       {/* Skip link per accessibilità */}
       <a href="#main-content" className="skip-link">
         Salta al contenuto principale
@@ -230,7 +231,7 @@ export default async function SchoolLayout({
 
       {/* Popup comunicazioni della scuola */}
       <CommunicationsPopup communications={communications} schoolSlug={schoolSlug} />
-    </>
+    </SchoolAdminTrialGuard>
   )
 }
 

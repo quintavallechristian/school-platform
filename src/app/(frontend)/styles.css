@@ -174,7 +174,6 @@
 *:focus-visible {
   outline: 3px solid hsl(var(--primary));
   outline-offset: 2px;
-  border-radius: 4px;
 }
 
 /* Rimuovi outline solo quando non si usa la tastiera */

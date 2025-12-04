@@ -34,6 +34,7 @@ import { default as default_a5c9098e7dddd0340e6a25b86e9ffd89 } from '@/component
 import { Logo as Logo_919492c8e60179286a0f183c0a5b652e } from '../../../components/Logo'
 import { Logo as Logo_c1ede64f143b73a023a68ca280ca1b3b } from '../../../components/LogoExtended'
 import { TermsAcceptanceProvider as TermsAcceptanceProvider_51c993d3738ad7801464ed07d9d31373 } from '../../../components/TermsAcceptanceProvider'
+import { AdminTrialGuard as AdminTrialGuard_f9645aa3a4b864c787091bac3d9ee589 } from '../../../components/AdminTrialGuard'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 
 export const importMap = {
@@ -73,5 +74,6 @@ export const importMap = {
   "/components/Logo#Logo": Logo_919492c8e60179286a0f183c0a5b652e,
   "/components/LogoExtended#Logo": Logo_c1ede64f143b73a023a68ca280ca1b3b,
   "/components/TermsAcceptanceProvider#TermsAcceptanceProvider": TermsAcceptanceProvider_51c993d3738ad7801464ed07d9d31373,
+  "/components/AdminTrialGuard#AdminTrialGuard": AdminTrialGuard_f9645aa3a4b864c787091bac3d9ee589,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24
 }
