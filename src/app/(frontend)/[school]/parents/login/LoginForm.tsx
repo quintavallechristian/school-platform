@@ -23,21 +23,50 @@ export default function LoginForm({ school }: { school: string }) {
     <form action={formAction} className="space-y-4">
       <input type="hidden" name="school" value={school} />
       <div className="space-y-2">
-        <label htmlFor="email">Email</label>
+        <label htmlFor="email" className="text-sm font-medium">
+          Email{' '}
+          <span className="text-destructive" aria-label="campo obbligatorio">
+            *
+          </span>
+        </label>
         <Input
           id="email"
           name="email"
           type="email"
           placeholder="mario.rossi@example.com"
           required
+          aria-required="true"
+          aria-invalid={state?.error ? 'true' : 'false'}
+          aria-describedby={state?.error ? 'login-error' : undefined}
+          autoComplete="email"
         />
       </div>
       <div className="space-y-2">
-        <label htmlFor="password">Password</label>
-        <PasswordInput id="password" name="password" required />
+        <label htmlFor="password" className="text-sm font-medium">
+          Password
+          <span className="text-destructive" aria-label="campo obbligatorio">
+            *
+          </span>
+        </label>
+        <PasswordInput
+          id="password"
+          name="password"
+          required
+          aria-required="true"
+          aria-invalid={state?.error ? 'true' : 'false'}
+          aria-describedby={state?.error ? 'login-error' : undefined}
+          autoComplete="current-password"
+        />
       </div>
       {state?.error && (
-        <div className="text-sm text-red-500 font-medium text-center">{state.error}</div>
+        <div
+          id="login-error"
+          role="alert"
+          aria-live="polite"
+          className="text-sm text-red-500 font-medium text-center"
+        >
+          {state.error}
+        </div>
       )}
       <SubmitButton />
     </form>

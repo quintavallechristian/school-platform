@@ -50,7 +50,7 @@ export function LandingFooter() {
             <div className="flex gap-4">
               {/* <a
                 href="#"
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="text-muted-foreground hover:text-foreground focus-visible:text-primary focus-visible:underline transition-colors"
                 aria-label="Facebook"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -59,7 +59,7 @@ export function LandingFooter() {
               </a>
               <a
                 href="#"
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="text-muted-foreground hover:text-foreground focus-visible:text-primary focus-visible:underline transition-colors"
                 aria-label="Instagram"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -68,7 +68,7 @@ export function LandingFooter() {
               </a>
               <a
                 href="#"
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="text-muted-foreground hover:text-foreground focus-visible:text-primary focus-visible:underline transition-colors"
                 aria-label="LinkedIn"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -82,32 +82,44 @@ export function LandingFooter() {
           <div>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="#features" className="text-muted-foreground hover:text-foreground">
+                <Link
+                  href="#features"
+                  className="text-muted-foreground hover:text-foreground focus-visible:text-primary focus-visible:underline"
+                >
                   Funzionalità
                 </Link>
               </li>
               <li>
-                <Link href="#pricing" className="text-muted-foreground hover:text-foreground">
+                <Link
+                  href="#pricing"
+                  className="text-muted-foreground hover:text-foreground focus-visible:text-primary focus-visible:underline"
+                >
                   Prezzi
                 </Link>
               </li>
               <li>
-                <Link href="/contatti" className="text-muted-foreground hover:text-foreground">
+                <Link
+                  href="/contatti"
+                  className="text-muted-foreground hover:text-foreground focus-visible:text-primary focus-visible:underline"
+                >
                   Contattaci
                 </Link>
               </li>
               <li>
-                <Link href="/faq" className="text-muted-foreground hover:text-foreground">
+                <Link
+                  href="/faq"
+                  className="text-muted-foreground hover:text-foreground focus-visible:text-primary focus-visible:underline"
+                >
                   FAQ
                 </Link>
               </li>
               {/* <li>
-                <Link href="#" className="text-muted-foreground hover:text-foreground">
+                <Link href="#" className="text-muted-foreground hover:text-foreground focus-visible:text-primary focus-visible:underline">
                   Aggiornamenti
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-muted-foreground hover:text-foreground">
+                <Link href="#" className="text-muted-foreground hover:text-foreground focus-visible:text-primary focus-visible:underline">
                   Roadmap
                 </Link>
               </li> */}
@@ -119,21 +131,21 @@ export function LandingFooter() {
             <h3 className="font-bold mb-4">Supporto</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="#" className="text-muted-foreground hover:text-foreground">
+                <Link href="#" className="text-muted-foreground hover:text-foreground focus-visible:text-primary focus-visible:underline">
                   Documentazione
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-muted-foreground hover:text-foreground">
+                <Link href="#" className="text-muted-foreground hover:text-foreground focus-visible:text-primary focus-visible:underline">
                   Guide
                 </Link>
               </li><li>
-                <Link href="#" className="text-muted-foreground hover:text-foreground">
+                <Link href="#" className="text-muted-foreground hover:text-foreground focus-visible:text-primary focus-visible:underline">
                   Contattaci
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-muted-foreground hover:text-foreground">
+                <Link href="#" className="text-muted-foreground hover:text-foreground focus-visible:text-primary focus-visible:underline">
                   FAQ
                 </Link>
               </li>
@@ -146,20 +158,23 @@ export function LandingFooter() {
               <li>
                 <Link
                   href={`/privacy-policy`}
-                  className="text-muted-foreground hover:text-foreground"
+                  className="text-muted-foreground hover:text-foreground focus-visible:text-primary focus-visible:underline"
                 >
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="/tos" className="text-muted-foreground hover:text-foreground">
+                <Link
+                  href="/tos"
+                  className="text-muted-foreground hover:text-foreground focus-visible:text-primary focus-visible:underline"
+                >
                   Termini di Servizio
                 </Link>
               </li>
               <li>
                 <Link
                   href={`/cookie-policy`}
-                  className="text-muted-foreground hover:text-foreground"
+                  className="text-muted-foreground hover:text-foreground focus-visible:text-primary focus-visible:underline"
                 >
                   Cookie Policy
                 </Link>

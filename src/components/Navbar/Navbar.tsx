@@ -211,9 +211,10 @@ export default async function Navbar({
                 <div className="relative h-8 w-8">
                   <Image
                     src={schoolLogo}
-                    alt={`Logo ${schoolName || 'della scuola'}`}
+                    alt={schoolName || 'Logo della scuola'}
                     fill
                     className="object-contain"
+                    priority
                   />
                 </div>
               ) : (

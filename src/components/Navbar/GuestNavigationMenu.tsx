@@ -99,7 +99,12 @@ export function GuestNavigationMenu({ menuItems }: { menuItems: MenuItem[] }) {
           <NavigationMenuItem key={item.href || `dropdown-${index}`}>
             {item.href ? (
               // Link singolo
-              <Link href={item.href}>{item.label}</Link>
+              <Link
+                href={item.href}
+                className="inline-flex h-9 w-max items-center justify-center rounded-md  px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary focus-visible:ring-2 focus-visible:ring-ring/50"
+              >
+                {item.label}
+              </Link>
             ) : item.items ? (
               // Menu dropdown
               <>

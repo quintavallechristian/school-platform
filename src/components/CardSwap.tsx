@@ -224,6 +224,16 @@ const CardSwap: React.FC<CardSwapProps> = ({
             child.props.onClick?.(e as React.MouseEvent<HTMLDivElement>)
             onCardClick?.(i)
           },
+          onKeyDown: (e: React.KeyboardEvent<HTMLDivElement>) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              onCardClick?.(i)
+              child.props.onClick?.(e as unknown as React.MouseEvent<HTMLDivElement>)
+            }
+          },
+          role: onCardClick ? 'button' : undefined,
+          tabIndex: onCardClick ? 0 : undefined,
+          'aria-label': onCardClick ? `Card ${i + 1}` : undefined,
         } as CardProps & React.RefAttributes<HTMLDivElement>)
       : child,
   )

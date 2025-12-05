@@ -154,8 +154,8 @@ export function TrialGuard({ schoolSlug, children, isAdmin = false }: TrialGuard
         <Dialog open={showExpiredModal} onOpenChange={() => {}}>
           <DialogContent className="sm:max-w-md" onPointerDownOutside={(e) => e.preventDefault()}>
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2 text-red-600">
-                <AlertCircle className="h-5 w-5" />
+              <DialogTitle id="trial-dialog-title" className="flex items-center gap-2 text-red-600">
+                <AlertCircle className="h-5 w-5" aria-hidden="true" />
                 {title}
               </DialogTitle>
               <DialogDescription asChild>
@@ -191,8 +191,11 @@ export function TrialGuard({ schoolSlug, children, isAdmin = false }: TrialGuard
         <Dialog open={showExpiredModal} onOpenChange={() => {}}>
           <DialogContent className="sm:max-w-md" onPointerDownOutside={(e) => e.preventDefault()}>
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2 text-blue-600">
-                <AlertCircle className="h-5 w-5" />
+              <DialogTitle
+                id="public-dialog-title"
+                className="flex items-center gap-2 text-blue-600"
+              >
+                <AlertCircle className="h-5 w-5" aria-hidden="true" />
                 Sito Temporaneamente Non Disponibile
               </DialogTitle>
               <DialogDescription asChild>
@@ -224,7 +227,10 @@ export function TrialGuard({ schoolSlug, children, isAdmin = false }: TrialGuard
           <div className="container mx-auto px-4 py-3">
             <div className="flex items-center justify-between gap-4 flex-wrap">
               <div className="flex items-center gap-3">
-                <Clock className="h-5 w-5 text-yellow-600 dark:text-yellow-500" />
+                <Clock
+                  className="h-5 w-5 text-yellow-600 dark:text-yellow-500"
+                  aria-hidden="true"
+                />
                 <div>
                   <p className="font-semibold text-yellow-900 dark:text-yellow-100">
                     {trialStatus.isTrial

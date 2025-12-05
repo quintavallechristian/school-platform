@@ -21,6 +21,8 @@ export function GenericNavbar({ user }: { user?: User | null }) {
     pathname.startsWith('/cookie-policy') ||
     pathname.startsWith('/privacy-policy') ||
     pathname.startsWith('/tos') ||
+    pathname.startsWith('/contatti') ||
+    pathname.startsWith('/faq') ||
     pathname.startsWith('/comunicazioni')
 
   // If we are not on a generic page, don't render anything
@@ -33,7 +35,8 @@ export function GenericNavbar({ user }: { user?: User | null }) {
     { label: 'Home', href: '/' },
     { label: 'Funzionalità', href: '/#features' },
     { label: 'Prezzi', href: '/#pricing' },
-    { label: 'Contatti', href: '/#contact' },
+    { label: 'Contatti', href: '/contatti' },
+    { label: 'FAQ', href: '/faq' },
   ]
 
   return (

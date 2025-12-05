@@ -8,6 +8,7 @@ import { CommunicationsPopup } from '@/components/CommunicationsPopup/Communicat
 import { getPayload } from 'payload'
 import config from '@/payload.config'
 import { SchoolAdminTrialGuard } from '@/components/TrialGuard/SchoolAdminTrialGuard'
+import { SkipLink } from '@/components/SkipLink/SkipLink'
 
 export default async function SchoolLayout({
   children,
@@ -72,9 +73,7 @@ export default async function SchoolLayout({
   return (
     <SchoolAdminTrialGuard schoolSlug={schoolSlug}>
       {/* Skip link per accessibilità */}
-      <a href="#main-content" className="skip-link">
-        Salta al contenuto principale
-      </a>
+      <SkipLink />
 
       {/* Applica i colori personalizzati della scuola */}
       <style
@@ -120,7 +119,7 @@ export default async function SchoolLayout({
       />
 
       {/* Contenuto della pagina con landmark main */}
-      <main id="main-content" role="main" className="min-h-screen">
+      <main id="main-content" role="main" tabIndex={-1} className="min-h-screen">
         {children}
       </main>
 
@@ -153,41 +152,59 @@ export default async function SchoolLayout({
               <h3 className="font-bold text-lg mb-4">Link Rapidi</h3>
               <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                 <li>
-                  <Link href={baseHref || '/'} className="hover:text-primary">
+                  <Link
+                    href={baseHref || '/'}
+                    className="hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary focus-visible:rounded"
+                  >
                     Home
                   </Link>
                 </li>
                 {isFeatureEnabled(school, 'blog') && (
                   <li>
-                    <Link href={`${baseHref}/blog`} className="hover:text-primary">
+                    <Link
+                      href={`${baseHref}/blog`}
+                      className="hover:text-primary focus-visible:text-primary focus-visible:underline"
+                    >
                       Blog
                     </Link>
                   </li>
                 )}
                 {isFeatureEnabled(school, 'events') && (
                   <li>
-                    <Link href={`${baseHref}/eventi`} className="hover:text-primary">
+                    <Link
+                      href={`${baseHref}/eventi`}
+                      className="hover:text-primary focus-visible:text-primary focus-visible:underline"
+                    >
                       Eventi
                     </Link>
                   </li>
                 )}
                 {isFeatureEnabled(school, 'calendar') && (
                   <li>
-                    <Link href={`${baseHref}/calendario`} className="hover:text-primary">
+                    <Link
+                      href={`${baseHref}/calendario`}
+                      className="hover:text-primary focus-visible:text-primary focus-visible:underline"
+                    >
                       Calendario
                     </Link>
                   </li>
                 )}
                 {isFeatureEnabled(school, 'communications') && (
                   <li>
-                    <Link href={`${baseHref}/comunicazioni`} className="hover:text-primary">
+                    <Link
+                      href={`${baseHref}/comunicazioni`}
+                      className="hover:text-primary focus-visible:text-primary focus-visible:underline"
+                    >
                       Comunicazioni
                     </Link>
                   </li>
                 )}
                 {isFeatureEnabled(school, 'menu') && (
                   <li>
-                    <Link href={`${baseHref}/mensa`} className="hover:text-primary">
+                    <Link
+                      href={`${baseHref}/mensa`}
+                      className="hover:text-primary focus-visible:text-primary focus-visible:underline"
+                    >
                       Menù Mensa
                     </Link>
                   </li>
@@ -204,22 +221,34 @@ export default async function SchoolLayout({
               </p>
               <ul className="space-y-2 mt-4 text-sm text-gray-600 dark:text-gray-400">
                 <li>
-                  <Link href={`${baseHref}/privacy-policy`} className="hover:text-primary">
+                  <Link
+                    href={`${baseHref}/privacy-policy`}
+                    className="hover:text-primary focus-visible:text-primary focus-visible:underline"
+                  >
                     Privacy Policy scuola
                   </Link>
                 </li>
                 <li>
-                  <Link href="/tos" className="hover:text-primary">
+                  <Link
+                    href="/tos"
+                    className="hover:text-primary focus-visible:text-primary focus-visible:underline"
+                  >
                     Termini di Servizio
                   </Link>
                 </li>
                 <li>
-                  <Link href={`/privacy-policy`} className="hover:text-primary">
+                  <Link
+                    href={`/privacy-policy`}
+                    className="hover:text-primary focus-visible:text-primary focus-visible:underline"
+                  >
                     Privacy Policy scuoleinfanzia.eu
                   </Link>
                 </li>
                 <li>
-                  <Link href={`/cookie-policy`} className="hover:text-primary">
+                  <Link
+                    href={`/cookie-policy`}
+                    className="hover:text-primary focus-visible:text-primary focus-visible:underline"
+                  >
                     Cookie Policy scuoleinfanzia.eu
                   </Link>
                 </li>
