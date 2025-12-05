@@ -21,6 +21,7 @@ export default function Hero({
   gradientOverlay = false,
   topDivider,
   bottomDivider,
+  logo,
   children,
 }: {
   title: string
@@ -48,6 +49,7 @@ export default function Hero({
     invert?: boolean
     height?: number
   }
+  logo?: React.ReactNode
   children?: React.ReactNode
 }) {
   // Colori di default conformi WCAG 2.1 AA (allineati con layout.tsx)
@@ -247,6 +249,7 @@ export default function Hero({
       )}
 
       <div className="max-w-4xl mx-auto relative z-10">
+        {logo && <div className="flex justify-center mb-8 animate-fade-in-up">{logo}</div>}
         <h1 className="text-5xl md:text-6xl font-bold mb-4 animate-fade-in-up">
           <GradientText colors={textGradientColors} showBorder={false} animationSpeed={30}>
             <div className="my-2 py-2">{title}</div>

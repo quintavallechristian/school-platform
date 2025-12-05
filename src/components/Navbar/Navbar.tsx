@@ -219,7 +219,7 @@ export default async function Navbar({
                 </div>
               ) : (
                 <Logo
-                  className=" text-amber-600 shrink-0 mt-[-8px] font-normal"
+                  className=" text-orange-600 dark:text-amber-500 shrink-0 mt-[-8px] font-normal"
                   width={40}
                   height={40}
                 />

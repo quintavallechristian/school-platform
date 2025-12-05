@@ -4,6 +4,7 @@ import { FeaturesSection } from '@/components/LandingPage/FeaturesSection'
 import { PricingSection } from '@/components/LandingPage/PricingSection'
 //import { TestimonialsSection } from '@/components/LandingPage/TestimonialsSection'
 import { LandingFooter } from '@/components/LandingPage/LandingFooter'
+import { Logo } from '@/components/Logo'
 
 export default async function HomePage() {
   return (
@@ -16,6 +17,7 @@ export default async function HomePage() {
           { text: 'Prenota una demo', href: '#contact', variant: 'outline' },
         ]}
         big={true}
+        logo={<Logo className="text-orange-600 dark:text-amber-500 size-40" />}
         bottomDivider={{
           style: 'tilt',
           height: 60,
