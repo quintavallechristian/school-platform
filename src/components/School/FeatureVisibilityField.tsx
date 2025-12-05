@@ -4,6 +4,7 @@ import { useField, useDocumentInfo } from '@payloadcms/ui'
 import React from 'react'
 import type { GroupFieldClientComponent } from 'payload'
 import ChangePlanPortalButton from '../ChangePlanPortalButton'
+import { Label } from '../ui/label'
 
 const FeatureVisibilityField: GroupFieldClientComponent = ({ path }) => {
   // Use useDocumentInfo to access the actual document data
@@ -89,9 +90,9 @@ const FeatureVisibilityField: GroupFieldClientComponent = ({ path }) => {
             cursor: 'pointer',
           }}
         />
-        <label htmlFor={fieldPath} style={{ cursor: 'pointer', userSelect: 'none' }}>
+        <Label htmlFor={fieldPath} style={{ cursor: 'pointer', userSelect: 'none' }}>
           {label}
-        </label>
+        </Label>
       </div>
     )
   }

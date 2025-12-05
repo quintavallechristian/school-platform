@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useRouter } from 'next/navigation'
+import { Label } from '../ui/label'
 
 export function ChangePasswordForm() {
   const router = useRouter()
@@ -81,7 +82,7 @@ export function ChangePasswordForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
-        <label htmlFor="currentPassword">Password attuale</label>
+        <Label htmlFor="currentPassword">Password attuale</Label>
         <Input
           id="currentPassword"
           type="password"
@@ -94,7 +95,7 @@ export function ChangePasswordForm() {
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="newPassword">Nuova password</label>
+        <Label htmlFor="newPassword">Nuova password</Label>
         <Input
           id="newPassword"
           type="password"
@@ -108,7 +109,7 @@ export function ChangePasswordForm() {
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="confirmPassword">Conferma nuova password</label>
+        <Label htmlFor="confirmPassword">Conferma nuova password</Label>
         <Input
           id="confirmPassword"
           type="password"

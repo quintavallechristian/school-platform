@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import './styles.css'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from 'sonner'
-import { MyAurora } from '@/components/Aurora/MyAurora'
 import CookieBanner from '@/components/CookieBanner/CookieBanner'
 import 'leaflet/dist/leaflet.css'
 
@@ -42,7 +41,27 @@ export default async function RootLayout({
 
   return (
     <html lang="it" suppressHydrationWarning className={`${scuoleFont.variable}`}>
-      <head></head>
+      <head>
+        {/* Variabili CSS di default per Aurora e altri componenti */}
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+            :root {
+              --color-background-primary: #ffffff;
+              --color-background-secondary: #f3f4f6;
+              --color-primary: #ea580c;
+              --color-secondary: #f59e0b;
+            }
+            .dark {
+              --color-background-primary: #1f2937;
+              --color-background-secondary: #111827;
+              --color-primary: #fb923c;
+              --color-secondary: #fbbf24;
+            }
+          `,
+          }}
+        />
+      </head>
       <body>
         <ThemeProvider
           attribute="class"
@@ -50,9 +69,6 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="h-full w-full fixed top-0 left-0 z-20 opacity-20 pointer-events-none">
-            <MyAurora />
-          </div>
           {/* Mostra GenericNavbar solo per route generiche (non scuole) */}
           <ConditionalGenericNavbar user={user} pathname={pathname} />
           {children}

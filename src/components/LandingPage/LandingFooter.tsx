@@ -7,7 +7,7 @@ import { trackEvent } from '@/lib/analytics'
 
 export function LandingFooter() {
   return (
-    <footer className="border-t bg-muted/30">
+    <footer className="border-t bg-[var(--color-background-primary)]">
       {/* CTA Section */}
       <div className="py-20 px-8 bg-linear-to-br from-primary/10 to-primary/5">
         <div className="max-w-4xl mx-auto text-center">

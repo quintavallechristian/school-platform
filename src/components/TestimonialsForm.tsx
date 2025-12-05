@@ -2,6 +2,7 @@
 import React, { useState } from 'react'
 import SpotlightCard from './SpotlightCard/SpotlightCard'
 import { Button } from './ui/button'
+import { Label } from './ui/label'
 
 export type TestimonialFormProps = {
   schoolId: string | number
@@ -59,7 +60,7 @@ export default function TestimonialForm({ schoolId, onSuccess }: TestimonialForm
       <SpotlightCard>
         <h3 className="text-2xl font-bold mb-2">Lascia una testimonianza</h3>
         <div>
-          <label className="block font-semibold mt-4">Nome *</label>
+          <Label className="block font-semibold mt-4">Nome *</Label>
           <input
             type="text"
             className="w-full border rounded px-3 py-2"
@@ -69,7 +70,7 @@ export default function TestimonialForm({ schoolId, onSuccess }: TestimonialForm
           />
         </div>
         <div>
-          <label className="block font-semibold mt-4">Ruolo</label>
+          <Label className="block font-semibold mt-4">Ruolo</Label>
           <input
             type="text"
             className="w-full border rounded px-3 py-2"
@@ -79,7 +80,7 @@ export default function TestimonialForm({ schoolId, onSuccess }: TestimonialForm
           />
         </div>
         <div>
-          <label className="block font-semibold mt-4">Testimonianza *</label>
+          <Label className="block font-semibold mt-4">Testimonianza *</Label>
           <textarea
             className="w-full border rounded px-3 py-2"
             value={content}

@@ -140,7 +140,7 @@ export function CalendarView({ calendarDays, schoolSlug }: CalendarViewProps) {
                               className="inline-flex items-center gap-2 mt-3 text-sm font-medium text-primary hover:underline"
                               aria-label={`Vai all\u0026apos;evento: ${day.linkedEvent.title || day.title}`}
                             >
-                              Vai all'evento
+                              Vai all&apos;evento
                               <ArrowRight className="h-4 w-4" aria-hidden="true" />
                             </Link>
                           )}

@@ -5,7 +5,7 @@ export function PrivacyPolicyContent() {
     <div className="prose prose-neutral dark:prose-invert max-w-none">
       {/* Header principale */}
       <div className="mb-12">
-        <h2 className="text-4xl font-bold bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent mb-4">
+        <h2 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary dark:from-primary dark:to-secondary bg-clip-text text-transparent mb-4">
           Privacy Policy
         </h2>
         <p className="text-sm text-neutral-600 dark:text-neutral-400 border-l-4 border-blue-500 pl-4 py-2 bg-blue-50 dark:bg-blue-950/20 rounded">

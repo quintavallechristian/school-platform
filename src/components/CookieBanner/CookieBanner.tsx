@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '../ui/button'
 import SpotlightCard from '../SpotlightCard/SpotlightCard'
+import { Label } from '../ui/label'
 
 type CookiePreferences = {
   necessary: boolean
@@ -264,7 +265,7 @@ export default function CookieBanner() {
                         Cookie Analitici
                       </h4>
                     </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
+                    <Label className="relative inline-flex items-center cursor-pointer">
                       <input
                         type="checkbox"
                         checked={preferences.analytics}
@@ -274,7 +275,7 @@ export default function CookieBanner() {
                         className="sr-only peer"
                       />
                       <div className="w-14 h-7 bg-neutral-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-neutral-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[4px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-neutral-600 peer-checked:bg-blue-600"></div>
-                    </label>
+                    </Label>
                   </div>
                   <p className="text-sm text-neutral-700 dark:text-neutral-300">
                     Ci aiutano a capire come i visitatori interagiscono con il sito raccogliendo e
@@ -286,7 +287,7 @@ export default function CookieBanner() {
               <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   onClick={handleSavePreferences}
-                  className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
                 >
                   Salva preferenze
                 </button>

@@ -16,7 +16,7 @@ export function ConditionalGenericNavbar({
   const pathname = serverPathname || clientPathname
 
   // Lista delle pagine generiche che dovrebbero mostrare GenericNavbar
-  const genericRoutes = ['/', '/privacy-policy', '/cookie-policy', '/tos', '/pricing']
+  const genericRoutes = ['/', '/privacy-policy', '/cookie-policy', '/tos', '/pricing', '/register']
 
   // Verifica se siamo in una route generica
   // Le route di scuola dopo il rewrite del middleware sono nella forma: /[schoolSlug]/...

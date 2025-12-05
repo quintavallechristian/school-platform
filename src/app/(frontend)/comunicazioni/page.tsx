@@ -16,10 +16,7 @@ export default async function ComunicazioniPage() {
 
   return (
     <>
-      <Hero
-        title="Comunicazioni di Servizio"
-        subtitle={`Avvisi e informazioni importanti di ${school.name}`}
-      />
+      <Hero title="Comunicazioni di Servizio" />
 
       <div className="container mx-auto px-4 py-12">
         <div className="mb-8">

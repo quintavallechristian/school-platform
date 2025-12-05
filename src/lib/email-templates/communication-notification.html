@@ -1,45 +1,59 @@
 <!DOCTYPE html>
 <html lang="it">
-  <body style="margin:0;padding:0;background:#f9fafb;font-family:sans-serif;">
-    <div style="max-width:600px;margin:0 auto;padding:20px;">
-      <div style="text-align:center;padding:30px 0 20px 0;">
-        <h1 style="margin:0;font-size:24px;color:#1f2937;">🏫 {{schoolName}}</h1>
-        <p style="margin:5px 0 0;color:#6b7280;font-size:14px;">Comunicazioni di Servizio</p>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body style="margin:0;padding:0;background:linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
+    <div style="max-width:600px;margin:40px auto;padding:20px;">
+      <!-- Header -->
+      <div style="text-align:center;padding:0 0 30px 0;">
+        <h1 style="margin:0;font-size:28px;font-weight:700;color:{{primaryColor}};letter-spacing:-0.5px;">{{schoolName}}</h1>
       </div>
 
-      <div style="background:white;border-radius:12px;border:1px solid #e5e7eb;">
-        <div style="background:{{priorityColor}};padding:12px 20px;">
-          <span style="color:white;font-weight:600;font-size:13px;">
-            {{priorityEmoji}}
-            Priorità: {{priorityLabel}}
-          </span>
+      <!-- Main Card with SpotlightCard-like styling -->
+      <div style="position:relative;background:linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);border-radius:24px;border:1px solid rgba(226, 232, 240, 0.8);box-shadow:0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);overflow:hidden;">
+        
+        <!-- Priority Badge -->
+        <div style="background:{{priorityColor}};padding:16px 24px;position:relative;">
+          <div style="display:inline-block;background:rgba(255,255,255,0.2);padding:6px 16px;border-radius:12px;backdrop-filter:blur(10px);">
+            <span style="color:white;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">
+              Priorità: {{priorityLabel}}
+            </span>
+          </div>
         </div>
 
-        <div style="padding:30px;">
-          <h2 style="margin:0 0 20px;font-size:22px;color:#1f2937;">{{title}}</h2>
+        <!-- Content -->
+        <div style="padding:40px 32px;">
+          <h2 style="margin:0 0 24px;font-size:24px;font-weight:700;color:{{primaryColor}};line-height:1.3;letter-spacing:-0.3px;">{{title}}</h2>
 
-          <p style="color:#4b5563;font-size:15px;line-height:1.6;">
+          <p style="color:#475569;font-size:16px;line-height:1.7;margin:0 0 32px;">
             È stata pubblicata una nuova comunicazione importante.
           </p>
 
-          <div style="text-align:center;margin:30px 0;">
+          <!-- CTA Button -->
+          <div style="text-align:center;margin:32px 0;">
             <a href="{{communicationsUrl}}"
-              style="background:#2563eb;color:white;padding:14px 32px;text-decoration:none;border-radius:8px;font-weight:600;">
-              📄 Visualizza Comunicazioni
+              style="display:inline-block;background:{{primaryColor}};color:white;padding:16px 40px;text-decoration:none;border-radius:12px;font-weight:600;font-size:15px;box-shadow:0 10px 15px -3px rgba(0, 0, 0, 0.15), 0 4px 6px -2px rgba(0, 0, 0, 0.1);transition:all 0.3s ease;">
+              Visualizza Comunicazioni
             </a>
           </div>
 
-          <p style="color:#6b7280;font-size:13px;margin-top:20px;">
-            Pubblicato il {{publishedDate}}
-          </p>
+          <!-- Metadata -->
+          <div style="margin-top:32px;padding-top:24px;border-top:1px solid #e2e8f0;">
+            <p style="color:#94a3b8;font-size:13px;margin:0;font-weight:500;">
+              Pubblicato il {{publishedDate}}
+            </p>
+          </div>
         </div>
       </div>
 
-      <div style="text-align:center;padding:20px;">
-        <p style="color:#9ca3af;font-size:12px;">
+      <!-- Footer -->
+      <div style="text-align:center;padding:32px 20px 20px;">
+        <p style="color:#94a3b8;font-size:13px;margin:0 0 12px;line-height:1.6;">
           Hai ricevuto questa email perché sei iscritto alle notifiche.
         </p>
-        <a href="{{unsubscribeUrl}}" style="font-size:12px;color:#6b7280;text-decoration:underline;">
+        <a href="{{unsubscribeUrl}}" style="font-size:13px;color:#64748b;text-decoration:none;font-weight:500;border-bottom:1px solid #cbd5e1;padding-bottom:2px;">
           Annulla iscrizione
         </a>
       </div>

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { User } from '@/payload-types'
 import './TermsAcceptanceBanner.css'
+import { Label } from './ui/label'
 
 interface ParentsTermsGuardProps {
   children: React.ReactNode
@@ -82,7 +83,7 @@ export const ParentsTermsGuard: React.FC<ParentsTermsGuardProps> = ({
           </div>
 
           <div className="terms-acceptance-checkboxes">
-            <label className="terms-checkbox-label">
+            <Label className="terms-checkbox-label">
               <input
                 type="checkbox"
                 checked={privacyAccepted}
@@ -95,9 +96,9 @@ export const ParentsTermsGuard: React.FC<ParentsTermsGuardProps> = ({
                   Privacy Policy
                 </a>
               </span>
-            </label>
+            </Label>
 
-            <label className="terms-checkbox-label">
+            <Label className="terms-checkbox-label">
               <input
                 type="checkbox"
                 checked={tosAccepted}
@@ -110,7 +111,7 @@ export const ParentsTermsGuard: React.FC<ParentsTermsGuardProps> = ({
                   Termini di Servizio
                 </a>
               </span>
-            </label>
+            </Label>
           </div>
 
           <button

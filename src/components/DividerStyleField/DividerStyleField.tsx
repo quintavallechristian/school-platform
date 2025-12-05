@@ -3,6 +3,7 @@
 import React from 'react'
 import { useField } from '@payloadcms/ui'
 import type { SelectField } from 'payload'
+import { Label } from '../ui/label'
 
 // Importa i path SVG dal componente ShapeDivider
 const shapePaths: Record<string, string> = {
@@ -57,7 +58,7 @@ const DividerStyleField = ({ path, field }: Props) => {
   return (
     <div className="divider-style-field">
       <div className="field-label">
-        <label>{fieldLabel}</label>
+        <Label>{fieldLabel}</Label>
         {fieldDescription && <p className="field-description">{fieldDescription}</p>}
       </div>
 

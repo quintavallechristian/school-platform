@@ -218,7 +218,11 @@ export default async function Navbar({
                   />
                 </div>
               ) : (
-                <Logo className="shrink-0 mt-[-8px] font-normal" width={40} height={40} />
+                <Logo
+                  className=" text-amber-600 shrink-0 mt-[-8px] font-normal"
+                  width={40}
+                  height={40}
+                />
               )}
               <span className="text-2xl font-bold" style={{ fontFamily: 'var(--font-scuole)' }}>
                 {schoolName || 'Scuole Infanzia'}

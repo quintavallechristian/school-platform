@@ -3,6 +3,7 @@
 import * as React from 'react'
 import { useId } from 'react'
 import { cn } from '@/lib/utils'
+import { Label } from './label'
 
 /**
  * Input accessibile conforme WCAG 2.1 AA
@@ -31,7 +32,7 @@ export const AccessibleInput = React.forwardRef<HTMLInputElement, AccessibleInpu
 
     return (
       <div className="space-y-2">
-        <label
+        <Label
           htmlFor={id}
           className={cn(
             'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
@@ -44,7 +45,7 @@ export const AccessibleInput = React.forwardRef<HTMLInputElement, AccessibleInpu
               *
             </span>
           )}
-        </label>
+        </Label>
 
         <input
           ref={ref}
@@ -109,7 +110,7 @@ export const AccessibleTextarea = React.forwardRef<HTMLTextAreaElement, Accessib
 
     return (
       <div className="space-y-2">
-        <label
+        <Label
           htmlFor={id}
           className={cn(
             'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
@@ -122,7 +123,7 @@ export const AccessibleTextarea = React.forwardRef<HTMLTextAreaElement, Accessib
               *
             </span>
           )}
-        </label>
+        </Label>
 
         <textarea
           ref={ref}
@@ -187,7 +188,7 @@ export const AccessibleSelect = React.forwardRef<HTMLSelectElement, AccessibleSe
 
     return (
       <div className="space-y-2">
-        <label
+        <Label
           htmlFor={id}
           className={cn(
             'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
@@ -200,7 +201,7 @@ export const AccessibleSelect = React.forwardRef<HTMLSelectElement, AccessibleSe
               *
             </span>
           )}
-        </label>
+        </Label>
 
         <select
           ref={ref}
@@ -286,7 +287,7 @@ export const AccessibleCheckbox = React.forwardRef<HTMLInputElement, AccessibleC
             )}
             {...props}
           />
-          <label
+          <Label
             htmlFor={id}
             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
@@ -296,7 +297,7 @@ export const AccessibleCheckbox = React.forwardRef<HTMLInputElement, AccessibleC
                 *
               </span>
             )}
-          </label>
+          </Label>
         </div>
 
         {helperText && !error && (

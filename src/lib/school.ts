@@ -2,6 +2,7 @@ import { headers } from 'next/headers'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import type { School } from '@/payload-types'
+import { startOfDay } from 'date-fns'
 
 /**
  * Utility functions per gestire il multi-tenancy nel frontend
@@ -153,7 +154,7 @@ export async function getSchoolCommunications(
         { priority: { in: priority } },
         { publishedAt: { less_than_equal: now } },
         {
-          or: [{ expiresAt: { greater_than: now } }, { expiresAt: { exists: false } }],
+          or: [{ expiresAt: { greater_than: startOfDay(now) } }, { expiresAt: { exists: false } }],
         },
       ],
     },

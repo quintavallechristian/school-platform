@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { useAuth } from '@payloadcms/ui'
+import Link from 'next/link'
 
 interface TrialExpiredModalProps {
   onActivate: () => void
@@ -146,7 +147,7 @@ const TrialExpiredModal: React.FC<TrialExpiredModalProps> = ({
           </button>
 
           <div style={{ display: 'flex', gap: '12px' }}>
-            <a
+            <Link
               href="/"
               style={{
                 flex: 1,
@@ -165,7 +166,7 @@ const TrialExpiredModal: React.FC<TrialExpiredModalProps> = ({
               }}
             >
               Torna alla Home
-            </a>
+            </Link>
 
             <button
               onClick={onLogout}

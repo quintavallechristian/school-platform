@@ -3,6 +3,7 @@
 import { useField } from '@payloadcms/ui'
 import React from 'react'
 import type { TextFieldClientComponent } from 'payload'
+import { Label } from '../ui/label'
 
 const ColorPickerField: TextFieldClientComponent = ({ field, path }) => {
   const { value, setValue } = useField<string>({ path: path || field.name })
@@ -19,10 +20,10 @@ const ColorPickerField: TextFieldClientComponent = ({ field, path }) => {
 
   return (
     <div className="field-type">
-      <label className="field-label" htmlFor={field.name}>
+      <Label className="field-label" htmlFor={field.name}>
         {labelText}
         {field.required && <span className="required">*</span>}
-      </label>
+      </Label>
       <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
         <input
           type="color"

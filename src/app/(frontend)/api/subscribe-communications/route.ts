@@ -4,7 +4,7 @@ import config from '@payload-config'
 
 export async function POST(request: NextRequest) {
   try {
-    const { email } = await request.json()
+    const { email, schoolId } = await request.json()
 
     if (!email || typeof email !== 'string') {
       return NextResponse.json({ error: 'Email non valida' }, { status: 400 })
@@ -24,6 +24,9 @@ export async function POST(request: NextRequest) {
       where: {
         email: {
           equals: email.toLowerCase(),
+        },
+        school: {
+          equals: schoolId,
         },
       },
       limit: 1,
@@ -60,6 +63,7 @@ export async function POST(request: NextRequest) {
       data: {
         email: email.toLowerCase(),
         isActive: true,
+        school: schoolId,
       },
     })
 

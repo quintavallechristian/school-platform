@@ -6,14 +6,16 @@ import { toast } from 'sonner'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import { useSearchParams, useRouter } from 'next/navigation'
 import EmptyArea from '@/components/EmptyArea/EmptyArea'
-import { getPlanFromPrice, priceIdList } from '@/lib/plans'
+import { getPlanFromPrice, priceIdList, planDetails } from '@/lib/plans'
 import { registerSchoolSchema } from '@/lib/validations/register'
-import { Suspense, useState } from 'react'
+import { Suspense, useState, useMemo } from 'react'
 import { z } from 'zod'
 import { PrivacyPolicyModal } from '@/components/PrivacyPolicy/PrivacyPolicyModal'
 import { TermsOfServiceModal } from '@/components/TermsOfService/TermsOfServiceModal'
 import { DpaModal } from '@/components/Dpa/DpaModal'
 import { trackEvent } from '@/lib/analytics'
+import { Label } from '@/components/ui/label'
+import Hero from '@/components/Hero/Hero'
 
 function SignupContent() {
   const searchParams = useSearchParams()
@@ -35,6 +37,25 @@ function SignupContent() {
 
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Determina il piano selezionato e se è annuale o mensile
+  const selectedPlanInfo = useMemo(() => {
+    if (!priceId) return null
+
+    for (const plan of planDetails) {
+      const isYearly = priceId === plan.yearlyPriceId
+      const isMonthly = priceId === plan.monthlyPriceId
+
+      if (isYearly || isMonthly) {
+        return {
+          ...plan,
+          billingPeriod: isYearly ? 'yearly' : 'monthly',
+          price: isYearly ? plan.yearlyPrice : plan.monthlyPrice,
+        }
+      }
+    }
+    return null
+  }, [priceId])
 
   if (!priceId || priceId === '' || !priceIdList.includes(priceId)) {
     return (
@@ -137,24 +158,93 @@ function SignupContent() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-20">
-      <div>
-        <SpotlightCard>Stai attivando il piano {getPlanFromPrice(priceId!)}</SpotlightCard>
-        <SpotlightCard className="mt-6">
-          <h1 className="text-3xl font-extrabold text-emerald-700 dark:text-emerald-400 mb-2 text-center">
+    <div className="min-h-screen">
+      <Hero
+        title="Inizia la tua prova gratuita"
+        subtitle="Crea il tuo account e inizia subito a utilizzare la piattaforma per 30 giorni, senza carta di credito."
+      />
+
+      <div className="max-w-6xl mx-auto px-8 py-12 -mt-16">
+        {/* Piano selezionato */}
+        {selectedPlanInfo && (
+          <SpotlightCard className="mb-8 relative overflow-hidden">
+            {selectedPlanInfo.highlighted && (
+              <div className="absolute top-0 right-0 bg-linear-to-r from-orange-600 to-amber-500 text-white text-xs font-bold px-4 py-1 rounded-bl-lg rounded-tr-2xl">
+                PIÙ POPOLARE
+              </div>
+            )}
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-bold mb-2">
+                Piano selezionato:{' '}
+                <span className="bg-linear-to-r from-orange-600 to-amber-500 bg-clip-text text-transparent">
+                  {selectedPlanInfo.name}
+                </span>
+              </h2>
+              <p className="text-muted-foreground">{selectedPlanInfo.description}</p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* Pricing */}
+              <div className="text-center md:text-left">
+                <div className="flex items-baseline gap-2 justify-center md:justify-start mb-4">
+                  <span className="text-5xl font-bold bg-linear-to-r from-orange-600 to-amber-500 bg-clip-text text-transparent">
+                    €{selectedPlanInfo.price}
+                  </span>
+                  <span className="text-muted-foreground">
+                    /{selectedPlanInfo.billingPeriod === 'monthly' ? 'mese' : 'anno'}
+                  </span>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                    🎉 {selectedPlanInfo.trialDays} giorni di prova gratuita
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Nessuna carta di credito richiesta
+                  </p>
+                  {selectedPlanInfo.billingPeriod === 'yearly' && (
+                    <p className="text-sm font-medium text-orange-600 dark:text-orange-400">
+                      Risparmia fino al 20% con il piano annuale
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Features */}
+              <div>
+                <h3 className="font-semibold mb-3 text-center md:text-left">
+                  Funzionalità incluse:
+                </h3>
+                <ul className="space-y-2">
+                  {selectedPlanInfo.features.slice(0, 5).map((feature, index) => (
+                    <li key={index} className="flex items-start gap-2 text-sm">
+                      <span className="text-emerald-500 mt-0.5">✓</span>
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                  {selectedPlanInfo.features.length > 5 && (
+                    <li className="text-sm text-muted-foreground italic">
+                      ... e altre {selectedPlanInfo.features.length - 5} funzionalità
+                    </li>
+                  )}
+                </ul>
+              </div>
+            </div>
+          </SpotlightCard>
+        )}
+
+        {/* Form di registrazione */}
+        <SpotlightCard>
+          <h1 className="text-3xl font-bold mb-2 text-center bg-linear-to-r from-orange-600 to-amber-500 bg-clip-text text-transparent">
             Crea la tua scuola
           </h1>
-          <p className="text-gray-500 dark:text-gray-300 text-center mb-6">
-            Benvenuto! Registrati per partecipare alle partite e gestire il tuo profilo.
+          <p className="text-muted-foreground text-center mb-6">
+            Compila i dati per iniziare subito la tua prova gratuita
           </p>
-          <form onSubmit={handleSubmit} className="space-y-3" noValidate>
+          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div>
-              <label
-                htmlFor="schoolName"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              >
+              <Label htmlFor="schoolName" className="block text-sm font-medium mb-1">
                 Nome scuola
-              </label>
+              </Label>
               <Input
                 type="text"
                 id="schoolName"
@@ -163,20 +253,17 @@ function SignupContent() {
                 onChange={(e) => handleFieldChange('schoolName', e.target.value)}
                 onBlur={() => handleFieldBlur('schoolName')}
                 autoComplete="organization"
-                className="focus:ring-emerald-500 focus:border-emerald-500 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700"
+                className="focus:ring-orange-500 focus:border-orange-500"
               />
               {errors.schoolName && (
                 <p className="text-red-500 text-sm mt-1">{errors.schoolName}</p>
               )}
             </div>
-            <div className="flex gap-4">
-              <div className="w-1/2">
-                <label
-                  htmlFor="firstName"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                >
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="firstName" className="block text-sm font-medium mb-1">
                   Nome responsabile
-                </label>
+                </Label>
                 <Input
                   type="text"
                   id="firstName"
@@ -185,19 +272,16 @@ function SignupContent() {
                   onChange={(e) => handleFieldChange('firstName', e.target.value)}
                   onBlur={() => handleFieldBlur('firstName')}
                   autoComplete="given-name"
-                  className="focus:ring-emerald-500 focus:border-emerald-500 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700"
+                  className="focus:ring-orange-500 focus:border-orange-500"
                 />
                 {errors.firstName && (
                   <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>
                 )}
               </div>
-              <div className="w-1/2">
-                <label
-                  htmlFor="lastName"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                >
+              <div>
+                <Label htmlFor="lastName" className="block text-sm font-medium mb-1">
                   Cognome responsabile
-                </label>
+                </Label>
                 <Input
                   type="text"
                   id="lastName"
@@ -206,18 +290,15 @@ function SignupContent() {
                   onChange={(e) => handleFieldChange('lastName', e.target.value)}
                   onBlur={() => handleFieldBlur('lastName')}
                   autoComplete="family-name"
-                  className="focus:ring-emerald-500 focus:border-emerald-500 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700"
+                  className="focus:ring-orange-500 focus:border-orange-500"
                 />
                 {errors.lastName && <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>}
               </div>
             </div>
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              >
+              <Label htmlFor="email" className="block text-sm font-medium mb-1">
                 Email responsabile
-              </label>
+              </Label>
               <Input
                 type="email"
                 id="email"
@@ -226,49 +307,43 @@ function SignupContent() {
                 onChange={(e) => handleFieldChange('email', e.target.value)}
                 onBlur={() => handleFieldBlur('email')}
                 autoComplete="email"
-                className="focus:ring-emerald-500 focus:border-emerald-500 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700"
+                className="focus:ring-orange-500 focus:border-orange-500"
               />
               {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
             </div>
-            <div className="flex gap-4">
-              <div className="w-1/2">
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                >
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="password" className="block text-sm font-medium mb-1">
                   Password
-                </label>
+                </Label>
                 <PasswordInput
                   id="password"
                   name="password"
                   value={formData.password}
                   onChange={(e) => handleFieldChange('password', e.target.value)}
                   onBlur={() => handleFieldBlur('password')}
-                  className="focus:ring-emerald-500 focus:border-emerald-500 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700"
+                  className="focus:ring-orange-500 focus:border-orange-500"
                 />
                 {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
               </div>
-              <div className="w-1/2">
-                <label
-                  htmlFor="confirmPassword"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                >
+              <div>
+                <Label htmlFor="confirmPassword" className="block text-sm font-medium mb-1">
                   Conferma Password
-                </label>
+                </Label>
                 <PasswordInput
                   id="confirmPassword"
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={(e) => handleFieldChange('confirmPassword', e.target.value)}
                   onBlur={() => handleFieldBlur('confirmPassword')}
-                  className="focus:ring-emerald-500 focus:border-emerald-500 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700"
+                  className="focus:ring-orange-500 focus:border-orange-500"
                 />
                 {errors.confirmPassword && (
                   <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>
                 )}
               </div>
             </div>
-            <div className="space-y-3 mt-8">
+            <div className="space-y-3 pt-4 border-t">
               <div>
                 <div className="flex items-center space-x-2">
                   <input
@@ -277,16 +352,16 @@ function SignupContent() {
                     name="privacy"
                     checked={formData.acceptPrivacy}
                     onChange={(e) => handleFieldChange('acceptPrivacy', e.target.checked)}
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
                   />
-                  <label htmlFor="privacy" className="text-sm text-gray-700 dark:text-gray-300">
+                  <Label htmlFor="privacy" className="text-sm">
                     Accetto la{' '}
                     <PrivacyPolicyModal>
-                      <span className="underline cursor-pointer text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                      <span className="underline cursor-pointer text-orange-600 hover:text-orange-800 dark:text-orange-400 dark:hover:text-orange-300">
                         privacy policy
                       </span>
                     </PrivacyPolicyModal>
-                  </label>
+                  </Label>
                 </div>
                 {errors.acceptPrivacy && (
                   <p className="text-red-500 text-sm mt-1 ml-6">{errors.acceptPrivacy}</p>
@@ -300,16 +375,16 @@ function SignupContent() {
                     name="tos"
                     checked={formData.acceptTerms}
                     onChange={(e) => handleFieldChange('acceptTerms', e.target.checked)}
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
                   />
-                  <label htmlFor="tos" className="text-sm text-gray-700 dark:text-gray-300">
+                  <Label htmlFor="tos" className="text-sm">
                     Accetto i{' '}
                     <TermsOfServiceModal>
-                      <span className="underline cursor-pointer text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                      <span className="underline cursor-pointer text-orange-600 hover:text-orange-800 dark:text-orange-400 dark:hover:text-orange-300">
                         termini e condizioni
                       </span>
                     </TermsOfServiceModal>
-                  </label>
+                  </Label>
                 </div>
                 {errors.acceptTerms && (
                   <p className="text-red-500 text-sm mt-1 ml-6">{errors.acceptTerms}</p>
@@ -323,26 +398,34 @@ function SignupContent() {
                     name="dpa"
                     checked={formData.acceptDpa}
                     onChange={(e) => handleFieldChange('acceptDpa', e.target.checked)}
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
                   />
-                  <label htmlFor="dpa" className="text-sm text-gray-700 dark:text-gray-300">
+                  <Label htmlFor="dpa" className="text-sm">
                     Accetto il{' '}
                     <DpaModal>
-                      <span className="underline cursor-pointer text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                      <span className="underline cursor-pointer text-orange-600 hover:text-orange-800 dark:text-orange-400 dark:hover:text-orange-300">
                         Data processing agreement
                       </span>
                     </DpaModal>
-                  </label>
+                  </Label>
                 </div>
                 {errors.acceptDpa && (
                   <p className="text-red-500 text-sm mt-1 ml-6">{errors.acceptDpa}</p>
                 )}
               </div>
             </div>
-            <div className="flex flex-col gap-2 mt-4">
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
-                {isSubmitting ? 'Registrazione in corso...' : 'Registrati'}
+            <div className="pt-4">
+              <Button
+                type="submit"
+                className="w-full bg-linear-to-r from-orange-600 to-amber-500 hover:from-orange-700 hover:to-amber-600 text-white font-semibold py-6 text-lg"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Registrazione in corso...' : 'Inizia la prova gratuita'}
               </Button>
+              <p className="text-xs text-center text-muted-foreground mt-3">
+                Iniziando la prova gratuita, non ti verrà addebitato nulla per i primi{' '}
+                {selectedPlanInfo?.trialDays || 30} giorni
+              </p>
             </div>
           </form>
         </SpotlightCard>

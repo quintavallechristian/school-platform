@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { useAuth } from '@payloadcms/ui'
+import { Label } from './ui/label'
 
 interface AcceptanceModalProps {
   onAccept: () => void
@@ -85,7 +86,7 @@ const AcceptanceModal: React.FC<AcceptanceModalProps> = ({ onAccept }) => {
             marginBottom: '24px',
           }}
         >
-          <label
+          <Label
             style={{
               display: 'flex',
               alignItems: 'flex-start',
@@ -120,9 +121,9 @@ const AcceptanceModal: React.FC<AcceptanceModalProps> = ({ onAccept }) => {
                 Privacy Policy
               </a>
             </span>
-          </label>
+          </Label>
 
-          <label
+          <Label
             style={{
               display: 'flex',
               alignItems: 'flex-start',
@@ -156,7 +157,7 @@ const AcceptanceModal: React.FC<AcceptanceModalProps> = ({ onAccept }) => {
                 Termini di Servizio
               </a>
             </span>
-          </label>
+          </Label>
         </div>
 
         <button

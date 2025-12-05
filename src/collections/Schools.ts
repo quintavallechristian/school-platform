@@ -213,7 +213,7 @@ export const Schools: CollectionConfig = {
                       name: 'textPrimary',
                       type: 'text',
                       label: 'Colore Testo Primario',
-                      defaultValue: '#1e40af',
+                      defaultValue: '#ea580c',
                       admin: {
                         width: '50%',
                         description:
@@ -227,7 +227,7 @@ export const Schools: CollectionConfig = {
                       name: 'textSecondary',
                       type: 'text',
                       label: 'Colore Testo Secondario',
-                      defaultValue: '#7c3aed',
+                      defaultValue: '#f59e0b',
                       admin: {
                         width: '50%',
                         description:
@@ -287,7 +287,7 @@ export const Schools: CollectionConfig = {
                       name: 'textPrimary',
                       type: 'text',
                       label: 'Colore Testo Primario',
-                      defaultValue: '#93c5fd',
+                      defaultValue: '#fb923c',
                       admin: {
                         width: '50%',
                         description:
@@ -301,7 +301,7 @@ export const Schools: CollectionConfig = {
                       name: 'textSecondary',
                       type: 'text',
                       label: 'Colore Testo Secondario',
-                      defaultValue: '#c4b5fd',
+                      defaultValue: '#fbbf24',
                       admin: {
                         width: '50%',
                         description:

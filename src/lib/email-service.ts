@@ -22,13 +22,14 @@ interface UserCredentialsData {
 
 interface CommunicationData {
   priorityColor: string
-  priorityEmoji: string
   priorityLabel: string
   title: string
   publishedDate: string
   communicationsUrl: string
   unsubscribeUrl: string
   schoolName: string
+  primaryColor: string
+  secondaryColor: string
 }
 
 // Template rendering utility
@@ -47,12 +48,6 @@ function renderTemplate(templateName: string, data: Record<string, string>): str
 
 // Priority configuration
 const priorityConfig = {
-  emoji: {
-    low: 'ℹ️',
-    normal: '🔔',
-    high: '⚠️',
-    urgent: '🚨',
-  } as Record<CommunicationPriority, string>,
   labels: {
     low: 'Bassa',
     normal: 'Normale',
@@ -87,7 +82,7 @@ export async function sendUserCredentialsEmail(
       email: process.env.BREVO_SENDER_EMAIL || 'no-reply@scuoleinfanzia.eu',
     },
     to: [{ email: to }],
-    subject: '🎉 Benvenuto! Ecco le tue credenziali di accesso',
+    subject: 'Benvenuto! Ecco le tue credenziali di accesso',
     htmlContent,
   })
 
@@ -147,7 +142,6 @@ export async function sendEmail(to: string, subject: string, htmlContent: string
  */
 export function getPriorityConfig(priority: CommunicationPriority) {
   return {
-    emoji: priorityConfig.emoji[priority],
     label: priorityConfig.labels[priority],
     color: priorityConfig.colors[priority],
   }

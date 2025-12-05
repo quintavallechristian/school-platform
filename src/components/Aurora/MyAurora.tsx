@@ -10,18 +10,11 @@ export function MyAurora() {
 
     const bgPrimary = rootStyles.getPropertyValue('--color-background-primary').trim()
     const bgSecondary = rootStyles.getPropertyValue('--color-background-secondary').trim()
-    const primary = rootStyles.getPropertyValue('--color-primary').trim()
-    const secondary = rootStyles.getPropertyValue('--color-secondary').trim()
 
-    const colorArray = []
-
-    if (bgPrimary && bgPrimary.startsWith('#')) colorArray.push(bgPrimary)
-    if (bgSecondary && bgSecondary.startsWith('#')) colorArray.push(bgSecondary)
-    if (primary && primary.startsWith('#')) colorArray.push(primary)
-    if (secondary && secondary.startsWith('#')) colorArray.push(secondary)
-
-    if (colorArray.length >= 3) {
-      setColors(colorArray)
+    // Usa solo i colori di sfondo primario e secondario
+    // Crea un gradiente con 3 stop: bgPrimary -> bgSecondary -> bgPrimary
+    if (bgPrimary && bgPrimary.startsWith('#') && bgSecondary && bgSecondary.startsWith('#')) {
+      setColors([bgPrimary, bgSecondary, bgPrimary])
     }
   }, [])
 

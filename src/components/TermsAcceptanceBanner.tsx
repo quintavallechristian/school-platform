@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { useAuth } from '@payloadcms/ui'
 import './TermsAcceptanceBanner.css'
+import { Label } from './ui/label'
 
 export const TermsAcceptanceBanner: React.FC = () => {
   const { user } = useAuth()
@@ -76,7 +77,7 @@ export const TermsAcceptanceBanner: React.FC = () => {
         </div>
 
         <div className="terms-acceptance-checkboxes">
-          <label className="terms-checkbox-label">
+          <Label className="terms-checkbox-label">
             <input
               type="checkbox"
               checked={privacyAccepted}
@@ -89,9 +90,9 @@ export const TermsAcceptanceBanner: React.FC = () => {
                 Privacy Policy
               </a>
             </span>
-          </label>
+          </Label>
 
-          <label className="terms-checkbox-label">
+          <Label className="terms-checkbox-label">
             <input
               type="checkbox"
               checked={tosAccepted}
@@ -104,7 +105,7 @@ export const TermsAcceptanceBanner: React.FC = () => {
                 Termini di Servizio
               </a>
             </span>
-          </label>
+          </Label>
         </div>
 
         <button

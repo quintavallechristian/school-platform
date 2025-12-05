@@ -46,7 +46,11 @@ export function GenericNavbar({ user }: { user?: User | null }) {
           <div className="flex items-center gap-4">
             <MobileGuestMenuButton menuItems={menuItems} />
             <Link href="/" className="flex">
-              <Logo className="shrink-0 mt-[-8px] font-normal" width={40} height={40} />
+              <Logo
+                className="text-orange-600 dark:text-amber-500 shrink-0 mt-[-8px] font-normal"
+                width={40}
+                height={40}
+              />
               <span
                 className="text-3xl font-bold text-gray-900 dark:text-white opacity-0 -ml-7"
                 style={{ fontFamily: 'var(--font-scuole)' }}

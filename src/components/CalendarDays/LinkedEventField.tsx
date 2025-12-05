@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { useFormFields, useAuth, RelationshipField } from '@payloadcms/ui'
+import { Label } from '../ui/label'
 
 export const LinkedEventField: React.FC = () => {
   const schoolField = useFormFields(([fields]) => fields.school)
@@ -90,9 +91,9 @@ export const LinkedEventField: React.FC = () => {
   if (isLoading) {
     return (
       <div className="field-type relationship">
-        <label htmlFor="linkedEvent" className="field-label">
+        <Label htmlFor="linkedEvent" className="field-label">
           Evento Collegato
-        </label>
+        </Label>
         <div style={{ marginTop: '8px', color: '#666' }}>Verifica in corso...</div>
       </div>
     )

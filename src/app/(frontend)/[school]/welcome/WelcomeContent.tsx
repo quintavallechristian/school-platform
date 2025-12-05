@@ -10,7 +10,6 @@ import {
   School,
   Home,
   Users,
-  Megaphone,
   Calendar,
   Target,
   Settings,
@@ -49,7 +48,8 @@ export default function WelcomeContent({ schoolId }: WelcomeContentProps) {
     {
       id: 'profile',
       title: 'Completa il profilo della scuola',
-      description: 'Aggiungi logo, colori e informazioni di contatto',
+      description:
+        'Aggiungi logo, colori e informazioni di contatto e scegli le funzionalità che vuoi offrire nel tuo sito',
       icon: School,
       link: `/admin/collections/schools/${schoolId}`,
       completed: false,
@@ -71,27 +71,27 @@ export default function WelcomeContent({ schoolId }: WelcomeContentProps) {
       completed: false,
     },
     {
-      id: 'teachers',
-      title: 'Aggiungi gli insegnanti',
-      description: 'Crea i profili del corpo docente',
-      icon: Users,
-      link: '/admin/collections/teachers',
-      completed: false,
-    },
-    {
-      id: 'communication',
-      title: 'Pubblica la prima comunicazione',
-      description: 'Invia un messaggio di benvenuto alle famiglie',
-      icon: Megaphone,
-      link: '/admin/collections/communications',
-      completed: false,
-    },
-    {
-      id: 'event',
-      title: 'Crea un evento',
-      description: 'Aggiungi il primo evento al calendario',
+      id: 'calendar',
+      title: 'Configura il calendario scolastico',
+      description: "Imposta il calendario con le date importanti dell'anno",
       icon: Calendar,
-      link: '/admin/collections/events',
+      link: '/admin/collections/calendar-days',
+      completed: false,
+    },
+    {
+      id: 'menu',
+      title: 'Pubblica il menù della mensa',
+      description: 'Aggiungi il menù settimanale per le famiglie',
+      icon: BookOpen,
+      link: '/admin/collections/menu',
+      completed: false,
+    },
+    {
+      id: 'pof',
+      title: 'Carica il Piano Offerta Formativa',
+      description: 'Pubblica il Piano Offerta Formativa della tua scuola',
+      icon: Target,
+      link: '/admin/collections/educational-offerings',
       completed: false,
     },
   ])
@@ -268,14 +268,12 @@ export default function WelcomeContent({ schoolId }: WelcomeContentProps) {
               configurazione della piattaforma.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-2">
-              <Button variant="outline">
-                <BookOpen className="w-5 h-5" />
-                Documentazione
-              </Button>
-              <Button>
-                <MessageCircle className="w-5 h-5" />
-                Contatta Supporto
-              </Button>
+              <Link href="/contatti">
+                <Button>
+                  <MessageCircle className="w-5 h-5" />
+                  Contattaci
+                </Button>
+              </Link>
             </div>
           </div>
         </ScrollStackItem>

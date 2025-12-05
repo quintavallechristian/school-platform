@@ -46,9 +46,17 @@ export const Communications: CollectionConfig = {
   hooks: {
     beforeChange: [assignSchoolBeforeChange],
     afterChange: [
-      async ({ doc, operation, req }) => {
-        if (operation !== 'create') return
+      async ({ doc, operation, req, context }) => {
+        // Se non è attivo → niente email
         if (!doc.isActive) return
+
+        // Se è un update ma NON è il cron → niente email
+        if (operation === 'update' && !context?.triggeredByCron) {
+          return
+        }
+
+        // Se è un create ma isActive era false al create → niente email
+        if (operation === 'create' && !doc.isActive) return
 
         try {
           // Fetch school data to check if email communications are enabled
@@ -96,6 +104,10 @@ export const Communications: CollectionConfig = {
           const schoolDomain = school.slug || 'scuola'
           const schoolName = school.name || 'Scuola'
 
+          // Extract school colors (use light theme colors for emails)
+          const primaryColor = school.lightTheme?.textPrimary || '#1e40af'
+          const secondaryColor = school.lightTheme?.textSecondary || '#7c3aed'
+
           // Invia a tutti gli iscritti
           const sendPromises = subscribers.docs.map(async (subscriber) => {
             const unsubscribeUrl = `${process.env.NEXT_PUBLIC_SERVER_URL}/api/unsubscribe?token=${subscriber.unsubscribeToken}`
@@ -104,15 +116,16 @@ export const Communications: CollectionConfig = {
               subscriber.email,
               {
                 priorityColor: priorityInfo.color,
-                priorityEmoji: priorityInfo.emoji,
                 priorityLabel: priorityInfo.label,
                 title: doc.title,
                 publishedDate,
                 communicationsUrl: `${process.env.NEXT_PUBLIC_SERVER_URL}/${schoolDomain}/comunicazioni`,
                 unsubscribeUrl,
                 schoolName,
+                primaryColor,
+                secondaryColor,
               },
-              `${priorityInfo.emoji} Nuova comunicazione: ${doc.title}`,
+              `Nuova comunicazione: ${doc.title}`,
             )
           })
 
@@ -128,10 +141,11 @@ export const Communications: CollectionConfig = {
 
   fields: [
     getSchoolField('Scuola a cui appartiene questa comunicazione'),
-    { name: 'title', type: 'text', required: true },
-    { name: 'content', type: 'richText', required: true },
+    { name: 'title', label: 'Titolo', type: 'text', required: true },
+    { name: 'content', label: 'Contenuto', type: 'richText', required: true },
     {
       name: 'priority',
+      label: 'Priorità',
       type: 'select',
       required: true,
       defaultValue: 'normal',
@@ -142,29 +156,66 @@ export const Communications: CollectionConfig = {
         { label: 'Urgente', value: 'urgent' },
       ],
     },
-    { name: 'isActive', type: 'checkbox', defaultValue: true },
     {
       name: 'publishedAt',
+      label: 'Data di pubblicazione',
       type: 'date',
       required: true,
       defaultValue: () => new Date().toISOString(),
+      admin: {
+        description:
+          'Scegli in che giorno inviare la comunicazione. Puoi scegliere anche giorni passati',
+        date: {
+          displayFormat: 'dd/MM/yyyy',
+        },
+      },
+    },
+    {
+      name: 'isActive',
+      label: 'Attiva',
+      type: 'checkbox',
+      defaultValue: true,
+      admin: {
+        description:
+          'Se attivo la comunicazione verrà mostrata nel sito ed inviata a tutti gli iscritti alla newsletter',
+        condition: (data) => {
+          if (!data.publishedAt) return true
+          const publishedDate = new Date(data.publishedAt)
+          const now = new Date()
+          // Rimuovi le ore per confrontare solo le date
+          publishedDate.setHours(0, 0, 0, 0)
+          now.setHours(0, 0, 0, 0)
+          return publishedDate <= now
+        },
+      },
     },
     {
       name: 'expiresAt',
       type: 'date',
       label: 'Data scadenza (opzionale)',
+      admin: {
+        description:
+          'Quando viene raggiunta la data di scadenza la comunicazione non verrà più mostrata',
+        date: {
+          displayFormat: 'dd/MM/yyyy',
+        },
+      },
     },
     {
       name: 'linkedArticle',
+      label: 'Articolo collegato (opzionale)',
       type: 'relationship',
       relationTo: 'articles',
-      admin: { condition: (data) => !data.linkedEvent },
+      admin: {
+        description: "Se collegato, la comunicazione rimanderà all'articolo",
+        condition: (data) => !data.linkedEvent,
+      },
     },
     {
       name: 'linkedEvent',
       type: 'relationship',
       relationTo: 'events',
-      admin: { condition: (data) => !data.linkedArticle },
+      admin: { hidden: true, condition: (data) => !data.linkedArticle },
     },
   ],
 }

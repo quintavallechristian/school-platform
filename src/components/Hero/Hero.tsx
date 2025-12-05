@@ -9,6 +9,7 @@ import BlurText from '../BlurText/BlurText'
 import GradientText from '../GradientText/GradientText'
 import ShapeDivider, { ShapeDividerStyle } from '../ShapeDivider/ShapeDivider'
 import type { Media } from '@/payload-types'
+import { MyAurora } from '../Aurora/MyAurora'
 
 export default function Hero({
   title,
@@ -50,8 +51,8 @@ export default function Hero({
   children?: React.ReactNode
 }) {
   // Colori di default conformi WCAG 2.1 AA (allineati con layout.tsx)
-  const defaultPrimaryColor = '#1e40af' // Blu scuro (8.72:1 su bianco)
-  const defaultSecondaryColor = '#7c3aed' // Viola scuro (6.37:1 su bianco)
+  const defaultPrimaryColor = '#ea580c' // Arancione vibrante
+  const defaultSecondaryColor = '#f59e0b' // Giallo ambrato
   const defaultBackgroundPrimaryColor = '#ffffff' // Bianco
   const defaultBackgroundSecondaryColor = '#f3f4f6' // Grigio chiaro
 
@@ -203,6 +204,9 @@ export default function Hero({
           : `linear-gradient(to bottom right, ${bgGradientStartColor}, ${bgGradientEndColor})`,
       }}
     >
+      <div className="absolute inset-0 z-20 opacity-20 pointer-events-none">
+        <MyAurora />
+      </div>
       {/* Immagine di sfondo con parallax opzionale */}
       {bgImageUrl && (
         <>

@@ -81,16 +81,16 @@ export default async function SchoolLayout({
           __html: `
           :root {
             /* Colori conformi WCAG 2.1 AA (contrasto >= 4.5:1) */
-            --color-primary: ${school.lightTheme?.textPrimary || school.primaryColor || '#1e40af'}; /* Blu scuro su bianco: 8.59:1 */
-            --color-secondary: ${school.lightTheme?.textSecondary || school.secondaryColor || '#7c3aed'}; /* Viola scuro su bianco: 6.37:1 */
+            --color-primary: ${school.lightTheme?.textPrimary || school.primaryColor || '#ea580c'}; /* Arancione vibrante */
+            --color-secondary: ${school.lightTheme?.textSecondary || school.secondaryColor || '#f59e0b'}; /* Giallo ambrato */
             --color-background-primary: ${school.lightTheme?.backgroundPrimary || school.backgroundPrimaryColor || '#ffffff'}; /* Bianco */
             --color-background-secondary: ${school.lightTheme?.backgroundSecondary || school.backgroundSecondaryColor || '#f3f4f6'}; /* Grigio chiaro */
           }
           
           .dark {
             /* Colori conformi WCAG 2.1 AA per dark mode */
-            --color-primary: ${school.darkTheme?.textPrimary || school.lightTheme?.textPrimary || school.primaryColor || '#93c5fd'}; /* Blu chiaro su nero: 9.35:1 */
-            --color-secondary: ${school.darkTheme?.textSecondary || school.lightTheme?.textSecondary || school.secondaryColor || '#c4b5fd'}; /* Viola chiaro su nero: 10.73:1 */
+            --color-primary: ${school.darkTheme?.textPrimary || school.lightTheme?.textPrimary || school.primaryColor || '#fb923c'}; /* Arancione chiaro */
+            --color-secondary: ${school.darkTheme?.textSecondary || school.lightTheme?.textSecondary || school.secondaryColor || '#fbbf24'}; /* Giallo dorato */
             --color-background-primary: ${school.darkTheme?.backgroundPrimary || school.lightTheme?.backgroundPrimary || school.backgroundPrimaryColor || '#1f2937'}; /* Grigio scuro */
             --color-background-secondary: ${school.darkTheme?.backgroundSecondary || school.lightTheme?.backgroundSecondary || school.backgroundSecondaryColor || '#111827'}; /* Grigio molto scuro */
           }
@@ -103,6 +103,19 @@ export default async function SchoolLayout({
           .bg-secondary { background-color: var(--color-secondary) !important; }
           .text-secondary { color: var(--color-secondary) !important; }
           .border-secondary { border-color: var(--color-secondary) !important; }
+          
+          /* Utility classes per gradienti personalizzati */
+          .from-primary { --tw-gradient-from: var(--color-primary) var(--tw-gradient-from-position); --tw-gradient-to: rgb(255 255 255 / 0) var(--tw-gradient-to-position); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+          .to-secondary { --tw-gradient-to: var(--color-secondary) var(--tw-gradient-to-position); }
+          .via-secondary { --tw-gradient-to: rgb(255 255 255 / 0) var(--tw-gradient-to-position); --tw-gradient-stops: var(--tw-gradient-from), var(--color-secondary) var(--tw-gradient-via-position), var(--tw-gradient-to); }
+          
+          /* Background gradienti personalizzati */
+          .bg-gradient-primary {
+            background: linear-gradient(to right, var(--color-primary), var(--color-secondary));
+          }
+          .bg-gradient-primary-br {
+            background: linear-gradient(to bottom right, var(--color-background-primary), var(--color-background-secondary));
+          }
         `,
         }}
       />
@@ -124,7 +137,7 @@ export default async function SchoolLayout({
       </main>
 
       {/* Footer con info della scuola */}
-      <footer role="contentinfo" className="bg-gray-100 dark:bg-gray-900 border-t">
+      <footer role="contentinfo" className="bg-[var(--color-background-primary)] border-t">
         <div className="container mx-auto px-4 py-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Info scuola */}

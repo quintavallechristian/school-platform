@@ -2,7 +2,7 @@ import React from 'react'
 import Hero from '@/components/Hero/Hero'
 import { FeaturesSection } from '@/components/LandingPage/FeaturesSection'
 import { PricingSection } from '@/components/LandingPage/PricingSection'
-import { TestimonialsSection } from '@/components/LandingPage/TestimonialsSection'
+//import { TestimonialsSection } from '@/components/LandingPage/TestimonialsSection'
 import { LandingFooter } from '@/components/LandingPage/LandingFooter'
 
 export default async function HomePage() {
@@ -16,12 +16,38 @@ export default async function HomePage() {
           { text: 'Prenota una demo', href: '#contact', variant: 'outline' },
         ]}
         big={true}
+        bottomDivider={{
+          style: 'tilt',
+          height: 60,
+          flip: true,
+          invert: true,
+        }}
       />
 
-      <FeaturesSection />
+      <FeaturesSection
+        bottomDivider={{
+          style: 'tilt',
+          height: 60,
+          flip: true,
+          invert: true,
+        }}
+        topDivider={{
+          style: 'tilt',
+          height: 60,
+          flip: true,
+          invert: true,
+        }}
+      />
 
       <div id="pricing">
-        <PricingSection />
+        <PricingSection
+          topDivider={{
+            style: 'tilt',
+            height: 60,
+            flip: true,
+            invert: true,
+          }}
+        />
       </div>
 
       {/* <TestimonialsSection /> */}

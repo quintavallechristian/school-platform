@@ -1856,9 +1856,21 @@ export interface Communication {
     [k: string]: unknown;
   };
   priority: 'low' | 'normal' | 'high' | 'urgent';
-  isActive?: boolean | null;
+  /**
+   * Scegli in che giorno inviare la comunicazione. Puoi scegliere anche giorni passati
+   */
   publishedAt: string;
+  /**
+   * Se attivo la comunicazione verrà mostrata nel sito ed inviata a tutti gli iscritti alla newsletter
+   */
+  isActive?: boolean | null;
+  /**
+   * Quando viene raggiunta la data di scadenza la comunicazione non verrà più mostrata
+   */
   expiresAt?: string | null;
+  /**
+   * Se collegato, la comunicazione rimanderà all'articolo
+   */
   linkedArticle?: (string | null) | Article;
   linkedEvent?: (string | null) | Event;
   updatedAt: string;
@@ -2922,8 +2934,8 @@ export interface CommunicationsSelect<T extends boolean = true> {
   title?: T;
   content?: T;
   priority?: T;
-  isActive?: T;
   publishedAt?: T;
+  isActive?: T;
   expiresAt?: T;
   linkedArticle?: T;
   linkedEvent?: T;
