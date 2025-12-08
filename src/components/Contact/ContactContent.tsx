@@ -61,7 +61,7 @@ export function ContactContent() {
 
       <div className="grid md:grid-cols-2 gap-12">
         {/* Contact Information */}
-        <div>
+        <div className="order-2 md:order-1">
           <h2 className="text-2xl font-bold mb-6">Informazioni di Contatto</h2>
 
           <div className="space-y-6">
@@ -90,7 +90,7 @@ export function ContactContent() {
         </div>
 
         {/* Contact Form */}
-        <div>
+        <div className="order-1 md:order-2">
           <h2 className="text-2xl font-bold mb-6">Inviaci un Messaggio</h2>
 
           <form onSubmit={handleSubmit} className="space-y-6">

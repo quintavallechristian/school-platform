@@ -125,7 +125,7 @@ export function FeaturesSection({
       )}
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+          <h2 className="text-3xl md:text-5xl font-bold mb-6">
             Tutto ciò di cui hai bisogno per gestire la tua scuola
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">

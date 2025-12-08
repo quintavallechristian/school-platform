@@ -3,8 +3,10 @@
 import { usePathname } from 'next/navigation'
 import { GenericNavbar } from './GenericNavbar'
 
+import { User } from '@/payload-types'
+
 interface ConditionalGenericNavbarProps {
-  user: any
+  user: User | null
   pathname?: string
 }
 
@@ -16,7 +18,18 @@ export function ConditionalGenericNavbar({
   const pathname = serverPathname || clientPathname
 
   // Lista delle pagine generiche che dovrebbero mostrare GenericNavbar
-  const genericRoutes = ['/', '/privacy-policy', '/cookie-policy', '/tos', '/pricing', '/register']
+  const genericRoutes = [
+    '/',
+    '/privacy-policy',
+    '/cookie-policy',
+    '/tos',
+    '/pricing',
+    '/register',
+    '/login',
+    '/contatti',
+    '/faq',
+    '/comunicazioni',
+  ]
 
   // Verifica se siamo in una route generica
   // Le route di scuola dopo il rewrite del middleware sono nella forma: /[schoolSlug]/...

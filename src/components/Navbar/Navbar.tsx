@@ -205,7 +205,17 @@ export default async function Navbar({
       <nav role="navigation" aria-label="Navigazione principale">
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-4">
-            <MobileGuestMenuButton menuItems={menuItems} />
+            <MobileGuestMenuButton menuItems={menuItems}>
+              {school && isFeatureEnabled(school, 'parentsArea') && (
+                <div className="flex flex-col gap-3">
+                  <ParentsAreaButton
+                    href={user ? `${baseHref}/parents/dashboard` : `${baseHref}/parents/login`}
+                    isLoggedIn={!!user}
+                    className="w-full justify-start"
+                  />
+                </div>
+              )}
+            </MobileGuestMenuButton>
             <Link href={baseHref || '/'} className="flex items-center gap-2">
               {schoolLogo ? (
                 <div className="relative h-8 w-8">

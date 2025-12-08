@@ -23,14 +23,20 @@ type MenuItem = {
   items?: Array<{ label: string; href: string; description?: string }>
 }
 
-export function MobileGuestMenuButton({ menuItems }: { menuItems: MenuItem[] }) {
+export function MobileGuestMenuButton({
+  menuItems,
+  children,
+}: {
+  menuItems: MenuItem[]
+  children?: React.ReactNode
+}) {
   const [open, setOpen] = React.useState(false)
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild className="md:hidden">
         <Button variant="outline" size="sm">
-          <Menu className="h-6 w-6" />
+          <Menu className="h-4 w-4" />
           <span className="sr-only">Toggle menu</span>
         </Button>
       </SheetTrigger>
@@ -86,6 +92,7 @@ export function MobileGuestMenuButton({ menuItems }: { menuItems: MenuItem[] }) 
             </div>
           ))}
         </nav>
+        {children && <div className="pt-4 mt-auto border-t">{children}</div>}
       </SheetContent>
     </Sheet>
   )

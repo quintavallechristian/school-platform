@@ -20,7 +20,7 @@ export function LandingFooter() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/#pricing">
               <Button
-                size="lg"
+                size="default"
                 className="text-lg px-8"
                 onClick={() => {
                   trackEvent('start_free_trial_click', {
@@ -31,7 +31,7 @@ export function LandingFooter() {
                 Inizia la prova gratuita
               </Button>
             </Link>
-            <Button size="lg" variant="outline" className="text-lg px-8">
+            <Button size="default" variant="outline" className="text-lg px-8">
               Prenota una demo
             </Button>
           </div>

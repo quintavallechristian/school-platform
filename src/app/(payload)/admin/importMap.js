@@ -1,4 +1,5 @@
 import { default as default_91a62b5153d9f44791641f7d9e8740a8 } from '@/components/ColorPicker/ColorPickerField'
+import { default as default_aad99f9d877997f6aafbd73d521c73b9 } from '@/components/School/ContrastWarning'
 import { default as default_c84d929c39c84dbf53bc28e517b5822e } from '@/components/School/FeatureVisibilityField'
 import { default as default_99e83bd5be38fef5b383b78aa34c189a } from '@/components/ChangePlanPortalButton'
 import { default as default_56ef74dbfe78eafdb6f5db236ef77a8e } from '@/components/HideCreateSchoolButton'
@@ -39,6 +40,7 @@ import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc056
 
 export const importMap = {
   '@/components/ColorPicker/ColorPickerField#default': default_91a62b5153d9f44791641f7d9e8740a8,
+  '@/components/School/ContrastWarning#default': default_aad99f9d877997f6aafbd73d521c73b9,
   '@/components/School/FeatureVisibilityField#default': default_c84d929c39c84dbf53bc28e517b5822e,
   '@/components/ChangePlanPortalButton#default': default_99e83bd5be38fef5b383b78aa34c189a,
   '@/components/HideCreateSchoolButton#default': default_56ef74dbfe78eafdb6f5db236ef77a8e,

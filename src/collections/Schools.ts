@@ -270,6 +270,25 @@ export const Schools: CollectionConfig = {
                     },
                   ],
                 },
+                // Componente per avviso contrasto tema chiaro
+                {
+                  type: 'ui',
+                  name: 'lightThemeContrastWarning',
+                  admin: {
+                    components: {
+                      Field: {
+                        path: '@/components/School/ContrastWarning',
+                        clientProps: {
+                          textPrimaryPath: 'lightTheme.textPrimary',
+                          textSecondaryPath: 'lightTheme.textSecondary',
+                          backgroundPrimaryPath: 'lightTheme.backgroundPrimary',
+                          backgroundSecondaryPath: 'lightTheme.backgroundSecondary',
+                          themeName: 'Tema Chiaro',
+                        },
+                      },
+                    },
+                  },
+                },
               ],
             },
             {
@@ -343,6 +362,25 @@ export const Schools: CollectionConfig = {
                       },
                     },
                   ],
+                },
+                // Componente per avviso contrasto tema scuro
+                {
+                  type: 'ui',
+                  name: 'darkThemeContrastWarning',
+                  admin: {
+                    components: {
+                      Field: {
+                        path: '@/components/School/ContrastWarning',
+                        clientProps: {
+                          textPrimaryPath: 'darkTheme.textPrimary',
+                          textSecondaryPath: 'darkTheme.textSecondary',
+                          backgroundPrimaryPath: 'darkTheme.backgroundPrimary',
+                          backgroundSecondaryPath: 'darkTheme.backgroundSecondary',
+                          themeName: 'Tema Scuro',
+                        },
+                      },
+                    },
+                  },
                 },
               ],
             },

@@ -85,27 +85,29 @@ export function PricingSection({
       )}
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">Prezzi trasparenti e flessibili</h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
+          <h2 className="text-3xl md:text-5xl font-bold mb-6">Prezzi trasparenti e flessibili</h2>
+          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
             Inizia con 30 giorni di prova gratuita. Nessuna carta di credito richiesta.
           </p>
 
-          <div className="inline-flex items-center gap-4 p-1 bg-background rounded-full border cursor-pointer">
+          <div className="inline-flex items-center gap-1 p-1 bg-background rounded-full border cursor-pointer">
             <Button
               onClick={() => setBillingPeriod('monthly')}
-              className={`px-6 py-2 rounded-full transition-all`}
+              className="px-4 py-1.5 h-auto text-sm rounded-full transition-all"
               variant={billingPeriod === 'monthly' ? 'default' : 'ghost'}
+              size="sm"
             >
               Mensile
             </Button>
             <Button
               onClick={() => setBillingPeriod('yearly')}
-              className={`px-6 py-2 rounded-full transition-all`}
+              className="px-4 py-1.5 h-auto text-sm rounded-full transition-all"
               variant={billingPeriod === 'yearly' ? 'default' : 'ghost'}
+              size="sm"
             >
               Annuale
-              <span className="ml-2 text-xs bg-emerald-700 text-white px-2 py-1 rounded-full">
-                fino al -20%
+              <span className="ml-2 text-[10px] bg-emerald-700 text-white px-2 py-0.5 rounded-full">
+                -20%
               </span>
             </Button>
           </div>
@@ -115,7 +117,7 @@ export function PricingSection({
           {planDetails.map((plan, index) => (
             <SpotlightCard
               key={index}
-              className={plan.highlighted ? 'ring-2 ring-primary scale-105' : ''}
+              className={plan.highlighted ? 'ring-2 ring-primary md:scale-105' : ''}
             >
               {plan.highlighted && (
                 <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-xs font-bold px-4 py-1 rounded-bl-lg rounded-tr-2xl">
@@ -171,9 +173,8 @@ export function PricingSection({
                   }}
                 >
                   <Button
-                    className="w-full mb-2"
+                    className="w-full mb-2 py-2 px-4 h-auto text-base md:text-lg md:py-4"
                     variant={plan.highlighted ? 'default' : 'outline'}
-                    size="lg"
                   >
                     Inizia la prova gratuita
                   </Button>
