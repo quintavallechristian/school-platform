@@ -107,30 +107,7 @@ export const ContrastWarning: React.FC<ContrastWarningProps> = ({
   }
 
   if (warnings.length === 0) {
-    return (
-      <div
-        style={{
-          padding: '16px',
-          marginTop: '16px',
-          marginBottom: '16px',
-          backgroundColor: '#d1fae5',
-          border: '2px solid #10b981',
-          borderRadius: '8px',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-          <span style={{ fontSize: '24px', flexShrink: 0 }}>✅</span>
-          <div>
-            <div style={{ fontWeight: 'bold', color: '#065f46', marginBottom: '4px' }}>
-              Contrasto Accessibile - {themeName}
-            </div>
-            <div style={{ fontSize: '14px', color: '#047857' }}>
-              Tutti i colori rispettano lo standard WCAG 2.1 AA (contrasto minimo 4.5:1)
-            </div>
-          </div>
-        </div>
-      </div>
-    )
+    return
   }
 
   return (
@@ -151,8 +128,8 @@ export const ContrastWarning: React.FC<ContrastWarningProps> = ({
             Avviso Contrasto - {themeName}
           </div>
           <div style={{ fontSize: '14px', color: '#78350f', marginBottom: '12px' }}>
-            I seguenti colori non rispettano il contrasto minimo WCAG 2.1 AA (4.5:1). Questo può
-            rendere il testo difficile da leggere per persone con disabilità visive.
+            La combinazione di colori scelta può rendere il testo difficile da leggere per persone
+            con disabilità visive.
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {warnings.map((warning, index) => (
@@ -182,7 +159,6 @@ export const ContrastWarning: React.FC<ContrastWarningProps> = ({
                       }}
                       title={`Testo: ${warning.textColor}`}
                     />
-                    <span style={{ fontSize: '12px', color: '#6b7280' }}>{warning.textColor}</span>
                   </div>
                   <span style={{ color: '#9ca3af', fontSize: '12px' }}>su</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -196,7 +172,6 @@ export const ContrastWarning: React.FC<ContrastWarningProps> = ({
                       }}
                       title={`Sfondo: ${warning.bgColor}`}
                     />
-                    <span style={{ fontSize: '12px', color: '#6b7280' }}>{warning.bgColor}</span>
                   </div>
                 </div>
                 <div
@@ -215,11 +190,7 @@ export const ContrastWarning: React.FC<ContrastWarningProps> = ({
                     fontSize: '12px',
                     color: '#78350f',
                   }}
-                >
-                  {warning.ratio < 4.5
-                    ? `Mancano ${(4.5 - warning.ratio).toFixed(2)} punti per raggiungere lo standard AA`
-                    : ''}
-                </div>
+                ></div>
               </div>
             ))}
           </div>

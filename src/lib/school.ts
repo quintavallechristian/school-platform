@@ -593,7 +593,8 @@ export function isFeatureEnabled(
     | 'menu'
     | 'documents'
     | 'chiSiamo'
-    | 'parentsArea',
+    | 'parentsArea'
+    | 'teachers',
 ): boolean {
   // Se featureVisibility non è definito, mostra tutte le features per retrocompatibilità
   if (!school.featureVisibility) {
@@ -611,6 +612,7 @@ export function isFeatureEnabled(
     menu: school.featureVisibility.showMenu,
     documents: school.featureVisibility.showDocuments,
     parentsArea: school.featureVisibility.showParentsArea,
+    teachers: school.featureVisibility.showTeachers,
   }
 
   // Se il valore non è esplicitamente definito, mostra la feature per retrocompatibilità

@@ -248,6 +248,9 @@ export const ParentAppointments: CollectionConfig = {
       required: true,
       defaultValue: 'pending',
       label: 'Stato',
+      admin: {
+        position: 'sidebar',
+      },
       options: [
         {
           label: 'In attesa di approvazione',
@@ -285,6 +288,7 @@ export const ParentAppointments: CollectionConfig = {
       type: 'textarea',
       label: 'Note post-incontro',
       admin: {
+        position: 'sidebar',
         description: "Note compilate dopo l'incontro",
       },
       access: {

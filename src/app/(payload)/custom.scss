@@ -1,0 +1,16 @@
+
+:root {
+  --payload-sidebar-width: 260px;
+}
+
+/* Forza lo scroll della sidebar su mobile */
+.nav {
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  max-height: 100vh;
+}
+
+/* Fix per i device con safe area (Android, iOS) */
+.nav {
+  padding-bottom: env(safe-area-inset-bottom);
+}

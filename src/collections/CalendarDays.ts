@@ -16,6 +16,8 @@ export const CalendarDays: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
+    description:
+      'Inserisci gli eventi significativi per la tua scuola, imposta la data di inizio e la eventuale data di fine',
     defaultColumns: ['title', 'type', 'startDate', 'endDate', 'school'],
     group: 'Scuola',
     components: {
@@ -45,19 +47,25 @@ export const CalendarDays: CollectionConfig = {
     {
       name: 'title',
       type: 'text',
+      admin: {
+        description: "Inserisci il titolo dell'evento a calendario",
+      },
       required: true,
       label: 'Titolo',
     },
     {
       name: 'description',
       type: 'textarea',
-      label: 'Descrizione',
+      label: 'Descrizione (opzionale)',
     },
     {
       name: 'type',
       type: 'select',
       required: true,
       label: 'Tipo',
+      admin: {
+        position: 'sidebar',
+      },
       options: [
         {
           label: 'Festività',
@@ -95,6 +103,7 @@ export const CalendarDays: CollectionConfig = {
       required: true,
       label: 'Data inizio',
       admin: {
+        position: 'sidebar',
         date: {
           displayFormat: 'd MMMM yyyy',
           pickerAppearance: 'dayOnly',
@@ -106,6 +115,7 @@ export const CalendarDays: CollectionConfig = {
       type: 'date',
       label: 'Data fine (opzionale)',
       admin: {
+        position: 'sidebar',
         description: 'Lasciare vuoto se è un singolo giorno',
         date: {
           displayFormat: 'd MMMM yyyy',

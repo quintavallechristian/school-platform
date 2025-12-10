@@ -67,8 +67,8 @@ export const pageBlocks: Block[] = [
   {
     slug: 'hero',
     labels: {
-      singular: 'Hero Section',
-      plural: 'Hero Sections',
+      singular: 'Copertina',
+      plural: 'Copertine',
     },
     fields: [
       createBackgroundColorField(),
@@ -114,13 +114,13 @@ export const pageBlocks: Block[] = [
         defaultValue: false,
         admin: {
           description:
-            "Se abilitato, l'immagine di sfondo avrà un effetto parallax durante lo scroll",
+            "Se abilitato, l'immagine di sfondo scrollerà più lentamente della pagina intera",
         },
       },
       {
         name: 'gradientOverlay',
         type: 'checkbox',
-        label: 'Overlay Gradiente',
+        label: 'Sfumatura in sovraimpressione',
         defaultValue: false,
         admin: {
           description:
@@ -329,8 +329,8 @@ export const pageBlocks: Block[] = [
   {
     slug: 'cardGrid',
     labels: {
-      singular: 'Griglia di Card',
-      plural: 'Griglie di Card',
+      singular: 'Griglia',
+      plural: 'Griglie',
     },
     fields: [
       createBackgroundColorField(),

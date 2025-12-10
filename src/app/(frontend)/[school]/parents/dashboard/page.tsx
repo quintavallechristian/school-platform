@@ -8,7 +8,7 @@ import Image from 'next/image'
 import { LogoutButton } from '@/components/Auth/LogoutButton'
 import { ParentLoginTracker } from '@/components/Auth/ParentLoginTracker'
 import Link from 'next/link'
-import { Event } from '@/payload-types'
+import { Event, School } from '@/payload-types'
 import { Button } from '@/components/ui/button'
 import { getPayload } from 'payload'
 import { Settings } from 'lucide-react'
@@ -308,11 +308,16 @@ export default async function ParentsDashboardPage({
                                 {appointment.description}
                               </p>
                             )}
-                            <Link href={`/${school}/eventi/${(appointment?.event as Event)?.id}`}>
-                              <Button size="sm" className="mt-4">
-                                Vai all&apos;evento
-                              </Button>
-                            </Link>
+                            {appointment.event &&
+                              (appointment.school as School)?.featureVisibility?.showEvents && (
+                                <Link
+                                  href={`/${school}/eventi/${(appointment?.event as Event)?.id}`}
+                                >
+                                  <Button size="sm" className="mt-4">
+                                    Vai all&apos;evento
+                                  </Button>
+                                </Link>
+                              )}
                           </div>
                         </SpotlightCard>
                       ))}

@@ -8,6 +8,7 @@ import type { User } from '@/payload-types'
 import { RichTextRenderer } from '@/components/RichTextRenderer/RichTextRenderer'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
+import { JsonLd } from '@/components/SEO/JsonLd'
 
 export default async function ArticlePage({
   params,
@@ -35,8 +36,38 @@ export default async function ArticlePage({
   const author = typeof article.author === 'object' ? (article.author as User) : null
   const gallery = article.gallery && typeof article.gallery === 'object' ? article.gallery : null
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'NewsArticle',
+    headline: article.title,
+    image:
+      article.cover && typeof article.cover === 'object' && article.cover.url
+        ? [article.cover.url]
+        : [],
+    datePublished: article.publishedAt,
+    dateModified: article.updatedAt,
+    author: author
+      ? {
+          '@type': 'Person',
+          name: author.email,
+        }
+      : {
+          '@type': 'Organization',
+          name: school.name,
+        },
+    publisher: {
+      '@type': 'Organization',
+      name: school.name,
+      logo: {
+        '@type': 'ImageObject',
+        url: school.logo && typeof school.logo === 'object' ? school.logo.url : '',
+      },
+    },
+  }
+
   return (
     <div className="min-h-[calc(100vh-200px)]">
+      <JsonLd data={jsonLd} />
       <article className="max-w-full">
         <header>
           <Hero
@@ -73,15 +104,17 @@ export default async function ArticlePage({
 
             {/* Content */}
             {article.content && (
-              <SpotlightCard>
-                <RichTextRenderer content={article.content} />
+              <>
+                <SpotlightCard>
+                  <RichTextRenderer content={article.content} />
+                </SpotlightCard>
                 {/* Author info */}
                 {author && (
                   <div className="mb-6 text-sm text-muted-foreground">
                     Scritto da <span className="font-semibold">{author.email}</span>
                   </div>
                 )}
-              </SpotlightCard>
+              </>
             )}
           </div>
         </div>
@@ -131,14 +164,35 @@ export async function generateMetadata({
     }
   }
 
+  const author = typeof article.author === 'object' ? (article.author as User) : null
+
   return {
     title: `${article.title} - ${school.name}`,
-    description: article.title,
-    openGraph:
-      article.cover && typeof article.cover === 'object' && article.cover.url
-        ? {
-            images: [article.cover.url],
-          }
-        : undefined,
+    description: `Leggi "${article.title}" su ${school.name}.`,
+    openGraph: {
+      title: article.title,
+      description: `Leggi "${article.title}" su ${school.name}.`,
+      type: 'article',
+      publishedTime: article.publishedAt || undefined,
+      modifiedTime: article.updatedAt,
+      authors: author ? [author.email] : undefined,
+      images:
+        article.cover && typeof article.cover === 'object' && article.cover.url
+          ? [article.cover.url]
+          : school.logo && typeof school.logo === 'object' && school.logo.url
+            ? [school.logo.url]
+            : [],
+      siteName: school.name,
+      locale: 'it_IT',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: article.title,
+      description: `Leggi "${article.title}" su ${school.name}.`,
+      images:
+        article.cover && typeof article.cover === 'object' && article.cover.url
+          ? [article.cover.url]
+          : [],
+    },
   }
 }

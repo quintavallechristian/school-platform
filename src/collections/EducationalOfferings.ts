@@ -13,11 +13,13 @@ export const EducationalOfferings: CollectionConfig = {
   slug: 'educational-offerings',
   labels: {
     singular: 'Piano Offerta Formativa',
-    plural: 'Piani Offerta Formativa',
+    plural: 'Piano Offerta Formativa',
   },
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'school'],
+    description:
+      'Qui puoi configurare il tuo piano offerta formativa. Puoi creare più piani offerta formativa diverse e attivarli uno per volta.',
     group: 'Scuola',
     components: {
       beforeList: [
@@ -65,7 +67,7 @@ export const EducationalOfferings: CollectionConfig = {
     {
       name: 'gradientOverlay',
       type: 'checkbox',
-      label: 'Overlay Gradiente sulla Copertina',
+      label: 'Sfumatura in sovraimpressione sulla Copertina',
       defaultValue: false,
       admin: {
         description:

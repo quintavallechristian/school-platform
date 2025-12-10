@@ -12,6 +12,7 @@ import config from '@payload-config'
 import { cookies } from 'next/headers'
 import { EventBooking } from '@/components/Events/EventBooking'
 import { getPayload } from 'payload'
+import { JsonLd } from '@/components/SEO/JsonLd'
 
 export default async function EventPage({
   params,
@@ -99,8 +100,44 @@ export default async function EventPage({
     }
   }
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    name: event.title,
+    startDate: event.date,
+    endDate: event.date, // Assuming single day event if no end date
+    eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    location: event.location
+      ? {
+          '@type': 'Place',
+          name: event.location,
+          address: {
+            '@type': 'PostalAddress',
+            addressLocality: event.location, // Simplified, as we might not have full address structure
+          },
+        }
+      : {
+          '@type': 'Place',
+          name: school.name,
+          address: {
+            '@type': 'PostalAddress',
+            streetAddress: school.contactInfo?.address || '',
+          },
+        },
+    image:
+      event.cover && typeof event.cover === 'object' && event.cover.url ? [event.cover.url] : [],
+    description: event.title, // Or fetch a plain text excerpt if possible
+    organizer: {
+      '@type': 'Organization',
+      name: school.name,
+      url: `${host}/${school.slug}`,
+    },
+  }
+
   return (
     <div className="min-h-[calc(100vh-200px)]">
+      <JsonLd data={jsonLd} />
       <article className="max-w-full">
         <header>
           <Hero
@@ -218,12 +255,26 @@ export async function generateMetadata({
 
   return {
     title: `${event.title} - ${school.name}`,
-    description: event.title,
-    openGraph:
-      event.cover && typeof event.cover === 'object' && event.cover.url
-        ? {
-            images: [event.cover.url],
-          }
-        : undefined,
+    description: `Scopri i dettagli dell'evento "${event.title}" presso ${school.name}.`,
+    openGraph: {
+      title: event.title,
+      description: `Scopri i dettagli dell'evento "${event.title}" presso ${school.name}.`,
+      type: 'website', // There isn't a strict 'event' type in standard OG, 'website' is safe, or custom types. Schema.org handles the 'Event' semantics.
+      images:
+        event.cover && typeof event.cover === 'object' && event.cover.url
+          ? [event.cover.url]
+          : school.logo && typeof school.logo === 'object' && school.logo.url
+            ? [school.logo.url]
+            : [],
+      siteName: school.name,
+      locale: 'it_IT',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: event.title,
+      description: `Scopri i dettagli dell'evento "${event.title}" presso ${school.name}.`,
+      images:
+        event.cover && typeof event.cover === 'object' && event.cover.url ? [event.cover.url] : [],
+    },
   }
 }

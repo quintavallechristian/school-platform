@@ -176,6 +176,9 @@ export const ChildUpdates: CollectionConfig = {
           value: 'event',
         },
       ],
+      admin: {
+        position: 'sidebar',
+      },
     },
     {
       name: 'photos',
@@ -195,6 +198,7 @@ export const ChildUpdates: CollectionConfig = {
       defaultValue: () => new Date().toISOString(),
       label: 'Data pubblicazione',
       admin: {
+        position: 'sidebar',
         date: {
           displayFormat: 'dd/MM/yyyy HH:mm',
         },

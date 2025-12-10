@@ -20,7 +20,8 @@ export const ChiSiamo: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     group: 'Scuola',
-    description: 'Configura i contenuti della pagina Chi Siamo',
+    description:
+      'Qui puoi configurare lo stile della tua pagina Chi Siamo. Puoi creare più pagine diverse e attivarle una per volta. Se non imposti alcuna pagina personalizzata, verrà utilizzata una versione di default.',
     defaultColumns: ['name', 'school', 'isActive'],
     hidden: false,
     components: {
@@ -54,7 +55,7 @@ export const ChiSiamo: CollectionConfig = {
       defaultValue: true,
       admin: {
         position: 'sidebar',
-        description: 'Se disattivata, la pagina non sarà visibile nel frontend',
+        description: 'Se disattivata, la pagina non sarà visibile nel sito',
       },
     },
     {
@@ -131,7 +132,7 @@ export const ChiSiamo: CollectionConfig = {
           defaultValue: false,
           admin: {
             description:
-              "Se abilitato, l'immagine di sfondo avrà un effetto parallax durante lo scroll",
+              "Se abilitato, l'immagine di sfondo scrollerà più lentamente della pagina intera",
             condition: (data, siblingData) =>
               siblingData?.showHero === true && siblingData?.backgroundImage,
           },
@@ -139,7 +140,7 @@ export const ChiSiamo: CollectionConfig = {
         {
           name: 'gradientOverlay',
           type: 'checkbox',
-          label: 'Overlay Gradiente',
+          label: 'Sfumatura in sovraimpressione',
           defaultValue: false,
           admin: {
             description:

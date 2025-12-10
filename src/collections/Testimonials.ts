@@ -39,7 +39,7 @@ export const Testimonials: CollectionConfig = {
       admin: {
         position: 'sidebar',
         description:
-          'Se non approvata, la testimonianza non sarà visibile nel frontend. Solo gli admin possono approvare.',
+          'Se non approvata, la testimonianza non sarà visibile nel sito. Solo gli admin possono approvare.',
       },
     },
     {
@@ -49,7 +49,7 @@ export const Testimonials: CollectionConfig = {
       defaultValue: true,
       admin: {
         position: 'sidebar',
-        description: 'Se disattivata, la testimonianza non sarà visibile nel frontend',
+        description: 'Se disattivata, la testimonianza non sarà visibile nel sito',
       },
     },
     {

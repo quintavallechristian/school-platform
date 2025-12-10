@@ -110,6 +110,7 @@ export const EmailSubscribers: CollectionConfig = {
       label: 'Attivo',
       defaultValue: true,
       admin: {
+        position: 'sidebar',
         description: 'Se disattivato, non riceverà più notifiche',
       },
     },
@@ -119,6 +120,7 @@ export const EmailSubscribers: CollectionConfig = {
       label: 'Data iscrizione',
       defaultValue: () => new Date().toISOString(),
       admin: {
+        position: 'sidebar',
         readOnly: true,
         date: {
           displayFormat: 'd MMMM yyyy HH:mm',
@@ -130,6 +132,7 @@ export const EmailSubscribers: CollectionConfig = {
       type: 'text',
       label: 'Token di disiscrizione',
       admin: {
+        position: 'sidebar',
         readOnly: true,
         description: 'Token unico per la disiscrizione',
       },

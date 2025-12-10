@@ -132,7 +132,7 @@ export const Homepage: CollectionConfig = {
       defaultValue: true,
       admin: {
         position: 'sidebar',
-        description: 'Se disattivata, la testimonianza non sarà visibile nel frontend',
+        description: 'Se disattivata, la testimonianza non sarà visibile nel sito',
       },
     },
     {
@@ -211,7 +211,7 @@ export const Homepage: CollectionConfig = {
           defaultValue: false,
           admin: {
             description:
-              "Se abilitato, l'immagine di sfondo avrà un effetto parallax durante lo scroll",
+              "Se abilitato, l'immagine di sfondo scrollerà più lentamente della pagina intera",
             condition: (data, siblingData) =>
               siblingData?.showHero === true && siblingData?.backgroundImage,
           },
@@ -219,7 +219,7 @@ export const Homepage: CollectionConfig = {
         {
           name: 'gradientOverlay',
           type: 'checkbox',
-          label: 'Overlay Gradiente',
+          label: 'Sfumatura in sovraimpressione',
           defaultValue: false,
           admin: {
             description:

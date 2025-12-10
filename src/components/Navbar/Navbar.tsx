@@ -210,7 +210,7 @@ export default async function Navbar({
                 <div className="flex flex-col gap-3">
                   <ParentsAreaButton
                     href={user ? `${baseHref}/parents/dashboard` : `${baseHref}/parents/login`}
-                    isLoggedIn={!!user}
+                    user={user}
                     className="w-full justify-start"
                   />
                 </div>
@@ -240,11 +240,11 @@ export default async function Navbar({
             </Link>
           </div>
           <GuestNavigationMenu menuItems={menuItems} />
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             {school && isFeatureEnabled(school, 'parentsArea') && (
               <ParentsAreaButton
                 href={user ? `${baseHref}/parents/dashboard` : `${baseHref}/parents/login`}
-                isLoggedIn={!!user}
+                user={user}
               />
             )}
             <ModeToggle />

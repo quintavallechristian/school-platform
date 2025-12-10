@@ -55,7 +55,7 @@ export const Projects: CollectionConfig = {
     {
       name: 'gradientOverlay',
       type: 'checkbox',
-      label: 'Overlay Gradiente sulla Copertina',
+      label: 'Sfumatura in sovraimpressione sulla Copertina',
       defaultValue: false,
       admin: {
         description:

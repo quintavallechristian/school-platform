@@ -371,7 +371,7 @@ export interface Page {
      */
     backgroundImage?: (string | null) | Media;
     /**
-     * Se abilitato, l'immagine di sfondo avrà un effetto parallax durante lo scroll
+     * Se abilitato, l'immagine di sfondo scrollerà più lentamente della pagina intera
      */
     parallax?: boolean | null;
     /**
@@ -432,7 +432,7 @@ export interface Page {
              */
             backgroundImage?: (string | null) | Media;
             /**
-             * Se abilitato, l'immagine di sfondo avrà un effetto parallax durante lo scroll
+             * Se abilitato, l'immagine di sfondo scrollerà più lentamente della pagina intera
              */
             parallax?: boolean | null;
             /**
@@ -763,7 +763,7 @@ export interface Homepage {
    */
   school?: (string | null) | School;
   /**
-   * Se disattivata, la testimonianza non sarà visibile nel frontend
+   * Se disattivata, la testimonianza non sarà visibile nel sito
    */
   isActive?: boolean | null;
   /**
@@ -795,7 +795,7 @@ export interface Homepage {
      */
     backgroundImage?: (string | null) | Media;
     /**
-     * Se abilitato, l'immagine di sfondo avrà un effetto parallax durante lo scroll
+     * Se abilitato, l'immagine di sfondo scrollerà più lentamente della pagina intera
      */
     parallax?: boolean | null;
     /**
@@ -856,7 +856,7 @@ export interface Homepage {
              */
             backgroundImage?: (string | null) | Media;
             /**
-             * Se abilitato, l'immagine di sfondo avrà un effetto parallax durante lo scroll
+             * Se abilitato, l'immagine di sfondo scrollerà più lentamente della pagina intera
              */
             parallax?: boolean | null;
             /**
@@ -1129,7 +1129,7 @@ export interface Homepage {
   createdAt: string;
 }
 /**
- * Configura i contenuti della pagina Privacy Policy
+ * Qui puoi configurare la Privacy Policy. Puoi creare più Privacy Policy diverse e attivarle una per volta. Se non imposti alcuna Privacy Policy personalizzata, verrà utilizzata una versione di default.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "privacy-policy".
@@ -1141,7 +1141,7 @@ export interface PrivacyPolicy {
    */
   school?: (string | null) | School;
   /**
-   * Se disattivata, la testimonianza non sarà visibile nel frontend
+   * Se disattivata, la testimonianza non sarà visibile nel sito
    */
   isActive?: boolean | null;
   /**
@@ -1170,7 +1170,7 @@ export interface PrivacyPolicy {
   createdAt: string;
 }
 /**
- * Configura i contenuti della pagina Chi Siamo
+ * Qui puoi configurare lo stile della tua pagina Chi Siamo. Puoi creare più pagine diverse e attivarle una per volta. Se non imposti alcuna pagina personalizzata, verrà utilizzata una versione di default.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "chi-siamo".
@@ -1182,7 +1182,7 @@ export interface ChiSiamo {
    */
   school?: (string | null) | School;
   /**
-   * Se disattivata, la pagina non sarà visibile nel frontend
+   * Se disattivata, la pagina non sarà visibile nel sito
    */
   isActive?: boolean | null;
   /**
@@ -1214,7 +1214,7 @@ export interface ChiSiamo {
      */
     backgroundImage?: (string | null) | Media;
     /**
-     * Se abilitato, l'immagine di sfondo avrà un effetto parallax durante lo scroll
+     * Se abilitato, l'immagine di sfondo scrollerà più lentamente della pagina intera
      */
     parallax?: boolean | null;
     /**
@@ -1350,6 +1350,8 @@ export interface Project {
   createdAt: string;
 }
 /**
+ * Qui puoi configurare il tuo piano offerta formativa. Puoi creare più piani offerta formativa diverse e attivarli uno per volta.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "educational-offerings".
  */
@@ -1392,6 +1394,8 @@ export interface EducationalOffering {
   createdAt: string;
 }
 /**
+ * Inserisci gli eventi significativi per la tua scuola, imposta la data di inizio e la eventuale data di fine
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "calendar-days".
  */
@@ -1401,6 +1405,9 @@ export interface CalendarDay {
    * Scuola a cui appartiene questo evento del calendario
    */
   school?: (string | null) | School;
+  /**
+   * Inserisci il titolo dell'evento a calendario
+   */
   title: string;
   description?: string | null;
   type: 'holiday' | 'closure' | 'event' | 'trip';
@@ -1789,11 +1796,11 @@ export interface Testimonial {
    */
   school?: (string | null) | School;
   /**
-   * Se non approvata, la testimonianza non sarà visibile nel frontend. Solo gli admin possono approvare.
+   * Se non approvata, la testimonianza non sarà visibile nel sito. Solo gli admin possono approvare.
    */
   approved?: boolean | null;
   /**
-   * Se disattivata, la testimonianza non sarà visibile nel frontend
+   * Se disattivata, la testimonianza non sarà visibile nel sito
    */
   isActive?: boolean | null;
   /**

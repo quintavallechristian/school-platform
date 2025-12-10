@@ -12,8 +12,47 @@ import { ConditionalGenericNavbar } from '@/components/Navbar/ConditionalGeneric
 import { getPayload } from 'payload'
 
 export const metadata: Metadata = {
-  title: 'Scuole infanzia',
-  description: 'Descrizione di scuole infanzia',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SERVER_URL || 'https://www.scuoleinfanzia.eu'),
+  title: {
+    template: '%s | Scuole Infanzia',
+    default: 'Scuole Infanzia | Il portale delle scuole materne',
+  },
+  description:
+    "Benvenuto su Scuole Infanzia, la piattaforma dedicata alla gestione e comunicazione delle scuole dell'infanzia in Italia.",
+  keywords: [
+    'scuola infanzia',
+    'asilo nido',
+    'scuola materna',
+    'gestione scuola',
+    'comunicazioni scuola famiglia',
+  ],
+  authors: [{ name: 'Scuole Infanzia Team' }],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  openGraph: {
+    title: 'Scuole Infanzia | Il portale delle scuole materne',
+    description:
+      "Benvenuto su Scuole Infanzia, la piattaforma dedicata alla gestione e comunicazione delle scuole dell'infanzia in Italia.",
+    url: 'https://www.scuoleinfanzia.eu',
+    siteName: 'Scuole Infanzia',
+    locale: 'it_IT',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Scuole Infanzia',
+    description:
+      "Benvenuto su Scuole Infanzia, la piattaforma dedicata alla gestione e comunicazione delle scuole dell'infanzia in Italia.",
+  },
 }
 
 export default async function RootLayout({

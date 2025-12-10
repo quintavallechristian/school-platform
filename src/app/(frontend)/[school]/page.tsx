@@ -18,6 +18,7 @@ import PageBlocks from '@/components/PageBlocks/PageBlocks'
 import type { Homepage as HomepageType } from '@/payload-types'
 import type { ShapeDividerStyle } from '@/components/ShapeDivider/ShapeDivider'
 import EmptyArea from '@/components/EmptyArea/EmptyArea'
+import { JsonLd } from '@/components/SEO/JsonLd'
 
 type PageProps = {
   params: Promise<{ school: string }>
@@ -126,8 +127,33 @@ export default async function SchoolHomePage({ params }: PageProps) {
         }),
   ])
 
+  /* Structured Data for SEO */
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'School',
+    name: school.name,
+    description: `Sito ufficiale di ${school.name}`,
+    url: `${host ? `https://${host}` : baseHref}`, // Best effort URL
+    logo: school.logo && typeof school.logo === 'object' ? school.logo.url : undefined,
+    contactPoint: {
+      '@type': 'ContactPoint',
+      telephone: school.contactInfo?.phone,
+      email: school.contactInfo?.email,
+      contactType: 'customer service',
+    },
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: school.contactInfo?.address,
+      addressCountry: 'IT',
+    },
+    sameAs: [
+      // Add social links here if available in the future
+    ],
+  }
+
   return (
     <div className="min-h-screen">
+      <JsonLd data={jsonLd} />
       <Hero
         title={school.name}
         subtitle="Scopri le ultime notizie, eventi e storie dalla nostra comunità scolastica"

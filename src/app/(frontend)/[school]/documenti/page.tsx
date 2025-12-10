@@ -1,15 +1,15 @@
 import { notFound, redirect } from 'next/navigation'
 import { getCurrentSchool, isFeatureEnabled } from '@/lib/school'
 import { getSchoolBaseHref } from '@/lib/linkUtils'
-import { headers } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import Hero from '@/components/Hero/Hero'
 import { Breadcrumbs } from '@/components/Breadcrumbs/Breadcrumbs'
 
 import { getPayload } from 'payload'
 import config from '@/payload.config'
-import { Document, Media } from '@/payload-types'
+import { Document, Media, User } from '@/payload-types'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
-import { Star, FileX } from 'lucide-react'
+import { Star, FileX, Download } from 'lucide-react'
 import EmptyArea from '@/components/EmptyArea/EmptyArea'
 import DownloadLink from '@/components/DownloadLink/DownloadLink'
 
@@ -39,6 +39,19 @@ async function getSchoolDocuments(schoolId: string) {
 export default async function DocumentiPage({ params }: { params: Promise<{ school: string }> }) {
   const { school: schoolSlug } = await params
   const school = await getCurrentSchool(schoolSlug)
+
+  const payload = await getPayload({ config })
+  // Get user from payload-token cookie
+  const cookieStore = await cookies()
+  const token = cookieStore.get('payload-token')?.value
+
+  let user: User | null = null
+  try {
+    const result = await payload.auth({ headers: new Headers({ Authorization: `JWT ${token}` }) })
+    user = result.user
+  } catch (error) {
+    console.error('Auth error:', error)
+  }
 
   if (!school) {
     notFound()
@@ -135,57 +148,60 @@ export default async function DocumentiPage({ params }: { params: Promise<{ scho
 
         {documentSections.length > 0 ? (
           <div className="space-y-16">
-            {documentSections.map((section) => (
-              <div key={section.id}>
-                {/* Titolo della sezione */}
-                <div className="mb-8">
-                  <h2 className="text-3xl font-bold mb-2 text-primary">{section.title}</h2>
-                  {section.description && (
-                    <p className="text-muted-foreground text-lg">{section.description}</p>
-                  )}
-                </div>
+            {documentSections.map((section) =>
+              section.requiresAuth && !user ? null : (
+                <div key={section.id}>
+                  {/* Titolo della sezione */}
+                  <div className="mb-8">
+                    <h2 className="text-3xl font-bold mb-2 text-primary">{section.title}</h2>
+                    {section.description && (
+                      <p className="text-muted-foreground text-lg">{section.description}</p>
+                    )}
+                  </div>
 
-                {/* Grid di card per i documenti */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {section.files?.map((fileItem, idx) => {
-                    const file =
-                      typeof fileItem.file === 'object' && fileItem.file !== null
-                        ? fileItem.file
-                        : null
-                    if (!file) return null
+                  {/* Grid di card per i documenti */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {section.files?.map((fileItem, idx) => {
+                      const file =
+                        typeof fileItem.file === 'object' && fileItem.file !== null
+                          ? fileItem.file
+                          : null
+                      if (!file) return null
 
-                    return (
-                      <SpotlightCard key={idx} className="px-4 py-4">
-                        <div className="flex h-full items-center">
-                          <div className="flex-1">
-                            <h3 className="text-lg font-medium">
-                              {fileItem.title || file.filename || 'Documento'}
-                            </h3>
+                      return (
+                        <SpotlightCard key={idx} className="px-4 py-4">
+                          <div className="flex h-full items-center">
+                            <div className="flex-1">
+                              <h3 className="text-lg font-medium">
+                                {fileItem.title || file.filename || 'Documento'}
+                              </h3>
 
-                            {fileItem.description && (
-                              <p className="text-sm text-muted-foreground">
-                                {fileItem.description}
-                              </p>
-                            )}
+                              {fileItem.description && (
+                                <p className="text-sm text-muted-foreground">
+                                  {fileItem.description}
+                                </p>
+                              )}
+                            </div>
+
+                            <DownloadLink
+                              url={file.url || '#'}
+                              fileName={fileItem.title || file.filename || 'Documento'}
+                              mimeType={file.mimeType || undefined}
+                              category={section.title}
+                              size="sm"
+                              aria-label="Scarica documento"
+                            >
+                              <Download className="h-4 w-4" />
+                              <span className="sr-only">Scarica</span>
+                            </DownloadLink>
                           </div>
-
-                          <DownloadLink
-                            url={file.url || '#'}
-                            fileName={fileItem.title || file.filename || 'Documento'}
-                            mimeType={file.mimeType || undefined}
-                            category={section.title}
-                            size="sm"
-                            aria-label="Scarica documento"
-                          >
-                            <span className="sr-only">Scarica</span>
-                          </DownloadLink>
-                        </div>
-                      </SpotlightCard>
-                    )
-                  })}
+                        </SpotlightCard>
+                      )
+                    })}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ),
+            )}
           </div>
         ) : (
           <SpotlightCard className="max-w-4xl mx-auto px-0 py-0">

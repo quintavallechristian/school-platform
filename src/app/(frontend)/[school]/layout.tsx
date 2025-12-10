@@ -137,7 +137,7 @@ export default async function SchoolLayout({
       </main>
 
       {/* Footer con info della scuola */}
-      <footer role="contentinfo" className="bg-[var(--color-background-primary)] border-t">
+      <footer role="contentinfo" className="bg-(--color-background-primary) border-t">
         <div className="container mx-auto px-4 py-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Info scuola */}
@@ -293,10 +293,27 @@ export async function generateMetadata({ params }: { params: Promise<{ school: s
   return {
     title: school.name,
     description: `Sito ufficiale di ${school.name}`,
+    icons:
+      school.logo && typeof school.logo === 'object' && school.logo.url
+        ? [{ rel: 'icon', url: school.logo.url }]
+        : [],
     openGraph: {
       title: school.name,
       description: `Sito ufficiale di ${school.name}`,
+      url: `https://${school.slug}.scuoleinfanzia.eu`, // Assuming subdomain or similar structure, adjust if needed based on baseHref logic
+      siteName: school.name,
+      locale: 'it_IT',
+      type: 'website',
       images: school.logo && typeof school.logo === 'object' ? [school.logo.url || ''] : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: school.name,
+      description: `Sito ufficiale di ${school.name}`,
+      images: school.logo && typeof school.logo === 'object' ? [school.logo.url || ''] : [],
+    },
+    alternates: {
+      canonical: `/${school.slug}`,
     },
   }
 }

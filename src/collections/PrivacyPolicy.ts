@@ -12,7 +12,8 @@ export const PrivacyPolicy: CollectionConfig = {
   slug: 'privacy-policy',
   admin: {
     group: 'Configurazione sito',
-    description: 'Configura i contenuti della pagina Privacy Policy',
+    description:
+      'Qui puoi configurare la Privacy Policy. Puoi creare più Privacy Policy diverse e attivarle una per volta. Se non imposti alcuna Privacy Policy personalizzata, verrà utilizzata una versione di default.',
     defaultColumns: ['name', 'school', 'isActive'],
   },
   access: {
@@ -33,7 +34,7 @@ export const PrivacyPolicy: CollectionConfig = {
       defaultValue: true,
       admin: {
         position: 'sidebar',
-        description: 'Se disattivata, la testimonianza non sarà visibile nel frontend',
+        description: 'Se disattivata, la testimonianza non sarà visibile nel sito',
       },
     },
     {

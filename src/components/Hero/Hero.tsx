@@ -225,7 +225,7 @@ export default function Hero({
           >
             <Image src={bgImageUrl} alt="" fill className="object-cover" priority quality={90} />
           </div>
-          {/* Overlay gradiente per migliorare la leggibilità */}
+          {/* Sfumatura in sovraimpressione per migliorare la leggibilità */}
           {gradientOverlay && (
             <div
               className="absolute inset-0 z-0"

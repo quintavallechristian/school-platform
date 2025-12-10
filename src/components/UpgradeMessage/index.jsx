@@ -134,40 +134,20 @@ export const UpgradeMessage = ({ requiredPlan, featureName, featureFlag }) => {
   // Messaggio per piano inadeguato
   if (messageType === 'upgrade') {
     return (
-      <div
-        style={{
-          padding: '2rem',
-          margin: '2rem 4rem',
-          backgroundColor: '#FEF3C7',
-          border: '2px solid #F59E0B',
-          borderRadius: '8px',
-          textAlign: 'center',
-        }}
-      >
-        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔒</div>
-        <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#92400E' }}>
+      <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-8 rounded-lg relative mx-4 md:mx-16 my-8 text-center">
+        <div className="text-5xl mb-4">🔒</div>
+        <h2 className="text-2xl font-bold mb-2 text-yellow-900">
           Funzionalità non disponibile
         </h2>
-        <p style={{ fontSize: '1rem', color: '#78350F', marginBottom: '1rem' }}>
+        <p className="text-base text-yellow-900 mb-4">
           La funzionalità <strong>{featureName}</strong> richiede il piano <strong>{planNames[requiredPlan]}</strong>.
         </p>
-        <p style={{ fontSize: '0.875rem', color: '#78350F', marginBottom: '1.5rem' }}>
+        <p className="text-sm text-yellow-900 mb-6">
           Il tuo piano attuale: <strong>{currentPlan.charAt(0).toUpperCase() + currentPlan.slice(1)}</strong>
         </p>
         <Link
           href="/admin/collections/schools"
-          style={{
-            display: 'inline-block',
-            padding: '0.75rem 1.5rem',
-            backgroundColor: '#F59E0B',
-            color: 'white',
-            borderRadius: '6px',
-            textDecoration: 'none',
-            fontWeight: '600',
-            transition: 'background-color 0.2s',
-          }}
-          onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#D97706')}
-          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#F59E0B')}
+          className="inline-block px-6 py-3 bg-amber-500 text-white rounded-md font-semibold hover:bg-amber-600 transition-colors"
         >
           Aggiorna al piano {planNames[requiredPlan]}
         </Link>
@@ -177,37 +157,17 @@ export const UpgradeMessage = ({ requiredPlan, featureName, featureFlag }) => {
   
   if (messageType === 'disabled') {
     return (
-      <div
-        style={{
-          padding: '2rem',
-          margin: '2rem 4rem',
-          backgroundColor: '#DBEAFE',
-          border: '2px solid #3B82F6',
-          borderRadius: '8px',
-          textAlign: 'center',
-        }}
-      >
-        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚙️</div>
-        <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#1E40AF' }}>
+      <div className="bg-blue-100 border border-blue-500 text-blue-900 px-4 py-8 rounded-lg mx-4 md:mx-16 my-8 text-center">
+        <div className="text-5xl mb-4">⚙️</div>
+        <h2 className="text-2xl font-bold mb-2 text-blue-800">
           Funzionalità disabilitata
         </h2>
-        <p style={{ fontSize: '1rem', color: '#1E3A8A', marginBottom: '1.5rem' }}>
+        <p className="text-base text-blue-900 mb-6">
           Abilitala nelle impostazioni scuola per poterla usare.
         </p>
         <Link
           href={`/admin/collections/schools/${schoolId}`}
-          style={{
-            display: 'inline-block',
-            padding: '0.75rem 1.5rem',
-            backgroundColor: '#3B82F6',
-            color: 'white',
-            borderRadius: '6px',
-            textDecoration: 'none',
-            fontWeight: '600',
-            transition: 'background-color 0.2s',
-          }}
-          onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#2563EB')}
-          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#3B82F6')}
+          className="inline-block px-6 py-3 bg-blue-500 text-white rounded-md font-semibold hover:bg-blue-600 transition-colors"
         >
           Vai alle impostazioni scuola
         </Link>

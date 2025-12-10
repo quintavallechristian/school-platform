@@ -40,9 +40,9 @@ const ColorPickerField: TextFieldClientComponent = ({ field, path }) => {
         />
         <input
           type="text"
-          value={value || '#000000'}
+          value={value || ''}
           onChange={(e) => handleChange(e.target.value)}
-          placeholder="#000000"
+          placeholder="Trasparente"
           pattern="^#[0-9A-Fa-f]{6}$"
           style={{
             flex: 1,

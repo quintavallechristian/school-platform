@@ -222,7 +222,7 @@ export const Pages: CollectionConfig = {
           defaultValue: false,
           admin: {
             description:
-              "Se abilitato, l'immagine di sfondo avrà un effetto parallax durante lo scroll",
+              "Se abilitato, l'immagine di sfondo scrollerà più lentamente della pagina intera",
             condition: (data, siblingData) =>
               siblingData?.showHero === true && siblingData?.backgroundImage,
           },
@@ -230,7 +230,7 @@ export const Pages: CollectionConfig = {
         {
           name: 'gradientOverlay',
           type: 'checkbox',
-          label: 'Overlay Gradiente',
+          label: 'Sfumatura in sovraimpressione',
           defaultValue: false,
           admin: {
             description:
