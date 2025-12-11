@@ -130,12 +130,7 @@ export default function PageBlocks({ blocks, schoolId, schoolSlug, baseHref }: P
           return (
             <div key={index} className={wrapperClass} style={bgStyle.style}>
               <div className="max-w-5xl mx-auto px-4">
-                <CommunicationsBlock
-                  block={block}
-                  schoolId={schoolId}
-                  schoolSlug={schoolSlug}
-                  baseHref={baseHref}
-                />
+                <CommunicationsBlock block={block} schoolId={schoolId} baseHref={baseHref} />
               </div>
             </div>
           )
