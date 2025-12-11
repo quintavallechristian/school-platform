@@ -1,9 +1,10 @@
 import { getCurrentSchool, isFeatureEnabled } from '@/lib/school'
 import { redirect } from 'next/navigation'
 import { ParentsTermsGuard } from '@/components/ParentsTermsGuard'
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { getSchoolBaseHref } from '@/lib/linkUtils'
 
 export default async function ParentsLayout({
   children,
@@ -21,6 +22,10 @@ export default async function ParentsLayout({
   if (!school) {
     redirect('/')
   }
+
+  const headersList = await headers()
+  const host = headersList.get('host') || ''
+  const baseHref = getSchoolBaseHref(school, host)
 
   // Check if parents area feature is enabled
   if (!isFeatureEnabled(school, 'parentsArea')) {
@@ -43,7 +48,7 @@ export default async function ParentsLayout({
   }
 
   return (
-    <ParentsTermsGuard initialUser={user} schoolSlug={schoolSlug}>
+    <ParentsTermsGuard initialUser={user} baseHref={baseHref}>
       {children}
     </ParentsTermsGuard>
   )

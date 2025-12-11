@@ -9,13 +9,13 @@ import { Label } from './ui/label'
 interface ParentsTermsGuardProps {
   children: React.ReactNode
   initialUser: User | null
-  schoolSlug: string
+  baseHref: string
 }
 
 export const ParentsTermsGuard: React.FC<ParentsTermsGuardProps> = ({
   children,
   initialUser,
-  schoolSlug,
+  baseHref,
 }) => {
   const [needsAcceptance, setNeedsAcceptance] = useState(false)
   const [privacyAccepted, setPrivacyAccepted] = useState(false)
@@ -92,7 +92,7 @@ export const ParentsTermsGuard: React.FC<ParentsTermsGuardProps> = ({
               />
               <span>
                 Ho letto e accetto la{' '}
-                <a href={`/${schoolSlug}/privacy-policy`} target="_blank" rel="noopener noreferrer">
+                <a href={`${baseHref}/privacy-policy`} target="_blank" rel="noopener noreferrer">
                   Privacy Policy
                 </a>
               </span>
@@ -107,7 +107,7 @@ export const ParentsTermsGuard: React.FC<ParentsTermsGuardProps> = ({
               />
               <span>
                 Ho letto e accetto i{' '}
-                <a href={`/${schoolSlug}/tos`} target="_blank" rel="noopener noreferrer">
+                <a href={`${baseHref}/tos`} target="_blank" rel="noopener noreferrer">
                   Termini di Servizio
                 </a>
               </span>

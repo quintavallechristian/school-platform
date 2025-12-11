@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { headers } from 'next/headers'
+import { getSchoolBaseHref } from '@/lib/linkUtils'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
@@ -39,6 +41,10 @@ export async function POST(req: NextRequest) {
 
     const school = schools.docs[0]
 
+    const headersList = await headers()
+    const host = headersList.get('host') || ''
+    const baseHref = getSchoolBaseHref(school, host)
+
     // Security Check: Verify user has access to this school
     if (user.role !== 'super-admin') {
       const userSchoolIds = (user.schools || []).map((s) => (typeof s === 'string' ? s : s.id))
@@ -64,8 +70,8 @@ export async function POST(req: NextRequest) {
           schoolSlug: schoolSlug,
         },
       },
-      success_url: `${process.env.NEXT_PUBLIC_URL}/${schoolSlug}/welcome?subscribed=1`,
-      cancel_url: `${process.env.NEXT_PUBLIC_URL}/${schoolSlug}`,
+      success_url: `/${baseHref}/welcome?subscribed=1`,
+      cancel_url: `/${baseHref}`,
     }
 
     // If school already has a Stripe customer ID, use it

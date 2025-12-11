@@ -1,9 +1,11 @@
 import { notFound, redirect } from 'next/navigation'
+import { headers } from 'next/headers'
 import { getCurrentSchool, getSchoolCalendarDays, isFeatureEnabled } from '@/lib/school'
 import { CalendarView } from '@/components/CalendarView/CalendarView'
 import Hero from '@/components/Hero/Hero'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import EmptyArea from '@/components/EmptyArea/EmptyArea'
+import { getSchoolBaseHref } from '@/lib/linkUtils'
 
 export default async function CalendarioPage({ params }: { params: Promise<{ school: string }> }) {
   const { school: schoolSlug } = await params
@@ -12,6 +14,10 @@ export default async function CalendarioPage({ params }: { params: Promise<{ sch
   if (!school) {
     notFound()
   }
+
+  const headersList = await headers()
+  const host = headersList.get('host') || ''
+  const baseHref = getSchoolBaseHref(school, host)
 
   // Reindirizza alla homepage se la feature calendario è disabilitata
   if (!isFeatureEnabled(school, 'calendar')) {
@@ -31,7 +37,7 @@ export default async function CalendarioPage({ params }: { params: Promise<{ sch
       <div className="container mx-auto px-4 py-12">
         {/* Calendar */}
         {calendarDays.length > 0 ? (
-          <CalendarView calendarDays={calendarDays} schoolSlug={schoolSlug} />
+          <CalendarView calendarDays={calendarDays} baseHref={baseHref} />
         ) : (
           <SpotlightCard className="max-w-4xl mx-auto -mt-16 px-0 py-0">
             <EmptyArea title="Nessun evento in calendario al momento." message="" />

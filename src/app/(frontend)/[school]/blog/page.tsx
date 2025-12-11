@@ -43,7 +43,7 @@ export default async function BlogPage({ params }: { params: Promise<{ school: s
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {articles.map((article) => (
               <SpotlightCard key={article.id} className="px-0 py-0">
-                <Link href={`/${schoolSlug}/blog/${article.slug}`}>
+                <Link href={`${baseHref}/blog/${article.slug}`}>
                   {article.cover && typeof article.cover === 'object' && article.cover.url && (
                     <div className="relative h-56 w-full overflow-hidden">
                       <Image

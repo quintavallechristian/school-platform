@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
 import { LogOut } from 'lucide-react'
 
-export const LogoutButton = ({ schoolSlug }: { schoolSlug: string }) => {
+export const LogoutButton = ({ baseHref }: { baseHref: string }) => {
   const router = useRouter()
 
   const handleLogout = async () => {
@@ -15,7 +15,7 @@ export const LogoutButton = ({ schoolSlug }: { schoolSlug: string }) => {
           'Content-Type': 'application/json',
         },
       })
-      router.push(`/${schoolSlug}/parents/login`)
+      router.push(`${baseHref}/parents/login`)
       router.refresh()
     } catch (error) {
       console.error('Logout failed', error)

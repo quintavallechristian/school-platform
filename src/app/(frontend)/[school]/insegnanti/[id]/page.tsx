@@ -6,6 +6,8 @@ import { getPayload } from 'payload'
 import configPromise from '@/payload.config'
 import Hero from '@/components/Hero/Hero'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
+import { getSchoolBaseHref } from '@/lib/linkUtils'
+import { headers } from 'next/headers'
 
 type PageProps = {
   params: Promise<{ school: string; id: string }>
@@ -38,6 +40,10 @@ export default async function InsegnanteDetailPage({ params }: PageProps) {
   if (!teacher) {
     notFound()
   }
+
+  const headersList = await headers()
+  const host = headersList.get('host') || ''
+  const baseHref = getSchoolBaseHref(school, host)
 
   return (
     <div className="min-h-screen pt-0 pb-8">
@@ -94,7 +100,7 @@ export default async function InsegnanteDetailPage({ params }: PageProps) {
       </div>
       <nav className="mt-8 text-sm">
         <Link
-          href={`/${schoolSlug}/insegnanti`}
+          href={`${baseHref}/insegnanti`}
           className="text-primary hover:underline inline-flex items-center gap-2"
         >
           ← Torna agli insegnanti

@@ -9,6 +9,8 @@ import { RichTextRenderer } from '@/components/RichTextRenderer/RichTextRenderer
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 import { JsonLd } from '@/components/SEO/JsonLd'
+import { getSchoolBaseHref } from '@/lib/linkUtils'
+import { headers } from 'next/headers'
 
 export default async function ArticlePage({
   params,
@@ -33,6 +35,9 @@ export default async function ArticlePage({
     notFound()
   }
 
+  const headersList = await headers()
+  const host = headersList.get('host') || ''
+  const baseHref = getSchoolBaseHref(school, host)
   const author = typeof article.author === 'object' ? (article.author as User) : null
   const gallery = article.gallery && typeof article.gallery === 'object' ? article.gallery : null
 
@@ -91,11 +96,11 @@ export default async function ArticlePage({
           <div className="max-w-4xl mx-auto">
             {/* Breadcrumb */}
             <nav className="mb-8 text-sm">
-              <Link href={`/${schoolSlug}`} className="text-primary hover:underline">
+              <Link href={`${baseHref}`} className="text-primary hover:underline">
                 Home
               </Link>
               {' / '}
-              <Link href={`/${schoolSlug}/blog`} className="text-primary hover:underline">
+              <Link href={`${baseHref}/blog`} className="text-primary hover:underline">
                 Blog
               </Link>
               {' / '}
@@ -129,7 +134,7 @@ export default async function ArticlePage({
 
         <footer className="px-8 pb-8">
           <div className="max-w-4xl mx-auto">
-            <Link href={`/${schoolSlug}/blog`}>
+            <Link href={`${baseHref}/blog`}>
               <Button variant="ghost">
                 <ArrowLeft className="h-4 w-4" />
                 Torna al Blog

@@ -47,7 +47,7 @@ export default async function EventsPage({ params }: { params: Promise<{ school:
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {upcomingEvents.map((event: Event) => (
                   <SpotlightCard key={event.id} className="px-0 py-0">
-                    <Link href={`/${schoolSlug}/eventi/${event.id}`}>
+                    <Link href={`${baseHref}/eventi/${event.id}`}>
                       {event.cover && typeof event.cover === 'object' && event.cover.url && (
                         <div className="relative h-48 w-full overflow-hidden">
                           <Image
@@ -88,7 +88,7 @@ export default async function EventsPage({ params }: { params: Promise<{ school:
                     className="block rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-xl transition-all duration-300 border-l-4 border-muted opacity-80"
                     bgClassName="bg-card"
                   >
-                    <Link href={`/${schoolSlug}/eventi/${event.id}`}>
+                    <Link href={`${baseHref}/eventi/${event.id}`}>
                       {event.cover && typeof event.cover === 'object' && event.cover.url && (
                         <div className="relative h-48 w-full overflow-hidden">
                           <Image

@@ -5,6 +5,8 @@ import { CommunicationsList } from '@/components/CommunicationsList/Communicatio
 import { EmailSubscription } from '@/components/EmailSubscription/EmailSubscription'
 import EmptyArea from '@/components/EmptyArea/EmptyArea'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
+import { headers } from 'next/headers'
+import { getSchoolBaseHref } from '@/lib/linkUtils'
 
 export default async function ComunicazioniPage({
   params,
@@ -25,6 +27,10 @@ export default async function ComunicazioniPage({
 
   const { docs: communications } = await getSchoolCommunications(school.id)
 
+  const headersList = await headers()
+  const host = headersList.get('host') || ''
+  const baseHref = getSchoolBaseHref(school, host)
+
   return (
     <>
       <Hero title="Comunicazioni di Servizio" />
@@ -37,7 +43,7 @@ export default async function ComunicazioniPage({
         )}
 
         {communications.length > 0 ? (
-          <CommunicationsList communications={communications} schoolSlug={schoolSlug} />
+          <CommunicationsList communications={communications} baseHref={baseHref} />
         ) : (
           <SpotlightCard className="px-0 py-0">
             <EmptyArea

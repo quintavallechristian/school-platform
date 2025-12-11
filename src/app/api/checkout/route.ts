@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { headers } from 'next/headers'
+import { getSchoolBaseHref } from '@/lib/linkUtils'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
@@ -17,6 +19,26 @@ export async function POST(req: Request) {
     }
 
     const { priceId, schoolId, schoolSlug, userId } = await req.json()
+
+    // Find the school
+    const schools = await payload.find({
+      collection: 'schools',
+      where: {
+        slug: {
+          equals: schoolSlug,
+        },
+      },
+      limit: 1,
+    })
+
+    if (schools.docs.length === 0) {
+      return NextResponse.json({ error: 'Scuola non trovata' }, { status: 404 })
+    }
+
+    const school = schools.docs[0]
+    const headersList = await headers()
+    const host = headersList.get('host') || ''
+    const baseHref = getSchoolBaseHref(school, host)
 
     // 2. Security Check: Validate User
     // Ensure the user initiating the checkout is the same as the one in the body,
@@ -43,8 +65,8 @@ export async function POST(req: Request) {
           schoolSlug,
         },
       },
-      success_url: `${process.env.NEXT_PUBLIC_URL}/${schoolSlug}/welcome?success=1`,
-      cancel_url: `${process.env.NEXT_PUBLIC_URL}/`,
+      success_url: `/${baseHref}/welcome?subscribed=1`,
+      cancel_url: `/${baseHref}`,
     })
 
     return NextResponse.json({ url: session.url })

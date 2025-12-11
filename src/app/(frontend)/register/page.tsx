@@ -59,7 +59,14 @@ function SignupContent() {
 
   if (!priceId || priceId === '' || !priceIdList.includes(priceId)) {
     return (
-      <EmptyArea title="Piano non selezionato" message="Seleziona un piano prima di registrarti." />
+      <div className="py-40">
+        <SpotlightCard className="max-w-6xl mx-auto">
+          <EmptyArea
+            title="Piano non selezionato"
+            message="Seleziona un piano prima di registrarti."
+          />
+        </SpotlightCard>
+      </div>
     )
   }
 

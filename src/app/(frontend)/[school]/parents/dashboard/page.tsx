@@ -1,6 +1,6 @@
 import config from '@payload-config'
-import { redirect } from 'next/navigation'
-import { cookies } from 'next/headers'
+import { notFound, redirect } from 'next/navigation'
+import { cookies, headers } from 'next/headers'
 import Hero from '@/components/Hero/Hero'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import { RichTextRenderer } from '@/components/RichTextRenderer/RichTextRenderer'
@@ -12,13 +12,20 @@ import { Event, School } from '@/payload-types'
 import { Button } from '@/components/ui/button'
 import { getPayload } from 'payload'
 import { Settings } from 'lucide-react'
+import { getSchoolBaseHref } from '@/lib/linkUtils'
+import { getCurrentSchool } from '@/lib/school'
 
 export default async function ParentsDashboardPage({
   params,
 }: {
   params: Promise<{ school: string }>
 }) {
-  const { school } = await params
+  const { school: schoolSlug } = await params
+  const school = await getCurrentSchool(schoolSlug)
+
+  if (!school) {
+    notFound()
+  }
   const payload = await getPayload({ config })
 
   // Get user from payload-token cookie
@@ -70,6 +77,10 @@ export default async function ParentsDashboardPage({
     depth: 2,
   })
 
+  const headersList = await headers()
+  const host = headersList.get('host') || ''
+  const baseHref = getSchoolBaseHref(school, host)
+
   return (
     <div className="min-h-screen bg-background">
       <ParentLoginTracker />
@@ -90,7 +101,7 @@ export default async function ParentsDashboardPage({
               Impostazioni
             </Button>
           </Link>
-          <LogoutButton schoolSlug={school} />
+          <LogoutButton baseHref={baseHref} />
         </div>
       </Hero>
 

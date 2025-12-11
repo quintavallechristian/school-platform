@@ -6,6 +6,7 @@ import config from '@/payload.config'
 import type { Page, Event } from '@/payload-types'
 import SpotlightCard from '@/components/SpotlightCard/SpotlightCard'
 import { Button } from '@/components/ui/button'
+import EmptyArea from '../EmptyArea/EmptyArea'
 
 type EventListBlockType = Extract<NonNullable<Page['blocks']>[number], { blockType: 'eventList' }>
 
@@ -36,9 +37,7 @@ export default async function EventListBlock({ block, schoolId, baseHref }: Prop
     return (
       <div className="max-w-5xl mx-auto px-4 py-12">
         {block.title && <h2 className="text-3xl font-bold mb-8 text-primary">{block.title}</h2>}
-        <div className="text-center py-12 text-muted-foreground">
-          <p className="text-xl">📅 Nessun evento disponibile</p>
-        </div>
+        <EmptyArea title="Nessun evento disponibile" />
       </div>
     )
   }
@@ -57,11 +56,9 @@ export default async function EventListBlock({ block, schoolId, baseHref }: Prop
     return (
       <div className="max-w-5xl mx-auto px-4 py-12">
         {block.title && <h2 className="text-3xl font-bold mb-8 text-primary">{block.title}</h2>}
-        <div className="text-center py-12 text-muted-foreground">
-          <p className="text-xl">
-            📅 Nessun evento {block.filter === 'upcoming' ? 'in programma' : 'passato'}
-          </p>
-        </div>
+        <EmptyArea
+          title={`Nessun evento ${block.filter === 'upcoming' ? 'in programma' : 'passato'}`}
+        />
       </div>
     )
   }

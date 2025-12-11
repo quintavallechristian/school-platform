@@ -45,7 +45,7 @@ export default async function ProjectsPage({ params }: { params: Promise<{ schoo
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {(projects as Project[]).map((project) => (
                 <SpotlightCard key={project.id} className="px-0 py-0">
-                  <Link href={`/${schoolSlug}/progetti/${project.id}`}>
+                  <Link href={`${baseHref}/progetti/${project.id}`}>
                     {project.cover && typeof project.cover === 'object' && project.cover.url && (
                       <div className="relative h-48 w-full overflow-hidden">
                         <Image

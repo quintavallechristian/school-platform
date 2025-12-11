@@ -12,6 +12,8 @@ import type { ChiSiamo as ChiSiamoType } from '@/payload-types'
 import type { ShapeDividerStyle } from '@/components/ShapeDivider/ShapeDivider'
 import Image from 'next/image'
 import Link from 'next/link'
+import { getSchoolBaseHref } from '@/lib/linkUtils'
+import { headers } from 'next/headers'
 
 type PageProps = {
   params: Promise<{ school: string }>
@@ -132,6 +134,9 @@ export default async function ChiSiamoPage({ params }: PageProps) {
   const shouldShowTeachers = typedPage.teachersSection?.enabled ?? true
   const teachers = shouldShowTeachers ? await getSchoolTeachers(school.id) : null
 
+  const headersList = await headers()
+  const host = headersList.get('host') || ''
+  const baseHref = getSchoolBaseHref(school, host)
   return (
     <div className="min-h-[calc(100vh-200px)] mb-20">
       {shouldShowDefaultHero && (
@@ -177,7 +182,7 @@ export default async function ChiSiamoPage({ params }: PageProps) {
                     teacher.photo && typeof teacher.photo === 'object' ? teacher.photo.url : null
 
                   return (
-                    <Link key={teacher.id} href={`/${schoolSlug}/insegnanti/${teacher.id}`}>
+                    <Link key={teacher.id} href={`${baseHref}/insegnanti/${teacher.id}`}>
                       <SpotlightCard>
                         {imageUrl && (
                           <div className="relative w-full h-64 mb-4 rounded-lg overflow-hidden">

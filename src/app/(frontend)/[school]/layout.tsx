@@ -272,7 +272,7 @@ export default async function SchoolLayout({
       </footer>
 
       {/* Popup comunicazioni della scuola */}
-      <CommunicationsPopup communications={communications} schoolSlug={schoolSlug} />
+      <CommunicationsPopup communications={communications} baseHref={baseHref} />
     </SchoolAdminTrialGuard>
   )
 }

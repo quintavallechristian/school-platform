@@ -168,7 +168,7 @@ export default async function SchoolHomePage({ params }: PageProps) {
             <h2 className="text-2xl font-bold mb-6">Comunicazioni Importanti</h2>
 
             {communications.docs.length > 0 && (
-              <CommunicationsList communications={communications.docs} schoolSlug={schoolSlug} />
+              <CommunicationsList communications={communications.docs} baseHref={baseHref} />
             )}
 
             <div className="mt-6 text-center">

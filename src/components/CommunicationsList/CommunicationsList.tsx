@@ -8,7 +8,7 @@ import Link from 'next/link'
 
 interface CommunicationsListProps {
   communications: Communication[]
-  schoolSlug?: string
+  baseHref?: string
 }
 
 const priorityConfig = {
@@ -54,7 +54,7 @@ function formatDate(dateString: string): string {
   }).format(date)
 }
 
-export function CommunicationsList({ communications, schoolSlug }: CommunicationsListProps) {
+export function CommunicationsList({ communications, baseHref }: CommunicationsListProps) {
   return (
     <div className="space-y-4">
       {communications.map((comm) => {
@@ -81,11 +81,7 @@ export function CommunicationsList({ communications, schoolSlug }: Communication
                 <div className="mb-3 space-x-4">
                   {comm.linkedArticle && typeof comm.linkedArticle !== 'string' && (
                     <Link
-                      href={
-                        schoolSlug
-                          ? `/${schoolSlug}/blog/${comm.linkedArticle.slug}`
-                          : `/blog/${comm.linkedArticle.slug}`
-                      }
+                      href={`${baseHref}/blog/${comm.linkedArticle.slug}`}
                       className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
                     >
                       📰 Leggi l&apos;articolo
@@ -94,11 +90,7 @@ export function CommunicationsList({ communications, schoolSlug }: Communication
                   )}
                   {comm.linkedEvent && typeof comm.linkedEvent !== 'string' && (
                     <Link
-                      href={
-                        schoolSlug
-                          ? `/${schoolSlug}/eventi/${comm.linkedEvent.id}`
-                          : `/eventi/${comm.linkedEvent.id}`
-                      }
+                      href={`${baseHref}/eventi/${comm.linkedEvent.id}`}
                       className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
                     >
                       📅 Vedi l&apos;evento

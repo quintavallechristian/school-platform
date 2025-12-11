@@ -5,7 +5,7 @@ export function DpaContent() {
     <div className="prose prose-neutral dark:prose-invert max-w-none">
       {/* Header principale */}
       <div className="mb-12">
-        <h2 className="text-4xl font-bold bg-linear-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent mb-4">
+        <h2 className="text-4xl font-bold bg-linear-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text mb-4">
           Data Processing Agreement (DPA)
         </h2>
         <p className="text-sm text-neutral-600 dark:text-neutral-400 border-l-4 border-purple-500 pl-4 py-2 bg-purple-50 dark:bg-purple-950/20 rounded">

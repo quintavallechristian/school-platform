@@ -7,7 +7,7 @@ import { ArrowRight } from 'lucide-react'
 
 interface CalendarViewProps {
   calendarDays: CalendarDay[]
-  schoolSlug?: string
+  baseHref?: string
 }
 
 const typeLabels = {
@@ -54,7 +54,7 @@ function getDayOfWeek(dateString: string): string {
   }).format(date)
 }
 
-export function CalendarView({ calendarDays, schoolSlug }: CalendarViewProps) {
+export function CalendarView({ calendarDays, baseHref }: CalendarViewProps) {
   const sortedDays = [...calendarDays].sort((a, b) => {
     return new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
   })
@@ -80,9 +80,7 @@ export function CalendarView({ calendarDays, schoolSlug }: CalendarViewProps) {
     <div className="space-y-12">
       {Object.entries(groupedByMonth).map(([monthYear, days]) => (
         <div key={monthYear}>
-          <h2 className="text-3xl font-bold mb-6 capitalize bg-linear-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-            {monthYear}
-          </h2>
+          <h2 className="text-3xl font-bold mb-6 capitalize">{monthYear}</h2>
           <div className="space-y-3">
             {days.map((day) => {
               const isRange = day.endDate && day.endDate !== day.startDate
@@ -132,11 +130,7 @@ export function CalendarView({ calendarDays, schoolSlug }: CalendarViewProps) {
 
                           {day.linkedEvent && typeof day.linkedEvent !== 'string' && (
                             <Link
-                              href={
-                                schoolSlug
-                                  ? `/${schoolSlug}/eventi/${day.linkedEvent.id}`
-                                  : `/eventi/${day.linkedEvent.id}`
-                              }
+                              href={`${baseHref}/eventi/${day.linkedEvent.id}`}
                               className="inline-flex items-center gap-2 mt-3 text-sm font-medium text-primary hover:underline"
                               aria-label={`Vai all\u0026apos;evento: ${day.linkedEvent.title || day.title}`}
                             >

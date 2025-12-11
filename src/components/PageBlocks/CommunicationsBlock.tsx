@@ -5,6 +5,7 @@ import config from '@/payload.config'
 import type { Page, Communication } from '@/payload-types'
 import { CommunicationsList } from '@/components/CommunicationsList/CommunicationsList'
 import { Button } from '@/components/ui/button'
+import EmptyArea from '../EmptyArea/EmptyArea'
 
 type CommunicationsBlockType = Extract<
   NonNullable<Page['blocks']>[number],
@@ -14,16 +15,10 @@ type CommunicationsBlockType = Extract<
 type Props = {
   block: CommunicationsBlockType
   schoolId: string | number
-  schoolSlug: string
   baseHref?: string
 }
 
-export default async function CommunicationsBlock({
-  block,
-  schoolId,
-  schoolSlug,
-  baseHref,
-}: Props) {
+export default async function CommunicationsBlock({ block, schoolId, baseHref }: Props) {
   const payloadConfig = await config
   const payload = await getPayload({ config: payloadConfig })
 
@@ -58,9 +53,7 @@ export default async function CommunicationsBlock({
     return (
       <div className="max-w-7xl mx-auto px-8 py-16">
         {block.title && <h2 className="text-3xl font-bold mb-8 text-primary">{block.title}</h2>}
-        <div className="text-center py-12 text-muted-foreground">
-          <p className="text-xl">📭 Nessuna comunicazione disponibile</p>
-        </div>
+        <EmptyArea title="Nessuna comunicazione disponibile" />
       </div>
     )
   }
@@ -69,10 +62,7 @@ export default async function CommunicationsBlock({
     <div className="max-w-7xl mx-auto px-8 py-16">
       {block.title && <h2 className="text-3xl font-bold mb-8 text-primary">{block.title}</h2>}
 
-      <CommunicationsList
-        communications={communications as Communication[]}
-        schoolSlug={schoolSlug}
-      />
+      <CommunicationsList communications={communications as Communication[]} baseHref={baseHref} />
 
       {block.showViewAll && (
         <div className="text-center mt-8">

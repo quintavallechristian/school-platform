@@ -1,5 +1,8 @@
 import type { CollectionConfig } from 'payload'
 import { sendUserCredentialsEmail } from '../lib/email-service'
+import { headers } from 'next/headers'
+import { getSchoolBaseHref } from '@/lib/linkUtils'
+import { School } from '@/payload-types'
 
 export const Users: CollectionConfig = {
   slug: 'users',
@@ -336,13 +339,14 @@ export const Users: CollectionConfig = {
 
           // Recupera i nomi delle scuole e lo slug per i genitori
           let schoolNames: string[] = []
+          let schools: School[] = []
           let schoolSlug: string | undefined
           if (doc.schools && doc.schools.length > 0) {
             const schoolIds = doc.schools.map((school: any) =>
               typeof school === 'string' ? school : school.id,
             )
 
-            const schools = await req.payload.find({
+            const retrievedSchools = await req.payload.find({
               collection: 'schools',
               where: {
                 id: {
@@ -351,17 +355,23 @@ export const Users: CollectionConfig = {
               },
             })
 
-            schoolNames = schools.docs.map((school: any) => school.name)
+            schools = retrievedSchools.docs
+
+            schoolNames = schools.map((school: any) => school.name)
             // Per i genitori, usa lo slug della prima scuola
-            if (doc.role === 'parent' && schools.docs.length > 0) {
-              schoolSlug = schools.docs[0].slug
+            if (doc.role === 'parent' && schools.length > 0) {
+              schoolSlug = schools[0].slug
             }
           }
+
+          const headersList = await headers()
+          const host = headersList.get('host') || ''
+          const baseHref = getSchoolBaseHref(schools[0], host)
 
           // Genera l'URL di login in base al ruolo
           let loginUrl: string
           if (doc.role === 'parent' && schoolSlug) {
-            loginUrl = `${process.env.NEXT_PUBLIC_SERVER_URL}/${schoolSlug}/parents/login`
+            loginUrl = `${baseHref}/parents/login`
           } else {
             loginUrl = `${process.env.NEXT_PUBLIC_SERVER_URL}/admin`
           }
