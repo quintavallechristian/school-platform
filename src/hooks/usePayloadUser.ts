@@ -22,8 +22,13 @@ export function usePayloadUser() {
     setLoading(true)
     setError(null)
 
+    const apiPath =
+      typeof window === 'undefined'
+        ? `${process.env.NEXT_PUBLIC_SERVER_URL || ''}/api/users/me`
+        : '/api/users/me'
+
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/users/me`, {
+      const res = await fetch(apiPath, {
         credentials: 'include',
       })
 
