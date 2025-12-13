@@ -1,14 +1,7 @@
 import { CollectionConfig } from 'payload'
-import {
-  assignSchoolBeforeChange,
-  getSchoolField,
-  tenantCreate,
-  tenantDelete,
-  tenantRead,
-  tenantUpdate,
-  filterBySchool,
-} from '../lib/access'
+import { filterBySchool } from '../lib/access'
 import { shapeDividerFields } from '../lib/blocks'
+import { createPlanGuardHook } from '../lib/subscriptionAccess'
 
 export const ChiSiamo: CollectionConfig = {
   slug: 'chi-siamo',
@@ -37,17 +30,18 @@ export const ChiSiamo: CollectionConfig = {
       ],
     },
   },
-  access: {
-    read: tenantRead,
-    create: tenantCreate,
-    update: tenantUpdate,
-    delete: tenantDelete,
-  },
   hooks: {
-    beforeChange: [assignSchoolBeforeChange],
+    beforeChange: [
+      createPlanGuardHook({
+        requiredPlan: 'starter',
+        featureName: 'Chi Siamo',
+        featureFlag: 'showChiSiamo',
+      }),
+    ],
   },
+  // Access control gestito dal plugin multi-tenant
   fields: [
-    getSchoolField('Scuola a cui appartiene questa configurazione'),
+    // Campo school gestito automaticamente dal plugin
     {
       name: 'isActive',
       type: 'checkbox',

@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 import { filterBySchool } from '../lib/access'
 import { getContrastRatio } from '../lib/accessibility'
+import { normalizeSchoolId } from '../lib/tenantAccess'
 export const Schools: CollectionConfig = {
   slug: 'schools',
   labels: {
@@ -11,13 +12,13 @@ export const Schools: CollectionConfig = {
     useAsTitle: 'name',
     defaultColumns: ['name', 'isActive', 'subscription.plan', 'createdAt'],
     group: 'Configurazione sito',
-    components: {
-      beforeList: [
-        {
-          path: '@/components/HideCreateSchoolButton',
-        },
-      ],
-    },
+    // components: {
+    //   beforeList: [
+    //     {
+    //       path: '@/components/HideCreateSchoolButton',
+    //     },
+    //   ],
+    // },
   },
   access: {
     // Super-admin e school-admin possono creare scuole
@@ -25,22 +26,9 @@ export const Schools: CollectionConfig = {
     create: ({ req: { user } }) => {
       return user?.role === 'super-admin' || user?.role === 'school-admin'
     },
-    read: ({ req: { user } }) => {
-      // Super-admin vedono tutte le scuole
-      if (user?.role === 'super-admin') {
-        return true
-      }
-      // Gli altri utenti vedono solo le loro scuole
-      if (user?.schools && user.schools.length > 0) {
-        return {
-          id: {
-            in: user.schools,
-          },
-        }
-      }
-      return false
+    read: () => {
+      return true
     },
-
     delete: ({ req: { user } }) => {
       return user?.role === 'super-admin'
     },
@@ -49,9 +37,20 @@ export const Schools: CollectionConfig = {
         return true
       }
       if (user?.role === 'school-admin' && user.schools && user.schools.length > 0) {
+        const schoolIDs = user.schools
+          .map((s: any) => {
+            if (typeof s === 'string') return s
+            if (typeof s === 'object' && s !== null) {
+              return s.school || s.id || s
+            }
+            return s
+          })
+          .filter(Boolean)
+          .map(String)
+
         return {
           id: {
-            in: user.schools,
+            in: schoolIDs,
           },
         }
       }
@@ -554,120 +553,27 @@ export const Schools: CollectionConfig = {
           fields: [
             {
               name: 'subscription',
-              type: 'group',
+              type: 'relationship',
+              relationTo: 'subscriptions',
               label: 'Abbonamento',
               admin: {
-                description: 'Informazioni sul piano di abbonamento',
+                description:
+                  'Abbonamento associato a questa scuola. Gestito automaticamente alla registrazione.',
               },
-              fields: [
-                {
-                  name: 'plan',
-                  type: 'select',
-                  label: 'Piano',
-                  defaultValue: 'starter',
-                  options: [
-                    { label: 'Starter', value: 'starter' },
-                    { label: 'Professional', value: 'professional' },
-                    { label: 'Enterprise', value: 'enterprise' },
-                  ],
-                  access: {
-                    read: ({ req: { user } }) =>
-                      user?.role === 'super-admin' || user?.role === 'school-admin',
-                    update: ({ req: { user } }) => user?.role === 'super-admin',
-                  },
+              access: {
+                read: ({ req: { user } }) =>
+                  user?.role === 'super-admin' || user?.role === 'school-admin',
+                update: ({ req: { user } }) => user?.role === 'super-admin',
+              },
+            },
+            {
+              type: 'ui',
+              name: 'subscriptionInfo',
+              admin: {
+                components: {
+                  Field: '@/components/School/SubscriptionInfo',
                 },
-                {
-                  name: 'isTrial',
-                  type: 'checkbox',
-                  label: 'Periodo di Prova',
-                  defaultValue: false,
-                  access: {
-                    read: ({ req: { user } }) =>
-                      user?.role === 'super-admin' || user?.role === 'school-admin',
-                    update: ({ req: { user } }) => user?.role === 'super-admin',
-                  },
-                },
-                {
-                  type: 'row',
-                  fields: [
-                    {
-                      name: 'expiresAt',
-                      type: 'date',
-                      label: 'Scadenza Abbonamento',
-                      admin: {
-                        width: '33%',
-                        description: 'Data di scadenza definitiva',
-                        date: {
-                          displayFormat: 'dd/MM/YYYY',
-                        },
-                        condition: (data) => {
-                          return !!data?.subscription?.expiresAt
-                        },
-                      },
-                      access: {
-                        read: ({ req: { user } }) =>
-                          user?.role === 'super-admin' || user?.role === 'school-admin',
-                        update: ({ req: { user } }) => user?.role === 'super-admin',
-                      },
-                    },
-                    {
-                      name: 'renewsAt',
-                      type: 'date',
-                      label: 'Prossimo Rinnovo',
-                      admin: {
-                        width: '33%',
-                        description: 'Data del prossimo rinnovo automatico',
-                        date: {
-                          displayFormat: 'dd/MM/YYYY',
-                        },
-                        condition: (data) => {
-                          return !!data?.subscription?.renewsAt
-                        },
-                      },
-                      access: {
-                        read: ({ req: { user } }) =>
-                          user?.role === 'super-admin' || user?.role === 'school-admin',
-                        update: ({ req: { user } }) => user?.role === 'super-admin',
-                      },
-                    },
-                    {
-                      name: 'stripeCustomerId',
-                      type: 'text',
-                      admin: {
-                        readOnly: true,
-                      },
-                      access: {
-                        read: ({ req: { user } }) =>
-                          user?.role === 'super-admin' || user?.role === 'school-admin',
-                        update: ({ req }) => req.user?.role === 'super-admin',
-                      },
-                    },
-                    {
-                      name: 'selectedPriceId',
-                      type: 'text',
-                      label: 'Price ID Selezionato',
-                      admin: {
-                        description: 'Il priceId Stripe selezionato durante la registrazione',
-                        readOnly: true,
-                      },
-                      access: {
-                        read: ({ req: { user } }) =>
-                          user?.role === 'super-admin' || user?.role === 'school-admin',
-                        update: ({ req }) => req.user?.role === 'super-admin',
-                      },
-                    },
-                  ],
-                },
-                {
-                  type: 'ui',
-                  name: 'manageSubscription',
-                  admin: {
-                    components: {
-                      Field: '@/components/ChangePlanPortalButton',
-                    },
-                  },
-                },
-              ],
+              },
             },
           ],
         },
@@ -689,28 +595,40 @@ export const Schools: CollectionConfig = {
               throw new Error('Non hai scuole assegnate. Contatta un super-admin.')
             }
 
-            // Ottieni le scuole dell'utente
-            const schoolIds = user.schools.map((school) =>
-              typeof school === 'string' ? school : school.id,
-            )
-
-            // Verifica se almeno una scuola ha piano enterprise
-            const schools = await req.payload.find({
-              collection: 'schools',
+            // Cerca la subscription dell'utente
+            const userSubscriptions = await req.payload.find({
+              collection: 'subscriptions',
               where: {
-                id: {
-                  in: schoolIds,
+                owner: {
+                  equals: user.id,
                 },
               },
+              limit: 1,
             })
 
-            const hasEnterprisePlan = schools.docs.some(
-              (school) => school.subscription?.plan === 'enterprise',
-            )
+            if (userSubscriptions.docs.length === 0) {
+              throw new Error('Non hai una subscription attiva. Contatta un super-admin.')
+            }
 
-            if (!hasEnterprisePlan) {
+            const subscription = userSubscriptions.docs[0]
+
+            // Verifica se la subscription è enterprise
+            if (subscription.plan !== 'enterprise') {
               throw new Error('È richiesto il piano Enterprise per gestire più di una scuola.')
             }
+
+            // Verifica il limite di scuole
+            const currentSchoolCount = user.schools.length
+            const maxSchools = subscription.maxSchools || 1
+
+            if (currentSchoolCount >= maxSchools) {
+              throw new Error(
+                `Hai raggiunto il limite massimo di ${maxSchools} scuole per il tuo piano.`,
+              )
+            }
+
+            // Associa automaticamente la nuova scuola alla subscription enterprise dell'utente
+            data.subscription = subscription.id
           }
         }
 
@@ -806,6 +724,38 @@ export const Schools: CollectionConfig = {
           console.warn('Il salvataggio continuerà, ma si consiglia di correggere questi problemi.')
           console.warn('=========================================\n')
         }
+      },
+    ],
+    afterChange: [
+      async ({ req, doc, operation }) => {
+        if (operation !== 'create') {
+          return
+        }
+
+        const user = req.user
+        if (!user || user.role !== 'school-admin') {
+          return
+        }
+
+        const newSchoolId = doc.id
+        const existingSchoolIds = Array.isArray(user.schools)
+          ? user.schools.map(normalizeSchoolId).filter((id): id is string => Boolean(id))
+          : []
+
+        if (existingSchoolIds.includes(newSchoolId)) {
+          return
+        }
+
+        const updatedSchoolIds = [...existingSchoolIds, newSchoolId]
+
+        await req.payload.update({
+          collection: 'users',
+          id: user.id,
+          data: {
+            schools: updatedSchoolIds,
+          },
+          overrideAccess: true,
+        })
       },
     ],
   },

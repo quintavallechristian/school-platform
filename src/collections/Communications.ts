@@ -4,14 +4,7 @@ import {
   getPriorityConfig,
   CommunicationPriority,
 } from '../lib/email-service'
-import {
-  tenantRead,
-  tenantCreate,
-  tenantUpdate,
-  tenantDelete,
-  assignSchoolBeforeChange,
-  getSchoolField,
-} from '../lib/access'
+import { createPlanGuardHook } from '../lib/subscriptionAccess'
 
 export const Communications: CollectionConfig = {
   slug: 'communications',
@@ -37,14 +30,15 @@ export const Communications: CollectionConfig = {
       ],
     },
   },
-  access: {
-    read: tenantRead,
-    create: tenantCreate,
-    update: tenantUpdate,
-    delete: tenantDelete,
-  },
+  // Access control gestito dal plugin multi-tenant
   hooks: {
-    beforeChange: [assignSchoolBeforeChange],
+    beforeChange: [
+      createPlanGuardHook({
+        requiredPlan: 'professional',
+        featureName: 'Comunicazioni',
+        featureFlag: 'showCommunications',
+      }),
+    ],
     afterChange: [
       async ({ doc, operation, req, context }) => {
         // Se non è attivo → niente email
@@ -140,7 +134,7 @@ export const Communications: CollectionConfig = {
   },
 
   fields: [
-    getSchoolField('Scuola a cui appartiene questa comunicazione'),
+    // Campo school gestito automaticamente dal plugin
     { name: 'title', label: 'Titolo', type: 'text', required: true },
     { name: 'content', label: 'Contenuto', type: 'richText', required: true },
     {

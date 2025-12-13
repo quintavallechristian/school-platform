@@ -1,13 +1,5 @@
 import { CollectionConfig } from 'payload'
-import {
-  assignSchoolBeforeChange,
-  getSchoolField,
-  tenantCreate,
-  tenantDelete,
-  tenantRead,
-  tenantUpdate,
-  filterBySchool,
-} from '../lib/access'
+import { filterBySchool } from '../lib/access'
 import { pageBlocks, shapeDividerFields } from '../lib/blocks'
 
 export const Homepage: CollectionConfig = {
@@ -19,15 +11,9 @@ export const Homepage: CollectionConfig = {
     defaultColumns: ['name', 'school', 'isActive'],
     useAsTitle: 'name',
   },
-  access: {
-    read: tenantRead,
-    create: tenantCreate,
-    update: tenantUpdate,
-    delete: tenantDelete,
-  },
+  // Access control gestito dal plugin multi-tenant
   hooks: {
     beforeChange: [
-      assignSchoolBeforeChange,
       // Valida che i blocchi utilizzati siano abilitati per la scuola
       async ({ req, data }) => {
         // Se non ci sono blocchi o non c'è una scuola, non fare nulla
@@ -124,7 +110,7 @@ export const Homepage: CollectionConfig = {
     ],
   },
   fields: [
-    getSchoolField('Scuola a cui appartiene questa configurazione'),
+    // Campo school gestito automaticamente dal plugin
     {
       name: 'isActive',
       type: 'checkbox',

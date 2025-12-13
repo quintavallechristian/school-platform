@@ -97,7 +97,7 @@ export function CalendarView({ calendarDays, baseHref }: CalendarViewProps) {
   const futureGroupedByMonth = groupByMonth(futureDays)
   const pastGroupedByMonth = groupByMonth(pastDays)
 
-  const renderMonthGroup = (monthYear: string, days: CalendarDay[], isPastSection: boolean) => (
+  const renderMonthGroup = (monthYear: string, days: CalendarDay[], _isPastSection: boolean) => (
     <div key={monthYear}>
       <h2 className="text-3xl font-bold mb-6 capitalize">{monthYear}</h2>
       <div className="space-y-3">

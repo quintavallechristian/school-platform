@@ -66,27 +66,21 @@ export async function POST(request: NextRequest) {
       )
     }
     // Calculate trial expiration date (30 days from now)
-    const trialExpiresAt = new Date()
-    trialExpiresAt.setDate(trialExpiresAt.getDate() + 30)
+    const trialEndsAt = new Date()
+    trialEndsAt.setDate(trialEndsAt.getDate() + 30)
 
     // Determine the plan from the priceId
     const plan = priceId ? getPlanFromPrice(priceId) : 'starter'
 
-    const { id: schoolId } = await payload.create({
-      collection: 'schools',
-      data: {
-        name: schoolName,
-        slug: schoolSlug,
-        isActive: true, // Attiva immediatamente la scuola
-        subscription: {
-          plan: plan,
-          isTrial: true,
-          expiresAt: trialExpiresAt.toISOString(),
-          selectedPriceId: priceId, // Salva il priceId selezionato per dopo
-        },
-      },
-    })
+    // Determine maxSchools based on plan
+    const planLimits: Record<string, number> = {
+      starter: 1,
+      professional: 1,
+      enterprise: 2,
+    }
+    const maxSchools = planLimits[plan] || 1
 
+    // Step 1: Create the user first (needed as subscription owner)
     const { id: userId } = await payload.create({
       collection: 'users',
       data: {
@@ -95,11 +89,44 @@ export async function POST(request: NextRequest) {
         lastName: lastName || '',
         password,
         role: 'school-admin',
-        schools: [schoolId],
+        schools: [], // Will be updated after school creation
         // Salva l'accettazione dei termini durante la registrazione
         acceptedPrivacyPolicy: true,
         acceptedTermsOfService: true,
         acceptanceDate: new Date().toISOString(),
+      },
+    })
+
+    // Step 2: Create the subscription linked to the user
+    const { id: subscriptionId } = await payload.create({
+      collection: 'subscriptions',
+      data: {
+        owner: userId,
+        plan: plan,
+        status: 'trial',
+        trialEndsAt: trialEndsAt.toISOString(),
+        maxSchools: maxSchools,
+        selectedPriceId: priceId || null,
+      },
+    })
+
+    // Step 3: Create the school linked to the subscription
+    const { id: schoolId } = await payload.create({
+      collection: 'schools',
+      data: {
+        name: schoolName,
+        slug: schoolSlug,
+        isActive: true, // Attiva immediatamente la scuola
+        subscription: subscriptionId,
+      },
+    })
+
+    // Step 4: Update the user with the school reference
+    await payload.update({
+      collection: 'users',
+      id: userId,
+      data: {
+        schools: [schoolId],
       },
     })
 
@@ -128,6 +155,7 @@ export async function POST(request: NextRequest) {
       schoolId,
       schoolSlug,
       userId,
+      subscriptionId,
     })
   } catch (error) {
     console.error('Error subscribing email:', error)

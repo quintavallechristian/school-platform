@@ -1,14 +1,7 @@
 import { CollectionConfig } from 'payload'
-import {
-  tenantRead,
-  tenantCreate,
-  tenantUpdate,
-  tenantDelete,
-  assignSchoolBeforeChange,
-  getSchoolField,
-  filterBySchool,
-} from '../lib/access'
+import { filterBySchool } from '../lib/access'
 import { richTextToPlainText } from '../lib/richTextUtils'
+import { createPlanGuardHook } from '../lib/subscriptionAccess'
 
 export const Events: CollectionConfig = {
   slug: 'events',
@@ -33,14 +26,15 @@ export const Events: CollectionConfig = {
       ],
     },
   },
-  access: {
-    read: tenantRead,
-    create: tenantCreate,
-    update: tenantUpdate,
-    delete: tenantDelete,
-  },
+  // Access control gestito dal plugin multi-tenant
   hooks: {
-    beforeValidate: [assignSchoolBeforeChange],
+    beforeChange: [
+      createPlanGuardHook({
+        requiredPlan: 'professional',
+        featureName: 'Eventi',
+        featureFlag: 'showEvents',
+      }),
+    ],
     afterChange: [
       async ({ doc, operation, req }) => {
         // Esegui solo quando viene creato un nuovo evento
@@ -171,7 +165,7 @@ export const Events: CollectionConfig = {
     ],
   },
   fields: [
-    getSchoolField('Scuola a cui appartiene questo evento'),
+    // Campo school gestito automaticamente dal plugin
     { name: 'title', type: 'text', label: 'Titolo', required: true },
     { name: 'date', type: 'date', label: 'Data', required: true },
     { name: 'description', type: 'richText', label: 'Descrizione' },

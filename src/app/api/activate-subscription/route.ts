@@ -3,7 +3,8 @@ import Stripe from 'stripe'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { headers } from 'next/headers'
-import { getSchoolBaseHref } from '@/lib/linkUtils'
+import { getSchoolFullUrl } from '@/lib/linkUtils'
+import type { Subscription } from '@/payload-types'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
@@ -20,11 +21,13 @@ export async function POST(req: NextRequest) {
 
     const { schoolSlug, priceId } = await req.json()
 
+    console.log('Activate subscription request:', { schoolSlug, priceId, userId: user.id })
+
     if (!schoolSlug || !priceId) {
       return NextResponse.json({ error: 'schoolSlug e priceId sono richiesti' }, { status: 400 })
     }
 
-    // Find the school
+    // Find the school with subscription populated
     const schools = await payload.find({
       collection: 'schools',
       where: {
@@ -32,6 +35,7 @@ export async function POST(req: NextRequest) {
           equals: schoolSlug,
         },
       },
+      depth: 1,
       limit: 1,
     })
 
@@ -41,9 +45,15 @@ export async function POST(req: NextRequest) {
 
     const school = schools.docs[0]
 
+    console.log('School found:', {
+      id: school.id,
+      name: school.name,
+      subscription: school.subscription,
+    })
+
     const headersList = await headers()
     const host = headersList.get('host') || ''
-    const baseHref = getSchoolBaseHref(school, host)
+    const schoolFullUrl = getSchoolFullUrl(school, host)
 
     // Security Check: Verify user has access to this school
     if (user.role !== 'super-admin') {
@@ -52,6 +62,37 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Non autorizzato.' }, { status: 403 })
       }
     }
+
+    // Get subscription from school
+    let subscription: Subscription | null = null
+    if (typeof school.subscription === 'object' && school.subscription !== null) {
+      subscription = school.subscription as Subscription
+    } else if (typeof school.subscription === 'string') {
+      try {
+        subscription = await payload.findByID({
+          collection: 'subscriptions',
+          id: school.subscription,
+        })
+      } catch (error) {
+        console.error('Error fetching subscription:', error)
+        subscription = null
+      }
+    }
+
+    if (!subscription) {
+      console.error('Subscription not found for school:', school.id)
+      return NextResponse.json(
+        { error: 'Abbonamento non trovato per questa scuola' },
+        { status: 404 },
+      )
+    }
+
+    console.log('Subscription found:', {
+      id: subscription.id,
+      plan: subscription.plan,
+      status: subscription.status,
+      stripeCustomerId: subscription.stripeCustomerId,
+    })
 
     // Prepare checkout session params
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
@@ -65,22 +106,27 @@ export async function POST(req: NextRequest) {
       ],
       subscription_data: {
         metadata: {
-          schoolId: school.id,
+          subscriptionId: subscription.id,
           userId: user.id,
           schoolSlug: schoolSlug,
         },
       },
-      success_url: `/${baseHref}/welcome?subscribed=1`,
-      cancel_url: `/${baseHref}`,
+      success_url: `${schoolFullUrl}/welcome?subscribed=1`,
+      cancel_url: `${schoolFullUrl}`,
     }
 
-    // If school already has a Stripe customer ID, use it
+    // If subscription already has a Stripe customer ID, use it
     // Otherwise, create a new customer using the user's email
-    if (school.subscription?.stripeCustomerId) {
-      sessionParams.customer = school.subscription.stripeCustomerId
+    if (subscription.stripeCustomerId) {
+      sessionParams.customer = subscription.stripeCustomerId
     } else {
       sessionParams.customer_email = user.email
     }
+
+    console.log('Creating Stripe checkout session with URLs:', {
+      success_url: sessionParams.success_url,
+      cancel_url: sessionParams.cancel_url,
+    })
 
     // Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create(sessionParams)

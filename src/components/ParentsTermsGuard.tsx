@@ -32,13 +32,6 @@ export const ParentsTermsGuard: React.FC<ParentsTermsGuardProps> = ({
       const hasAccepted =
         initialUser.acceptedPrivacyPolicy === true && initialUser.acceptedTermsOfService === true
 
-      console.log('Parents area - User acceptance status:', {
-        email: initialUser.email,
-        acceptedPrivacy: initialUser.acceptedPrivacyPolicy,
-        acceptedTos: initialUser.acceptedTermsOfService,
-        needsAcceptance: !hasAccepted,
-      })
-
       setNeedsAcceptance(!hasAccepted)
     }
   }, [initialUser])

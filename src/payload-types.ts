@@ -88,6 +88,7 @@ export interface Config {
     media: Media;
     gallery: Gallery;
     users: User;
+    subscriptions: Subscription;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -116,6 +117,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     gallery: GallerySelect<false> | GallerySelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
+    subscriptions: SubscriptionsSelect<false> | SubscriptionsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -284,25 +286,9 @@ export interface School {
     enableEmailCommunications?: boolean | null;
   };
   /**
-   * Informazioni sul piano di abbonamento
+   * Abbonamento associato a questa scuola. Gestito automaticamente alla registrazione.
    */
-  subscription?: {
-    plan?: ('starter' | 'professional' | 'enterprise') | null;
-    isTrial?: boolean | null;
-    /**
-     * Data di scadenza definitiva
-     */
-    expiresAt?: string | null;
-    /**
-     * Data del prossimo rinnovo automatico
-     */
-    renewsAt?: string | null;
-    stripeCustomerId?: string | null;
-    /**
-     * Il priceId Stripe selezionato durante la registrazione
-     */
-    selectedPriceId?: string | null;
-  };
+  subscription?: (string | null) | Subscription;
   updatedAt: string;
   createdAt: string;
 }
@@ -312,9 +298,6 @@ export interface School {
  */
 export interface Media {
   id: string;
-  /**
-   * Scuola a cui appartiene questo file
-   */
   school?: (string | null) | School;
   alt: string;
   updatedAt: string;
@@ -337,9 +320,6 @@ export interface Media {
  */
 export interface Page {
   id: string;
-  /**
-   * Scuola a cui appartiene questa pagina
-   */
   school?: (string | null) | School;
   title: string;
   /**
@@ -718,9 +698,6 @@ export interface Page {
  */
 export interface Gallery {
   id: string;
-  /**
-   * Scuola a cui appartiene questa galleria
-   */
   school?: (string | null) | School;
   /**
    * Nome identificativo della galleria
@@ -751,6 +728,96 @@ export interface Gallery {
   createdAt: string;
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscriptions".
+ */
+export interface Subscription {
+  id: string;
+  /**
+   * L'utente che gestisce questo abbonamento
+   */
+  owner: string | User;
+  plan: 'starter' | 'professional' | 'enterprise';
+  status: 'trial' | 'active' | 'cancelled' | 'expired';
+  /**
+   * Data di fine del periodo di prova
+   */
+  trialEndsAt?: string | null;
+  /**
+   * Data del prossimo rinnovo automatico
+   */
+  renewsAt?: string | null;
+  /**
+   * Data di scadenza (per abbonamenti cancellati)
+   */
+  expiresAt?: string | null;
+  /**
+   * Numero massimo di scuole che possono utilizzare questo abbonamento
+   */
+  maxSchools: number;
+  stripeCustomerId?: string | null;
+  stripeSubscriptionId?: string | null;
+  /**
+   * Il priceId Stripe selezionato durante la registrazione
+   */
+  selectedPriceId?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: string;
+  /**
+   * Amministratore: gestisce la propria scuola | Editor: può modificare contenuti | Genitore: area riservata
+   */
+  role?: ('super-admin' | 'school-admin' | 'editor' | 'parent') | null;
+  /**
+   * Scuole di appartenenza
+   */
+  schools?: (string | School)[] | null;
+  tenantAccess?:
+    | {
+        school: string | School;
+        id?: string | null;
+      }[]
+    | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  phone?: string | null;
+  /**
+   * Indica se l'utente ha accettato la Privacy Policy
+   */
+  acceptedPrivacyPolicy?: boolean | null;
+  /**
+   * Indica se l'utente ha accettato i Termini di Servizio
+   */
+  acceptedTermsOfService?: boolean | null;
+  /**
+   * Data in cui l'utente ha accettato Privacy Policy e ToS
+   */
+  acceptanceDate?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+}
+/**
  * Qui puoi configurare lo stile della tua homepage. Puoi creare più homepage diverse e attivarle una per volta. Se non imposti alcuna homepage personalizzata, verrà utilizzata una versione di default.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -758,9 +825,6 @@ export interface Gallery {
  */
 export interface Homepage {
   id: string;
-  /**
-   * Scuola a cui appartiene questa configurazione
-   */
   school?: (string | null) | School;
   /**
    * Se disattivata, la testimonianza non sarà visibile nel sito
@@ -1136,9 +1200,6 @@ export interface Homepage {
  */
 export interface PrivacyPolicy {
   id: string;
-  /**
-   * Scuola a cui appartiene questa configurazione
-   */
   school?: (string | null) | School;
   /**
    * Se disattivata, la testimonianza non sarà visibile nel sito
@@ -1177,9 +1238,6 @@ export interface PrivacyPolicy {
  */
 export interface ChiSiamo {
   id: string;
-  /**
-   * Scuola a cui appartiene questa configurazione
-   */
   school?: (string | null) | School;
   /**
    * Se disattivata, la pagina non sarà visibile nel sito
@@ -1295,9 +1353,6 @@ export interface ChiSiamo {
  */
 export interface Teacher {
   id: string;
-  /**
-   * Scuola a cui appartiene questa testimonianza
-   */
   school?: (string | null) | School;
   name: string;
   /**
@@ -1317,9 +1372,6 @@ export interface Teacher {
  */
 export interface Project {
   id: string;
-  /**
-   * Scuola a cui appartiene questo progetto
-   */
   school?: (string | null) | School;
   title: string;
   description?: {
@@ -1357,9 +1409,6 @@ export interface Project {
  */
 export interface EducationalOffering {
   id: string;
-  /**
-   * Scuola a cui appartiene questo piano offerta formativa
-   */
   school?: (string | null) | School;
   /**
    * Se attivo, questo piano offerta formativa sarà visibile come principale
@@ -1401,9 +1450,6 @@ export interface EducationalOffering {
  */
 export interface CalendarDay {
   id: string;
-  /**
-   * Scuola a cui appartiene questo evento del calendario
-   */
   school?: (string | null) | School;
   /**
    * Inserisci il titolo dell'evento a calendario
@@ -1426,9 +1472,6 @@ export interface CalendarDay {
  */
 export interface Event {
   id: string;
-  /**
-   * Scuola a cui appartiene questo evento
-   */
   school?: (string | null) | School;
   title: string;
   date: string;
@@ -1512,9 +1555,6 @@ export interface Event {
  */
 export interface Menu {
   id: string;
-  /**
-   * Scuola a cui appartiene questo menù
-   */
   school?: (string | null) | School;
   /**
    * Nome del menù (es. "Menù Autunno 2025", "Menù Inverno 2025")
@@ -1731,9 +1771,6 @@ export interface Menu {
  */
 export interface Document {
   id: string;
-  /**
-   * Scuola a cui appartiene questo documento
-   */
   school?: (string | null) | School;
   /**
    * Titolo della sezione che raggruppa questi documenti (es: "Modulistica", "Regolamenti")
@@ -1791,9 +1828,6 @@ export interface Document {
  */
 export interface Testimonial {
   id: string;
-  /**
-   * Scuola a cui appartiene questa testimonianza
-   */
   school?: (string | null) | School;
   /**
    * Se non approvata, la testimonianza non sarà visibile nel sito. Solo gli admin possono approvare.
@@ -1842,9 +1876,6 @@ export interface Testimonial {
  */
 export interface Communication {
   id: string;
-  /**
-   * Scuola a cui appartiene questa comunicazione
-   */
   school?: (string | null) | School;
   title: string;
   content: {
@@ -1889,9 +1920,6 @@ export interface Communication {
  */
 export interface Article {
   id: string;
-  /**
-   * Scuola a cui appartiene questo articolo
-   */
   school?: (string | null) | School;
   title: string;
   cover?: (string | null) | Media;
@@ -1925,53 +1953,6 @@ export interface Article {
   createdAt: string;
 }
 /**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
- */
-export interface User {
-  id: string;
-  /**
-   * Amministratore: gestisce la propria scuola | Editor: può modificare contenuti | Genitore: area riservata
-   */
-  role?: ('super-admin' | 'school-admin' | 'editor' | 'parent') | null;
-  /**
-   * Scuole di appartenenza
-   */
-  schools?: (string | School)[] | null;
-  firstName?: string | null;
-  lastName?: string | null;
-  phone?: string | null;
-  /**
-   * Indica se l'utente ha accettato la Privacy Policy
-   */
-  acceptedPrivacyPolicy?: boolean | null;
-  /**
-   * Indica se l'utente ha accettato i Termini di Servizio
-   */
-  acceptedTermsOfService?: boolean | null;
-  /**
-   * Data in cui l'utente ha accettato Privacy Policy e ToS
-   */
-  acceptanceDate?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
-    | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
-      }[]
-    | null;
-  password?: string | null;
-}
-/**
  * Gestisci gli iscritti alle notifiche email delle comunicazioni
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1979,9 +1960,6 @@ export interface User {
  */
 export interface EmailSubscriber {
   id: string;
-  /**
-   * Scuola per cui l'utente riceve notifiche
-   */
   school?: (string | null) | School;
   /**
    * Indirizzo email per le notifiche (può essere iscritto a più scuole)
@@ -2005,9 +1983,6 @@ export interface EmailSubscriber {
  */
 export interface ChildUpdate {
   id: string;
-  /**
-   * Scuola a cui appartiene questo aggiornamento
-   */
   school?: (string | null) | School;
   /**
    * Il genitore a cui si riferisce questo aggiornamento
@@ -2044,9 +2019,6 @@ export interface ChildUpdate {
  */
 export interface ParentAppointment {
   id: string;
-  /**
-   * Scuola
-   */
   school?: (string | null) | School;
   /**
    * Il genitore per cui è l'appuntamento
@@ -2186,6 +2158,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'users';
         value: string | User;
+      } | null)
+    | ({
+        relationTo: 'subscriptions';
+        value: string | Subscription;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -2296,16 +2272,7 @@ export interface SchoolsSelect<T extends boolean = true> {
         showPages?: T;
         enableEmailCommunications?: T;
       };
-  subscription?:
-    | T
-    | {
-        plan?: T;
-        isTrial?: T;
-        expiresAt?: T;
-        renewsAt?: T;
-        stripeCustomerId?: T;
-        selectedPriceId?: T;
-      };
+  subscription?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -3264,6 +3231,12 @@ export interface GallerySelect<T extends boolean = true> {
 export interface UsersSelect<T extends boolean = true> {
   role?: T;
   schools?: T;
+  tenantAccess?:
+    | T
+    | {
+        school?: T;
+        id?: T;
+      };
   firstName?: T;
   lastName?: T;
   phone?: T;
@@ -3286,6 +3259,24 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscriptions_select".
+ */
+export interface SubscriptionsSelect<T extends boolean = true> {
+  owner?: T;
+  plan?: T;
+  status?: T;
+  trialEndsAt?: T;
+  renewsAt?: T;
+  expiresAt?: T;
+  maxSchools?: T;
+  stripeCustomerId?: T;
+  stripeSubscriptionId?: T;
+  selectedPriceId?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

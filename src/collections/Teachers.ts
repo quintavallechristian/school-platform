@@ -1,13 +1,6 @@
 import { CollectionConfig } from 'payload'
-import {
-  tenantRead,
-  tenantCreate,
-  tenantUpdate,
-  tenantDelete,
-  assignSchoolBeforeChange,
-  getSchoolField,
-  filterBySchool,
-} from '../lib/access'
+import { filterBySchool } from '../lib/access'
+import { createPlanGuardHook } from '../lib/subscriptionAccess'
 
 export const Teachers: CollectionConfig = {
   slug: 'teachers',
@@ -26,23 +19,24 @@ export const Teachers: CollectionConfig = {
           clientProps: {
             requiredPlan: 'professional',
             featureName: 'Insegnanti',
-            featureFlag: 'showChiSiamo',
+            featureFlag: 'showTeachers',
           },
         },
       ],
     },
   },
-  access: {
-    read: tenantRead,
-    create: tenantCreate,
-    update: tenantUpdate,
-    delete: tenantDelete,
-  },
   hooks: {
-    beforeChange: [assignSchoolBeforeChange],
+    beforeChange: [
+      createPlanGuardHook({
+        requiredPlan: 'professional',
+        featureName: 'Insegnanti',
+        featureFlag: 'showTeachers',
+      }),
+    ],
   },
+  // Access control gestito dal plugin multi-tenant
   fields: [
-    getSchoolField('Scuola a cui appartiene questa testimonianza'),
+    // Campo school gestito automaticamente dal plugin
     { name: 'name', type: 'text', label: 'Nome', required: true },
     {
       name: 'role',

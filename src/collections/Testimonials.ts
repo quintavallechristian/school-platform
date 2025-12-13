@@ -1,13 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import {
-  tenantCreate,
-  tenantUpdate,
-  tenantDelete,
-  getSchoolField,
-  assignSchoolBeforeChange,
-  filterBySchool,
-  tenantRead,
-} from '@/lib/access'
+import { filterBySchool } from '@/lib/access'
 
 export const Testimonials: CollectionConfig = {
   slug: 'testimonials',
@@ -15,22 +7,14 @@ export const Testimonials: CollectionConfig = {
     singular: 'Testimonianza',
     plural: 'Testimonianze',
   },
-  access: {
-    read: tenantRead,
-    create: tenantCreate,
-    update: tenantUpdate,
-    delete: tenantDelete,
-  },
-  hooks: {
-    beforeValidate: [assignSchoolBeforeChange],
-  },
+  // Access control gestito dal plugin multi-tenant
   admin: {
     useAsTitle: 'authorName',
     defaultColumns: ['authorName', 'role', 'school', 'isActive'],
     group: 'Comunicazioni scuola-famiglia',
   },
   fields: [
-    getSchoolField('Scuola a cui appartiene questa testimonianza'),
+    // Campo school gestito automaticamente dal plugin
     {
       name: 'approved',
       type: 'checkbox',

@@ -1,17 +1,78 @@
 'use client'
 
 import { useField, useDocumentInfo } from '@payloadcms/ui'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import type { GroupFieldClientComponent } from 'payload'
 import ChangePlanPortalButton from '../ChangePlanPortalButton'
 import { Label } from '../ui/label'
+
+const planOptions = ['starter', 'professional', 'enterprise'] as const
+type Plan = (typeof planOptions)[number]
+
+const isPlan = (value: unknown): value is Plan => {
+  return typeof value === 'string' && planOptions.includes(value as Plan)
+}
 
 const FeatureVisibilityField: GroupFieldClientComponent = ({ path }) => {
   // Use useDocumentInfo to access the actual document data
   const { data: schoolData } = useDocumentInfo()
 
-  // Extract the plan from the subscription group
-  const plan = (schoolData?.subscription?.plan as string) || 'starter'
+  const [plan, setPlan] = useState<Plan | null>(null)
+
+  useEffect(() => {
+    let isMounted = true
+
+    const resolvePlan = async () => {
+      // No subscription means starter plan
+      if (!schoolData?.subscription) {
+        if (isMounted) setPlan('starter')
+        return
+      }
+
+      // When Payload populates the relationship we can read the plan directly
+      if (
+        typeof schoolData.subscription === 'object' &&
+        schoolData.subscription !== null &&
+        'plan' in schoolData.subscription &&
+        isPlan((schoolData.subscription as { plan?: string }).plan)
+      ) {
+        if (isMounted) setPlan((schoolData.subscription as { plan: Plan }).plan)
+        return
+      }
+
+      // Otherwise fetch the subscription to get the plan
+      try {
+        const response = await fetch(`/api/subscriptions/${schoolData.subscription}`, {
+          credentials: 'include',
+        })
+        if (response.ok) {
+          const subscription = await response.json()
+          if (isMounted) {
+            setPlan(isPlan(subscription?.plan) ? subscription.plan : 'starter')
+          }
+          return
+        }
+      } catch (error) {
+        console.error('Errore durante il recupero del piano abbonamento:', error)
+      }
+
+      if (isMounted) setPlan('starter')
+    }
+
+    resolvePlan()
+
+    return () => {
+      isMounted = false
+    }
+  }, [schoolData?.subscription])
+
+  if (!plan) {
+    return (
+      <div style={{ padding: '20px', color: '#6b7280' }}>
+        Caricamento delle funzionalità disponibili...
+      </div>
+    )
+  }
 
   // Define feature groups
   const features = {

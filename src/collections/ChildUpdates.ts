@@ -1,11 +1,6 @@
 import { CollectionConfig } from 'payload'
-import {
-  tenantCreate,
-  tenantDelete,
-  assignSchoolBeforeChange,
-  getSchoolField,
-  filterBySchool,
-} from '../lib/access'
+import { filterBySchool } from '../lib/access'
+import { createPlanGuardHook } from '../lib/subscriptionAccess'
 
 export const ChildUpdates: CollectionConfig = {
   slug: 'child-updates',
@@ -30,12 +25,22 @@ export const ChildUpdates: CollectionConfig = {
       ],
     },
   },
+  hooks: {
+    beforeChange: [
+      createPlanGuardHook({
+        requiredPlan: 'professional',
+        featureName: 'Area Genitori',
+        featureFlag: 'showParentsArea',
+      }),
+    ],
+  },
   access: {
-    // Parents vedono solo gli updates dei propri figli
+    // Access control personalizzato per i genitori
+    // Il plugin gestisce il filtro tenant, ma aggiungiamo logica per i genitori
     read: ({ req: { user } }) => {
       if (!user) return false
 
-      // Super-admin vede tutto
+      // Super-admin vede tutto (via plugin)
       if (user.role === 'super-admin') return true
 
       // Parent vede solo i propri updates
@@ -47,54 +52,13 @@ export const ChildUpdates: CollectionConfig = {
         } as any
       }
 
-      // School-admin ed editor vedono updates della loro scuola
-      if (
-        (user.role === 'school-admin' || user.role === 'editor') &&
-        user.schools &&
-        user.schools.length > 0
-      ) {
-        const schoolIds = user.schools.map((school) =>
-          typeof school === 'string' ? school : school.id,
-        )
-        return {
-          school: {
-            in: schoolIds,
-          },
-        } as any
-      }
-
-      return false
+      // School-admin ed editor: il plugin gestisce il filtro tenant
+      return true
     },
-    create: tenantCreate, // School-admin ed editor possono creare
-    update: ({ req: { user } }) => {
-      if (!user) return false
-      if (user.role === 'super-admin') return true
-
-      // Solo school-admin ed editor, non i genitori
-      if (
-        (user.role === 'school-admin' || user.role === 'editor') &&
-        user.schools &&
-        user.schools.length > 0
-      ) {
-        const schoolIds = user.schools.map((school) =>
-          typeof school === 'string' ? school : school.id,
-        )
-        return {
-          school: {
-            in: schoolIds,
-          },
-        }
-      }
-
-      return false
-    },
-    delete: tenantDelete,
-  },
-  hooks: {
-    beforeChange: [assignSchoolBeforeChange],
+    // create, update, delete gestiti dal plugin multi-tenant
   },
   fields: [
-    getSchoolField('Scuola a cui appartiene questo aggiornamento'),
+    // Campo school gestito automaticamente dal plugin
     {
       name: 'parent',
       type: 'relationship',

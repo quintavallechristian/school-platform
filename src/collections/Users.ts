@@ -3,6 +3,7 @@ import { sendUserCredentialsEmail } from '../lib/email-service'
 import { headers } from 'next/headers'
 import { getSchoolBaseHref } from '@/lib/linkUtils'
 import { School } from '@/payload-types'
+import { buildTenantAccess, normalizeSchoolId } from '../lib/tenantAccess'
 
 export const Users: CollectionConfig = {
   slug: 'users',
@@ -22,32 +23,32 @@ export const Users: CollectionConfig = {
       // I genitori non possono accedere al pannello admin
       return user?.role !== 'parent'
     },
-    read: ({ req }) => {
-      const user = req.user
-      if (!user) return false
-      if (user.role === 'super-admin') return true
+    // read: ({ req }) => {
+    //   const user = req.user
+    //   if (!user) return false
+    //   if (user.role === 'super-admin') return true
 
-      const schoolIDs = user.schools?.map((s) => (typeof s === 'object' ? s.id : s))
+    //   const schoolIDs = user.schools?.map((s) => (typeof s === 'object' ? s.id : s))
 
-      if (schoolIDs?.length) {
-        return {
-          and: [
-            {
-              schools: {
-                in: schoolIDs,
-              },
-            },
-            {
-              role: {
-                not_equals: 'super-admin',
-              },
-            },
-          ],
-        } as any
-      }
+    //   if (schoolIDs?.length) {
+    //     return {
+    //       and: [
+    //         {
+    //           schools: {
+    //             in: schoolIDs,
+    //           },
+    //         },
+    //         {
+    //           role: {
+    //             not_equals: 'super-admin',
+    //           },
+    //         },
+    //       ],
+    //     } as any
+    //   }
 
-      return false
-    },
+    //   return false
+    // },
     // Solo super-admin possono creare utenti per qualsiasi scuola
     create: ({ req: { user } }) => {
       return user?.role === 'super-admin' || user?.role === 'school-admin'
@@ -200,17 +201,38 @@ export const Users: CollectionConfig = {
           return user?.role === 'super-admin'
         },
       },
-      validate: (value, { operation }) => {
+      validate: (value, { operation, data }) => {
         // Durante l'update dell'account, permetti valori vuoti (migrazione in corso)
         if (operation === 'update') {
           return true
         }
-        // Durante la creazione, richiedi almeno una scuola
+        // Durante la creazione, permetti schools vuoto per school-admin (registrazione)
+        // perché la scuola viene creata dopo l'utente e poi assegnata
+        if (operation === 'create' && (data as { role?: string })?.role === 'school-admin') {
+          return true
+        }
+        // Per altri ruoli in creazione, richiedi almeno una scuola
         if (operation === 'create' && (!value || value.length === 0)) {
           return 'Almeno una scuola deve essere assegnata'
         }
         return true
       },
+    },
+    {
+      name: 'tenantAccess',
+      type: 'array',
+      fields: [
+        {
+          name: 'school',
+          type: 'relationship',
+          relationTo: 'schools',
+          required: true,
+        },
+      ],
+      admin: {
+        hidden: true,
+      },
+      saveToJWT: true,
     },
 
     {
@@ -276,11 +298,18 @@ export const Users: CollectionConfig = {
           delete oldData.school
         }
 
-        // Normalizza sempre schools a ID (in caso di oggetti completi)
-        if (data.schools && Array.isArray(data.schools)) {
-          data.schools = data.schools.map((school) =>
-            typeof school === 'string' ? school : school.id,
-          )
+        // Normalizza schools a ID semplici (in caso di oggetti completi)
+        // Il plugin multi-tenant potrebbe passare { school: id } o oggetti completi
+        const hasSchoolsField = Object.prototype.hasOwnProperty.call(data, 'schools')
+        if (Array.isArray(data.schools)) {
+          data.schools = data.schools
+            .map(normalizeSchoolId)
+            .filter((id): id is string => Boolean(id))
+        }
+
+        if (hasSchoolsField) {
+          const tenantAccess = Array.isArray(data.schools) ? buildTenantAccess(data.schools) : []
+          data.tenantAccess = tenantAccess
         }
 
         // Se non è super-admin, non può assegnare il ruolo super-admin
@@ -307,6 +336,10 @@ export const Users: CollectionConfig = {
         if (oldDoc.school && (!doc.schools || doc.schools.length === 0)) {
           const schoolId = typeof oldDoc.school === 'string' ? oldDoc.school : oldDoc.school.id
           doc.schools = [schoolId]
+        }
+
+        if ((!doc.tenantAccess || doc.tenantAccess.length === 0) && doc.schools?.length) {
+          doc.tenantAccess = buildTenantAccess(doc.schools)
         }
         return doc
       },

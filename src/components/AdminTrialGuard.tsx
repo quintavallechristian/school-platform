@@ -245,62 +245,59 @@ export const AdminTrialGuard: React.FC<{ children: React.ReactNode }> = ({ child
       }
 
       try {
-        // Controlla tutte le scuole dell'admin
+        // Controlla tutte le scuole dell'admin usando trial-status API
         let hasActiveSchool = false
 
         for (const schoolRef of schools) {
-          const schoolId = typeof schoolRef === 'string' ? schoolRef : schoolRef.id
+          // Get school slug - need to fetch the school first
+          // Multi-tenant plugin format: { school: id } or could be string ID or full object
+          let schoolId: string | null = null
+          if (typeof schoolRef === 'string') {
+            schoolId = schoolRef
+          } else if (typeof schoolRef === 'object' && schoolRef !== null) {
+            // Support both { school: id } (multi-tenant plugin) and { id: ... } (full object)
+            schoolId = schoolRef.school || schoolRef.id || null
+          }
 
-          // Fetch school details
-          const response = await fetch(`/api/schools/${schoolId}`, {
+          if (!schoolId) continue
+
+          let slug: string | null = null
+
+          // If schoolRef is an object with slug, use it directly
+          if (typeof schoolRef === 'object' && schoolRef !== null && schoolRef.slug) {
+            slug = schoolRef.slug
+          } else {
+            // Fetch school to get slug
+            const schoolResponse = await fetch(`/api/schools/${schoolId}`, {
+              credentials: 'include',
+            })
+            if (schoolResponse.ok) {
+              const schoolData = await schoolResponse.json()
+              slug = schoolData.slug
+            }
+          }
+
+          if (!slug) continue
+
+          // Use the trial-status API which handles the new subscription model
+          const response = await fetch(`/api/schools/${slug}/trial-status`, {
             credentials: 'include',
           })
 
           if (response.ok) {
-            const schoolData = await response.json()
+            const statusData = await response.json()
 
-            // Controlla se la scuola è attiva e l'abbonamento non è scaduto
-            if (schoolData.isActive) {
-              const isTrialPlan = schoolData.subscription?.isTrial || false
-              const expiresAt = schoolData.subscription?.expiresAt
-              const renewsAt = schoolData.subscription?.renewsAt
-              const now = new Date()
-
-              // Check for renewal failure (renewsAt in past without expiresAt)
-              if (renewsAt && !expiresAt) {
-                const renewsAtDate = new Date(renewsAt)
-                if (renewsAtDate < now) {
-                  // Renewal failed - treat as expired
-                  setPlan(schoolData.subscription?.plan || 'starter')
-                  setIsTrial(false) // Not a trial, it's a failed renewal
-                  setSchoolSlug(schoolData.slug)
-                  setSelectedPriceId(schoolData.subscription?.selectedPriceId || null)
-                  continue // Check next school
-                } else {
-                  // Active subscription that will renew
-                  hasActiveSchool = true
-                  break
-                }
-              }
-              // Check if subscription is cancelled/expired
-              else if (expiresAt) {
-                const expirationDate = new Date(expiresAt)
-
-                if (expirationDate > now) {
-                  // Abbonamento ancora valido (ma cancellato, scadrà)
-                  hasActiveSchool = true
-                  break
-                } else {
-                  // Abbonamento scaduto (trial o pagato), salva le info per il modal
-                  setPlan(schoolData.subscription?.plan || 'starter')
-                  setIsTrial(isTrialPlan)
-                  setSchoolSlug(schoolData.slug)
-                  setSelectedPriceId(schoolData.subscription?.selectedPriceId || null)
-                }
-              } else {
-                // Nessuna data di scadenza o rinnovo, considera la scuola attiva
-                hasActiveSchool = true
-                break
+            // Check if this school has an active subscription
+            if (statusData.isActive && statusData.daysRemaining > 0) {
+              hasActiveSchool = true
+              break
+            } else {
+              // Save info for the modal from the first expired school
+              if (!schoolSlug) {
+                setPlan(statusData.plan || 'starter')
+                setIsTrial(statusData.isTrial || false)
+                setSchoolSlug(slug)
+                setSelectedPriceId(statusData.selectedPriceId || null)
               }
             }
           }
@@ -315,10 +312,12 @@ export const AdminTrialGuard: React.FC<{ children: React.ReactNode }> = ({ child
     }
 
     checkTrialStatus()
-  }, [user])
+  }, [user, schoolSlug])
 
   const handleActivate = async () => {
     if (!schoolSlug || !selectedPriceId) {
+      console.error('Missing schoolSlug or selectedPriceId:', { schoolSlug, selectedPriceId })
+      alert('Dati mancanti. Verrai reindirizzato alla pagina dei piani.')
       window.location.href = '/pricing'
       return
     }
@@ -339,7 +338,10 @@ export const AdminTrialGuard: React.FC<{ children: React.ReactNode }> = ({ child
       if (response.ok && data.url) {
         window.location.href = data.url
       } else {
-        alert("Errore durante l'attivazione dell'abbonamento")
+        console.error('Activation error response:', data)
+        alert(
+          `Errore durante l'attivazione dell'abbonamento: ${data.error || 'Errore sconosciuto'}`,
+        )
       }
     } catch (error) {
       console.error('Error activating subscription:', error)

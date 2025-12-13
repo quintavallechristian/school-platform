@@ -1,13 +1,6 @@
 import { CollectionConfig } from 'payload'
-import {
-  tenantRead,
-  tenantCreate,
-  tenantUpdate,
-  tenantDelete,
-  assignSchoolBeforeChange,
-  getSchoolField,
-  filterBySchool,
-} from '../lib/access'
+import { filterBySchool } from '../lib/access'
+import { createPlanGuardHook } from '../lib/subscriptionAccess'
 
 export const EducationalOfferings: CollectionConfig = {
   slug: 'educational-offerings',
@@ -34,17 +27,18 @@ export const EducationalOfferings: CollectionConfig = {
       ],
     },
   },
-  access: {
-    read: tenantRead,
-    create: tenantCreate,
-    update: tenantUpdate,
-    delete: tenantDelete,
-  },
   hooks: {
-    beforeChange: [assignSchoolBeforeChange],
+    beforeChange: [
+      createPlanGuardHook({
+        requiredPlan: 'starter',
+        featureName: 'Piano Offerta Formativa',
+        featureFlag: 'showEducationalOfferings',
+      }),
+    ],
   },
+  // Access control gestito dal plugin multi-tenant
   fields: [
-    getSchoolField('Scuola a cui appartiene questo piano offerta formativa'),
+    // Campo school gestito automaticamente dal plugin
     {
       name: 'isActive',
       type: 'checkbox',

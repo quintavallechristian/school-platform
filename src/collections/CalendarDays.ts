@@ -1,12 +1,5 @@
 import { CollectionConfig } from 'payload'
-import {
-  tenantRead,
-  tenantCreate,
-  tenantUpdate,
-  tenantDelete,
-  assignSchoolBeforeChange,
-  getSchoolField,
-} from '../lib/access'
+import { createPlanGuardHook } from '../lib/subscriptionAccess'
 
 export const CalendarDays: CollectionConfig = {
   slug: 'calendar-days',
@@ -33,17 +26,18 @@ export const CalendarDays: CollectionConfig = {
       ],
     },
   },
-  access: {
-    read: tenantRead,
-    create: tenantCreate,
-    update: tenantUpdate,
-    delete: tenantDelete,
-  },
   hooks: {
-    beforeChange: [assignSchoolBeforeChange],
+    beforeChange: [
+      createPlanGuardHook({
+        requiredPlan: 'starter',
+        featureName: 'Calendario',
+        featureFlag: 'showCalendar',
+      }),
+    ],
   },
+  // Access control gestito dal plugin multi-tenant
   fields: [
-    getSchoolField('Scuola a cui appartiene questo evento del calendario'),
+    // Campo school gestito automaticamente dal plugin
     {
       name: 'title',
       type: 'text',

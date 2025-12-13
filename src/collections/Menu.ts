@@ -1,11 +1,5 @@
 import { CollectionConfig } from 'payload'
-import {
-  tenantRead,
-  tenantCreate,
-  tenantUpdate,
-  tenantDelete,
-  assignSchoolBeforeChange,
-} from '../lib/access'
+import { createPlanGuardHook } from '../lib/subscriptionAccess'
 
 // Helper per creare i campi di un giorno
 const createDayFields = (dayName: string) => ({
@@ -82,29 +76,18 @@ export const Menu: CollectionConfig = {
       ],
     },
   },
-  access: {
-    read: tenantRead,
-    create: tenantCreate,
-    update: tenantUpdate,
-    delete: tenantDelete,
-  },
   hooks: {
-    beforeChange: [assignSchoolBeforeChange],
+    beforeChange: [
+      createPlanGuardHook({
+        requiredPlan: 'starter',
+        featureName: 'Menù Mensa',
+        featureFlag: 'showMenu',
+      }),
+    ],
   },
+  // Access control gestito dal plugin multi-tenant
   fields: [
-    {
-      name: 'school',
-      type: 'relationship',
-      relationTo: 'schools',
-      required: true,
-      label: 'Scuola',
-      admin: {
-        description: 'Scuola a cui appartiene questo menù',
-        condition: (data, siblingData, { user }) => {
-          return user?.role === 'super-admin'
-        },
-      },
-    },
+    // Campo school gestito automaticamente dal plugin
     {
       name: 'name',
       label: 'Nome',

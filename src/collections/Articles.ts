@@ -1,13 +1,6 @@
 import { CollectionConfig } from 'payload'
-import {
-  tenantRead,
-  tenantCreate,
-  tenantUpdate,
-  tenantDelete,
-  assignSchoolBeforeChange,
-  getSchoolField,
-  filterBySchool,
-} from '../lib/access'
+import { filterBySchool } from '../lib/access'
+import { createPlanGuardHook } from '../lib/subscriptionAccess'
 
 export const Articles: CollectionConfig = {
   slug: 'articles',
@@ -32,17 +25,18 @@ export const Articles: CollectionConfig = {
       ],
     },
   },
-  access: {
-    read: tenantRead,
-    create: tenantCreate,
-    update: tenantUpdate,
-    delete: tenantDelete,
-  },
   hooks: {
-    beforeChange: [assignSchoolBeforeChange],
+    beforeChange: [
+      createPlanGuardHook({
+        requiredPlan: 'starter',
+        featureName: 'Articoli',
+        featureFlag: 'showBlog',
+      }),
+    ],
   },
+  // Access control gestito dal plugin multi-tenant
   fields: [
-    getSchoolField('Scuola a cui appartiene questo articolo'),
+    // Campo school gestito automaticamente dal plugin
     {
       name: 'title',
       type: 'text',

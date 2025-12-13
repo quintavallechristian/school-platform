@@ -27,172 +27,232 @@ export async function POST(req: Request) {
 
     switch (event.type) {
       case 'customer.subscription.created': {
-        const subscription = event.data.object as Stripe.Subscription
-        const schoolId = subscription.metadata.schoolId
+        const stripeSubscription = event.data.object as Stripe.Subscription
+        const subscriptionId = stripeSubscription.metadata.subscriptionId
 
-        if (!schoolId) {
-          console.error('[Webhook] Missing schoolId in metadata for subscription.created')
-          return NextResponse.json({ error: 'Missing schoolId in metadata' }, { status: 400 })
+        if (!subscriptionId) {
+          console.error('[Webhook] Missing subscriptionId in metadata for subscription.created')
+          return NextResponse.json({ error: 'Missing subscriptionId in metadata' }, { status: 400 })
         }
 
         try {
-          // Get current school to preserve selectedPriceId
-          const school = await payload.findByID({
-            collection: 'schools',
-            id: schoolId,
-          })
+          // Get current_period_end from subscription items
+          const currentPeriodEnd = stripeSubscription.items.data[0]?.current_period_end
+          const plan = getPlanFromPrice(stripeSubscription.items.data[0].price.id)
 
-          // When subscription is created from activate-subscription endpoint (no trial)
-          // the subscription starts immediately as active
-          const updateData: any = {
-            isActive: true,
-            subscription: {
-              isTrial: false, // No more trial when activating subscription
-              stripeCustomerId: subscription.customer as string,
-              plan: getPlanFromPrice(subscription.items.data[0].price.id),
-              selectedPriceId: school.subscription?.selectedPriceId || null,
-              expiresAt: null, // Active subscription doesn't have expiration
-            },
+          // Determine maxSchools based on plan
+          const planLimits: Record<string, number> = {
+            starter: 1,
+            professional: 1,
+            enterprise: 2,
           }
 
-          // Get current_period_end from subscription or from items
-          // Stripe API v2024+ moved this field into items.data[0]
-          const currentPeriodEnd = subscription.items.data[0]?.current_period_end
+          const updateData: Record<string, unknown> = {
+            status: 'active',
+            plan: plan,
+            maxSchools: planLimits[plan] || 1,
+            stripeCustomerId: stripeSubscription.customer as string,
+            stripeSubscriptionId: stripeSubscription.id,
+            trialEndsAt: null, // No more trial
+            expiresAt: null, // Active subscription doesn't have expiration
+          }
 
           if (currentPeriodEnd) {
             const renewsAtDate = new Date(currentPeriodEnd * 1000)
-            updateData.subscription.renewsAt = renewsAtDate.toISOString()
+            updateData.renewsAt = renewsAtDate.toISOString()
             console.log('[Webhook] Set subscription renewsAt:', {
               timestamp: currentPeriodEnd,
               date: renewsAtDate,
-              iso: updateData.subscription.renewsAt,
+              iso: updateData.renewsAt,
             })
           }
 
           await payload.update({
-            collection: 'schools',
-            id: schoolId,
+            collection: 'subscriptions',
+            id: subscriptionId,
             data: updateData,
           })
+
+          // Update all schools linked to this subscription to be active
+          const schools = await payload.find({
+            collection: 'schools',
+            where: {
+              subscription: { equals: subscriptionId },
+            },
+          })
+
+          for (const school of schools.docs) {
+            await payload.update({
+              collection: 'schools',
+              id: school.id,
+              data: { isActive: true },
+            })
+          }
+
+          console.log(
+            `[Webhook] Subscription ${subscriptionId} activated, ${schools.docs.length} schools updated`,
+          )
         } catch (error: unknown) {
           const message = error instanceof Error ? error.message : 'Unknown error'
-          console.error(`[Webhook] Failed to update school ${schoolId}:`, message)
+          console.error(`[Webhook] Failed to update subscription ${subscriptionId}:`, message)
           return NextResponse.json({ error: 'Database update failed' }, { status: 500 })
         }
         break
       }
 
       case 'customer.subscription.updated': {
-        const subscription = event.data.object as Stripe.Subscription
-        const schoolId = subscription.metadata.schoolId
+        const stripeSubscription = event.data.object as Stripe.Subscription
+        const subscriptionId = stripeSubscription.metadata.subscriptionId
 
-        if (!schoolId) {
-          console.error('[Webhook] Missing schoolId in metadata for subscription.updated')
-          return NextResponse.json({ error: 'Missing schoolId in metadata' }, { status: 400 })
+        if (!subscriptionId) {
+          console.error('[Webhook] Missing subscriptionId in metadata for subscription.updated')
+          return NextResponse.json({ error: 'Missing subscriptionId in metadata' }, { status: 400 })
         }
 
         try {
-          // Get current school to preserve selectedPriceId
-          const school = await payload.findByID({
-            collection: 'schools',
-            id: schoolId,
-          })
+          const currentPeriodEnd = stripeSubscription.items.data[0]?.current_period_end
+          const plan = getPlanFromPrice(stripeSubscription.items.data[0].price.id)
 
-          // Get current_period_end from subscription or from items
-          // Stripe API v2024+ moved this field into items.data[0]
-          const currentPeriodEnd = subscription.items.data[0]?.current_period_end
+          // Determine maxSchools based on plan
+          const planLimits: Record<string, number> = {
+            starter: 1,
+            professional: 1,
+            enterprise: 2,
+          }
 
-          const updateData: any = {
-            isActive: subscription.status === 'active',
-            subscription: {
-              isTrial: false,
-              stripeCustomerId: subscription.customer as string, // Ensure customer ID is always set
-              plan: getPlanFromPrice(subscription.items.data[0].price.id),
-              selectedPriceId: school.subscription?.selectedPriceId || null,
-            },
+          const updateData: Record<string, unknown> = {
+            plan: plan,
+            maxSchools: planLimits[plan] || 1,
+            stripeCustomerId: stripeSubscription.customer as string,
+            stripeSubscriptionId: stripeSubscription.id,
+          }
+
+          // Determine status based on Stripe subscription status
+          if (stripeSubscription.status === 'active') {
+            updateData.status = 'active'
+          } else if (
+            stripeSubscription.status === 'past_due' ||
+            stripeSubscription.status === 'unpaid'
+          ) {
+            updateData.status = 'active' // Still active but payment issue
+          } else {
+            updateData.status = 'expired'
           }
 
           // Handle renewsAt and expiresAt based on subscription status
-          if (subscription.cancel_at) {
+          if (stripeSubscription.cancel_at) {
             // Subscription is cancelled but still active until period end
-            updateData.subscription.renewsAt = null
-            if (subscription.cancel_at) {
-              const expiresAtDate = new Date(subscription.cancel_at * 1000)
-              updateData.subscription.expiresAt = expiresAtDate.toISOString()
-              console.log('[Webhook] Subscription cancelled, set expiresAt:', {
-                timestamp: subscription.cancel_at,
-                date: expiresAtDate,
-                iso: updateData.subscription.expiresAt,
-              })
-            }
-          } else if (subscription.status === 'active') {
+            updateData.status = 'cancelled'
+            updateData.renewsAt = null
+            const expiresAtDate = new Date(stripeSubscription.cancel_at * 1000)
+            updateData.expiresAt = expiresAtDate.toISOString()
+            console.log('[Webhook] Subscription cancelled, set expiresAt:', {
+              timestamp: stripeSubscription.cancel_at,
+              date: expiresAtDate,
+              iso: updateData.expiresAt,
+            })
+          } else if (stripeSubscription.status === 'active') {
             // Subscription is active and will renew
-            updateData.subscription.expiresAt = null
+            updateData.expiresAt = null
             if (currentPeriodEnd) {
               const renewsAtDate = new Date(currentPeriodEnd * 1000)
-              updateData.subscription.renewsAt = renewsAtDate.toISOString()
+              updateData.renewsAt = renewsAtDate.toISOString()
               console.log('[Webhook] Subscription active, set renewsAt:', {
                 timestamp: currentPeriodEnd,
                 date: renewsAtDate,
-                iso: updateData.subscription.renewsAt,
+                iso: updateData.renewsAt,
               })
             }
           } else {
-            // Other statuses (past_due, unpaid, etc.) - keep expiresAt if available
-            updateData.subscription.renewsAt = null
+            // Other statuses - set expiration
+            updateData.renewsAt = null
             if (currentPeriodEnd) {
               const expiresAtDate = new Date(currentPeriodEnd * 1000)
-              updateData.subscription.expiresAt = expiresAtDate.toISOString()
+              updateData.expiresAt = expiresAtDate.toISOString()
             }
           }
 
           await payload.update({
-            collection: 'schools',
-            id: schoolId,
+            collection: 'subscriptions',
+            id: subscriptionId,
             data: updateData,
           })
 
-          console.log(`[Webhook] School ${schoolId} subscription updated`, {
-            status: subscription.status,
-            cancelAt: subscription.cancel_at,
-            plan: getPlanFromPrice(subscription.items.data[0].price.id),
-            renewsAt: updateData.subscription.renewsAt || 'N/A',
-            expiresAt: updateData.subscription.expiresAt || 'N/A',
+          // Update school active status based on subscription
+          const isActive = updateData.status === 'active' || updateData.status === 'cancelled'
+          const schools = await payload.find({
+            collection: 'schools',
+            where: {
+              subscription: { equals: subscriptionId },
+            },
+          })
+
+          for (const school of schools.docs) {
+            await payload.update({
+              collection: 'schools',
+              id: school.id,
+              data: { isActive },
+            })
+          }
+
+          console.log(`[Webhook] Subscription ${subscriptionId} updated`, {
+            status: updateData.status,
+            cancelAt: stripeSubscription.cancel_at,
+            plan: plan,
+            renewsAt: updateData.renewsAt || 'N/A',
+            expiresAt: updateData.expiresAt || 'N/A',
+            schoolsUpdated: schools.docs.length,
           })
         } catch (error: unknown) {
           const message = error instanceof Error ? error.message : 'Unknown error'
-          console.error(`[Webhook] Failed to update school ${schoolId}:`, message)
+          console.error(`[Webhook] Failed to update subscription ${subscriptionId}:`, message)
           return NextResponse.json({ error: 'Database update failed' }, { status: 500 })
         }
         break
       }
 
       case 'customer.subscription.deleted': {
-        const subscription = event.data.object as Stripe.Subscription
-        const schoolId = subscription.metadata.schoolId
+        const stripeSubscription = event.data.object as Stripe.Subscription
+        const subscriptionId = stripeSubscription.metadata.subscriptionId
 
-        if (!schoolId) {
-          console.error('[Webhook] Missing schoolId in metadata for subscription.deleted')
-          return NextResponse.json({ error: 'Missing schoolId in metadata' }, { status: 400 })
+        if (!subscriptionId) {
+          console.error('[Webhook] Missing subscriptionId in metadata for subscription.deleted')
+          return NextResponse.json({ error: 'Missing subscriptionId in metadata' }, { status: 400 })
         }
 
         try {
           await payload.update({
-            collection: 'schools',
-            id: schoolId,
+            collection: 'subscriptions',
+            id: subscriptionId,
             data: {
-              isActive: false,
-              subscription: {
-                isTrial: false,
-                expiresAt: new Date().toISOString(),
-                renewsAt: null, // No renewal for deleted subscription
-              },
+              status: 'expired',
+              expiresAt: new Date().toISOString(),
+              renewsAt: null,
             },
           })
-          console.log(`[Webhook] School ${schoolId} deactivated - subscription cancelled`)
+
+          // Deactivate all schools linked to this subscription
+          const schools = await payload.find({
+            collection: 'schools',
+            where: {
+              subscription: { equals: subscriptionId },
+            },
+          })
+
+          for (const school of schools.docs) {
+            await payload.update({
+              collection: 'schools',
+              id: school.id,
+              data: { isActive: false },
+            })
+          }
+
+          console.log(
+            `[Webhook] Subscription ${subscriptionId} deleted, ${schools.docs.length} schools deactivated`,
+          )
         } catch (error: unknown) {
           const message = error instanceof Error ? error.message : 'Unknown error'
-          console.error(`[Webhook] Failed to deactivate school ${schoolId}:`, message)
+          console.error(`[Webhook] Failed to update subscription ${subscriptionId}:`, message)
           return NextResponse.json({ error: 'Database update failed' }, { status: 500 })
         }
         break
@@ -205,19 +265,19 @@ export async function POST(req: Request) {
         console.warn(`[Webhook] Payment failed for customer ${customerId}`)
 
         try {
-          // Find school by Stripe customer ID
-          const schools = await payload.find({
-            collection: 'schools',
+          // Find subscription by Stripe customer ID
+          const subscriptions = await payload.find({
+            collection: 'subscriptions',
             where: {
-              'subscription.stripeCustomerId': { equals: customerId },
+              stripeCustomerId: { equals: customerId },
             },
             limit: 1,
           })
 
-          if (schools.docs.length > 0) {
-            const school = schools.docs[0]
-            console.warn(`[Webhook] Payment failed for school ${school.id} (${school.name})`)
-            // TODO: Send email notification to school admin
+          if (subscriptions.docs.length > 0) {
+            const subscription = subscriptions.docs[0]
+            console.warn(`[Webhook] Payment failed for subscription ${subscription.id}`)
+            // TODO: Send email notification to subscription owner
           }
         } catch (error: unknown) {
           const message = error instanceof Error ? error.message : 'Unknown error'

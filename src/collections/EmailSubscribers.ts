@@ -1,11 +1,5 @@
 import { CollectionConfig } from 'payload'
-import {
-  tenantRead,
-  tenantCreate,
-  tenantUpdate,
-  tenantDelete,
-  assignSchoolBeforeChange,
-} from '../lib/access'
+import { createPlanGuardHook } from '../lib/subscriptionAccess'
 
 export const EmailSubscribers: CollectionConfig = {
   slug: 'email-subscribers',
@@ -31,15 +25,14 @@ export const EmailSubscribers: CollectionConfig = {
       ],
     },
   },
-  access: {
-    read: tenantRead,
-    create: tenantCreate, // Permettiamo creazione pubblica tramite form
-    update: tenantUpdate,
-    delete: tenantDelete,
-  },
+  // Access control gestito dal plugin multi-tenant
   hooks: {
     beforeChange: [
-      assignSchoolBeforeChange,
+      createPlanGuardHook({
+        requiredPlan: 'enterprise',
+        featureName: 'Comunicazioni via mail',
+        featureFlag: 'enableEmailCommunications',
+      }),
       async ({ data, operation }) => {
         // Generate unsubscribe token on create
         if (operation === 'create' && !data.unsubscribeToken) {
@@ -82,19 +75,7 @@ export const EmailSubscribers: CollectionConfig = {
     ],
   },
   fields: [
-    {
-      name: 'school',
-      type: 'relationship',
-      relationTo: 'schools',
-      required: true,
-      label: 'Scuola',
-      admin: {
-        description: "Scuola per cui l'utente riceve notifiche",
-        condition: (data, siblingData, { user }) => {
-          return user?.role === 'super-admin'
-        },
-      },
-    },
+    // Campo school gestito automaticamente dal plugin
     {
       name: 'email',
       type: 'email',

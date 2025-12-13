@@ -1,5 +1,6 @@
 import { getParentLimitForPlan, canAddParent } from './plans'
 import type { Payload } from 'payload'
+import type { Subscription } from '@/payload-types'
 
 export interface ParentLimitCheckResult {
   canAdd: boolean
@@ -23,6 +24,7 @@ export async function checkParentLimit(
     const school = await payload.findByID({
       collection: 'schools',
       id: schoolId,
+      depth: 1, // Populate subscription relationship
     })
 
     if (!school) {
@@ -34,7 +36,25 @@ export async function checkParentLimit(
       }
     }
 
-    const plan = school.subscription?.plan || 'starter'
+    // Get plan from subscription - handle both relationship and embedded data
+    let plan = 'starter'
+    if (school.subscription) {
+      if (typeof school.subscription === 'object') {
+        plan = (school.subscription as Subscription).plan || 'starter'
+      } else if (typeof school.subscription === 'string') {
+        // Subscription is just an ID, fetch it
+        try {
+          const sub = await payload.findByID({
+            collection: 'subscriptions',
+            id: school.subscription,
+          })
+          plan = sub.plan || 'starter'
+        } catch {
+          plan = 'starter'
+        }
+      }
+    }
+
     const limit = getParentLimitForPlan(plan)
 
     // Count current parents for this school

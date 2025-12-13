@@ -1,14 +1,7 @@
 import { CollectionConfig } from 'payload'
-import {
-  tenantRead,
-  tenantCreate,
-  tenantUpdate,
-  tenantDelete,
-  assignSchoolBeforeChange,
-  getSchoolField,
-  filterBySchool,
-} from '../lib/access'
+import { filterBySchool } from '../lib/access'
 import { pageBlocks, shapeDividerFields } from '../lib/blocks'
+import { createPlanGuardHook } from '../lib/subscriptionAccess'
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
@@ -35,15 +28,14 @@ export const Pages: CollectionConfig = {
       ],
     },
   },
-  access: {
-    read: tenantRead,
-    create: tenantCreate,
-    update: tenantUpdate,
-    delete: tenantDelete,
-  },
+  // Access control gestito dal plugin multi-tenant
   hooks: {
     beforeChange: [
-      assignSchoolBeforeChange,
+      createPlanGuardHook({
+        requiredPlan: 'professional',
+        featureName: 'Pagine',
+        featureFlag: 'showPages',
+      }),
       // Valida che i blocchi utilizzati siano abilitati per la scuola
       async ({ req, data }) => {
         // Se non ci sono blocchi o non c'è una scuola, non fare nulla
@@ -140,7 +132,7 @@ export const Pages: CollectionConfig = {
     ],
   },
   fields: [
-    getSchoolField('Scuola a cui appartiene questa pagina'),
+    // Campo school gestito automaticamente dal plugin
     {
       name: 'title',
       type: 'text',

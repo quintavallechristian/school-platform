@@ -19,19 +19,12 @@ export const TermsAcceptanceProvider: React.FC<{ children: React.ReactNode }> = 
   }, [])
 
   useEffect(() => {
-    console.log('TermsAcceptanceProvider mounted, user:', user)
     if (user) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const userData = user as any
 
       const hasAccepted =
         userData.acceptedPrivacyPolicy === true && userData.acceptedTermsOfService === true
-
-      console.log('User acceptance status:', {
-        acceptedPrivacy: userData.acceptedPrivacyPolicy,
-        acceptedTos: userData.acceptedTermsOfService,
-        needsAcceptance: !hasAccepted,
-      })
 
       setNeedsAcceptance(!hasAccepted)
     }

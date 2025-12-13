@@ -1,5 +1,5 @@
 import { CollectionConfig, Access } from 'payload'
-import { assignSchoolBeforeChange, getSchoolField } from '../lib/access'
+import { createPlanGuardHook } from '../lib/subscriptionAccess'
 
 export const ParentAppointments: CollectionConfig = {
   slug: 'parent-appointments',
@@ -25,7 +25,7 @@ export const ParentAppointments: CollectionConfig = {
     },
   },
   access: {
-    // Parents vedono solo i propri appuntamenti
+    // Access control personalizzato per i genitori
     read: (({ req: { user } }) => {
       if (!user) return false
 
@@ -41,27 +41,11 @@ export const ParentAppointments: CollectionConfig = {
         }
       }
 
-      // School-admin ed editor vedono appuntamenti della loro scuola
-      if (
-        (user.role === 'school-admin' || user.role === 'editor') &&
-        user.schools &&
-        user.schools.length > 0
-      ) {
-        const schoolIds = user.schools.map((school) =>
-          typeof school === 'string' ? school : school.id,
-        )
-        return {
-          school: {
-            in: schoolIds,
-          },
-        }
-      }
-
-      return false
+      // School-admin ed editor: il plugin gestisce il filtro tenant
+      return true
     }) as Access,
     create: ({ req: { user } }) => {
       // School-admin, editor E parent possono creare appuntamenti
-      // Parent può creare solo prenotazioni (bookings)
       return (
         user?.role === 'super-admin' ||
         user?.role === 'school-admin' ||
@@ -82,48 +66,29 @@ export const ParentAppointments: CollectionConfig = {
         }
       }
 
-      // School-admin ed editor possono modificare appuntamenti della loro scuola
-      if (
-        (user.role === 'school-admin' || user.role === 'editor') &&
-        user.schools &&
-        user.schools.length > 0
-      ) {
-        const schoolIds = user.schools.map((school) =>
-          typeof school === 'string' ? school : school.id,
-        )
-        return {
-          school: {
-            in: schoolIds,
-          },
-        }
-      }
-
-      return false
+      // School-admin ed editor: il plugin gestisce il filtro tenant
+      return true
     }) as Access,
     delete: (({ req: { user } }) => {
       if (!user) return false
       if (user.role === 'super-admin') return true
 
-      // Solo school-admin può eliminare
-      if (user.role === 'school-admin' && user.schools && user.schools.length > 0) {
-        const schoolIds = user.schools.map((school) =>
-          typeof school === 'string' ? school : school.id,
-        )
-        return {
-          school: {
-            in: schoolIds,
-          },
-        }
-      }
-
-      return false
+      // Solo school-admin può eliminare (il plugin gestisce il filtro tenant)
+      return user.role === 'school-admin'
     }) as Access,
   },
   hooks: {
-    beforeChange: [assignSchoolBeforeChange],
+    beforeChange: [
+      createPlanGuardHook({
+        requiredPlan: 'professional',
+        featureName: 'Area Genitori',
+        featureFlag: 'showParentsArea',
+      }),
+    ],
   },
+  // Hook rimosso - il plugin gestisce l'assegnazione della scuola
   fields: [
-    getSchoolField('Scuola'),
+    // Campo school gestito automaticamente dal plugin
     {
       name: 'parent',
       type: 'relationship',

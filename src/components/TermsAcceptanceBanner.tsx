@@ -15,18 +15,8 @@ export const TermsAcceptanceBanner: React.FC = () => {
   useEffect(() => {
     console.log('TermsAcceptanceBanner mounted, user:', user)
     if (user) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const userData = user as any
-
       // TEMPORANEO: Forza la visualizzazione del banner per test
       const hasAccepted = false // Cambia in: userData.acceptedPrivacyPolicy === true && userData.acceptedTermsOfService === true
-
-      console.log('User acceptance status:', {
-        acceptedPrivacy: userData.acceptedPrivacyPolicy,
-        acceptedTos: userData.acceptedTermsOfService,
-        needsAcceptance: !hasAccepted,
-        FORCED_FOR_TESTING: true,
-      })
 
       setNeedsAcceptance(!hasAccepted)
     }
