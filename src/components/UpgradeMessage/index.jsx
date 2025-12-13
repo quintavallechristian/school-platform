@@ -28,7 +28,6 @@ export const UpgradeMessage = ({ requiredPlan, featureName, featureFlag }) => {
   }, [])
 
   useEffect(() => {
-    console.log('Qua')
     const checkPlanAndFeature = async () => {
       if (!user || !user.schools || user.schools.length === 0) {
         return
@@ -41,18 +40,41 @@ export const UpgradeMessage = ({ requiredPlan, featureName, featureFlag }) => {
       }
 
       try {
-        // Ottieni la scuola dell'utente
-        const currentSchoolId =
-          typeof user.schools[0] === 'string' ? user.schools[0] : user.schools[0].id
+        // Determina la scuola corrente: usa quella selezionata dal tenant selector se disponibile
+        let currentSchoolId
+
+        // Prova a leggere la scuola selezionata dal cookie del plugin multi-tenant
+        const cookies = document.cookie.split(';')
+        const tenantCookie = cookies.find((cookie) =>
+          cookie.trim().startsWith('payload-tenant-selection='),
+        )
+
+        if (tenantCookie) {
+          try {
+            const cookieValue = tenantCookie.split('=')[1]
+            const tenantSelection = JSON.parse(decodeURIComponent(cookieValue))
+            // Il cookie contiene { schools: "schoolId" } o simile
+            if (tenantSelection && tenantSelection.schools) {
+              currentSchoolId = tenantSelection.schools
+            }
+          } catch (e) {
+            console.error('Error parsing tenant selection cookie:', e)
+          }
+        }
+
+        // Se non c'è una scuola selezionata nel cookie, usa la prima scuola dell'utente
+        if (!currentSchoolId) {
+          currentSchoolId =
+            typeof user.schools[0] === 'string' ? user.schools[0] : user.schools[0].id
+        }
 
         setSchoolId(currentSchoolId)
 
-        const response = await fetch(`/api/schools/${currentSchoolId}`)
+        const response = await fetch(`/api/schools/${currentSchoolId}?depth=1`)
         const school = await response.json()
 
         const plan = school?.subscription?.plan || 'starter'
         setCurrentPlan(plan)
-        console.log('User plan:', plan)
 
         // Controlla il piano
         const planHierarchy = { starter: 0, professional: 1, enterprise: 2 }
@@ -89,7 +111,6 @@ export const UpgradeMessage = ({ requiredPlan, featureName, featureFlag }) => {
   }, [user, requiredPlan, featureFlag])
 
   useEffect(() => {
-    console.log('Quick')
     // Nascondi il pulsante "Create New" usando JavaScript DOM manipulation
     if (messageType !== 'none') {
       const hideButton = () => {
@@ -132,7 +153,6 @@ export const UpgradeMessage = ({ requiredPlan, featureName, featureFlag }) => {
 
   // Messaggio per piano inadeguato
   if (messageType === 'upgrade') {
-    console.log('Rendering upgrade message')
     return (
       <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-8 rounded-lg relative mx-4 md:mx-16 my-8 text-center">
         <div className="text-5xl mb-4">🔒</div>

@@ -21,7 +21,6 @@ export function middleware(request: NextRequest) {
   }
 
   const hostname = hostHeader.split(':')[0].toLowerCase()
-  console.log('Middleware processing:', { hostname, pathname })
 
   // Ignora richieste all'admin panel, API e assets
   if (

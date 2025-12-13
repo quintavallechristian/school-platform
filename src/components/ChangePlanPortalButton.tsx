@@ -4,7 +4,6 @@ import React from 'react'
 
 const ChangePlanPortalButton = ({ title }: { title: string }) => {
   const { data: schoolData } = useDocumentInfo()
-  console.log(schoolData)
 
   const handleClick = async () => {
     if (!schoolData) {

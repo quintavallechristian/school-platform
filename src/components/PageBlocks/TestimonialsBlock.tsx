@@ -22,7 +22,6 @@ type Props = {
 
 export default async function TestimonialsBlock({ block, schoolId, baseHref }: Props) {
   const testimonials = await getSchoolTestimonials(schoolId, block.limit || 6)
-  console.log('Testimonials fetched:', testimonials, schoolId)
 
   // Se non ci sono testimonianze, non mostrare nulla o mostrare un messaggio
   if (testimonials.docs.length === 0) {

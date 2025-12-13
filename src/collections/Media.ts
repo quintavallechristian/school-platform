@@ -5,7 +5,11 @@ export const Media: CollectionConfig = {
   admin: {
     group: 'Contenuti',
   },
-  // Access control gestito dal plugin multi-tenant
+  // Accesso pubblico in lettura per permettere la visualizzazione di loghi e immagini
+  access: {
+    read: () => true, // Accesso pubblico per la lettura
+  },
+  // Access control gestito dal plugin multi-tenant per create/update/delete
   // Il plugin aggiunge automaticamente il campo school
   upload: {
     disableLocalStorage: true, // obbligatorio su Vercel

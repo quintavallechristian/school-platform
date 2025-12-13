@@ -10,6 +10,12 @@ export const PrivacyPolicy: CollectionConfig = {
     defaultColumns: ['name', 'school', 'isActive'],
   },
   // Access control gestito dal plugin multi-tenant
+  access: {
+    read: ({ req: { user } }) => {
+      if (!user || user.role === 'editor') return false
+      return true
+    },
+  },
   fields: [
     // Campo school gestito automaticamente dal plugin
     {

@@ -21,8 +21,6 @@ export async function POST(req: NextRequest) {
 
     const { schoolSlug, priceId } = await req.json()
 
-    console.log('Activate subscription request:', { schoolSlug, priceId, userId: user.id })
-
     if (!schoolSlug || !priceId) {
       return NextResponse.json({ error: 'schoolSlug e priceId sono richiesti' }, { status: 400 })
     }
@@ -44,12 +42,6 @@ export async function POST(req: NextRequest) {
     }
 
     const school = schools.docs[0]
-
-    console.log('School found:', {
-      id: school.id,
-      name: school.name,
-      subscription: school.subscription,
-    })
 
     const headersList = await headers()
     const host = headersList.get('host') || ''
@@ -87,13 +79,6 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    console.log('Subscription found:', {
-      id: subscription.id,
-      plan: subscription.plan,
-      status: subscription.status,
-      stripeCustomerId: subscription.stripeCustomerId,
-    })
-
     // Prepare checkout session params
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
       mode: 'subscription',
@@ -122,11 +107,6 @@ export async function POST(req: NextRequest) {
     } else {
       sessionParams.customer_email = user.email
     }
-
-    console.log('Creating Stripe checkout session with URLs:', {
-      success_url: sessionParams.success_url,
-      cancel_url: sessionParams.cancel_url,
-    })
 
     // Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create(sessionParams)

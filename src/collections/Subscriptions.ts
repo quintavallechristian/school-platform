@@ -1,3 +1,4 @@
+import { Subscription } from '@/payload-types'
 import type { CollectionConfig } from 'payload'
 
 /**
@@ -29,12 +30,22 @@ export const Subscriptions: CollectionConfig = {
     read: ({ req: { user } }) => {
       if (!user) return false
       if (user.role === 'super-admin') return true
-
       // School-admin can only read their own subscription
       if (user.role === 'school-admin') {
         return {
           owner: {
             equals: user.id,
+          },
+        }
+      }
+
+      if (user.role === 'editor') {
+        const subscriptionsIds = user.schools?.map((s) =>
+          typeof s === 'string' ? s : (s.subscription as Subscription)?.id,
+        )
+        return {
+          id: {
+            in: subscriptionsIds || [],
           },
         }
       }
@@ -183,6 +194,9 @@ export const Subscriptions: CollectionConfig = {
         condition: (data) => {
           return !!data?.stripeCustomerId || !!data?.stripeSubscriptionId
         },
+      },
+      access: {
+        read: ({ req: { user } }) => user?.role === 'super-admin' || user?.role === 'school-admin',
       },
       fields: [
         {

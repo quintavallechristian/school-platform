@@ -36,7 +36,7 @@ const SubscriptionManageButton = () => {
   }
 
   // Only show button if there's a Stripe customer ID
-  if (!subscriptionData?.stripeCustomerId) {
+  if (subscriptionData?.status === 'trial') {
     return (
       <div
         style={{
@@ -52,15 +52,15 @@ const SubscriptionManageButton = () => {
         </p>
       </div>
     )
+  } else if (subscriptionData?.stripeCustomerId) {
+    return (
+      <div style={{ marginTop: '16px' }}>
+        <Button buttonStyle="secondary" onClick={handleClick}>
+          Gestisci Abbonamento tramite Stripe
+        </Button>
+      </div>
+    )
   }
-
-  return (
-    <div style={{ marginTop: '16px' }}>
-      <Button buttonStyle="secondary" onClick={handleClick}>
-        Gestisci Abbonamento tramite Stripe
-      </Button>
-    </div>
-  )
 }
 
 export default SubscriptionManageButton

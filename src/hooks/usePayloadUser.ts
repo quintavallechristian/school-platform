@@ -44,10 +44,8 @@ export function usePayloadUser() {
 
   useEffect(() => {
     fetchUser()
-
-    // Auto-refresh ogni 30 sec (opzionale)
-    const interval = setInterval(fetchUser, 30000)
-    return () => clearInterval(interval)
+    // Auto-refresh rimosso per evitare polling continuo
+    // Se necessario, usa la funzione refresh() restituita dall'hook
   }, [fetchUser])
 
   return { user, loading, error, refresh: fetchUser }

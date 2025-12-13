@@ -21,13 +21,12 @@ export const Schools: CollectionConfig = {
     // },
   },
   access: {
+    // Accesso pubblico in lettura per permettere al frontend di visualizzare le informazioni della scuola
+    read: () => true,
     // Super-admin e school-admin possono creare scuole
     // School-admin devono avere almeno una scuola con piano enterprise (validato in beforeChange)
     create: ({ req: { user } }) => {
       return user?.role === 'super-admin' || user?.role === 'school-admin'
-    },
-    read: () => {
-      return true
     },
     delete: ({ req: { user } }) => {
       return user?.role === 'super-admin'
@@ -561,8 +560,6 @@ export const Schools: CollectionConfig = {
                   'Abbonamento associato a questa scuola. Gestito automaticamente alla registrazione.',
               },
               access: {
-                read: ({ req: { user } }) =>
-                  user?.role === 'super-admin' || user?.role === 'school-admin',
                 update: ({ req: { user } }) => user?.role === 'super-admin',
               },
             },

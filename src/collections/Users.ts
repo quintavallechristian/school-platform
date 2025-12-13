@@ -13,7 +13,7 @@ export const Users: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'email',
-    defaultColumns: ['email', 'role', 'schools', 'createdAt'],
+    defaultColumns: ['email', 'role', 'createdAt'],
     group: 'Utenti',
   },
   auth: true,
@@ -57,11 +57,19 @@ export const Users: CollectionConfig = {
       if (!user) return false
       if (user.role === 'super-admin') return true
 
-      // School-admin può modificare solo utenti con almeno una scuola in comune (eccetto super-admin)
+      const conditions: any[] = [
+        {
+          id: {
+            equals: user.id,
+          },
+        },
+      ]
+
+      // School-admin può modificare utenti con scuole in comune (eccetto super-admin)
       if (user.role === 'school-admin' && user.schools && user.schools.length > 0) {
         const schoolIDs = user.schools?.map((s) => (typeof s === 'object' ? s.id : s))
         if (schoolIDs?.length) {
-          return {
+          conditions.push({
             and: [
               {
                 schools: {
@@ -74,16 +82,18 @@ export const Users: CollectionConfig = {
                 },
               },
             ],
-          } as any
+          })
         }
       }
-      return false
+
+      return {
+        or: conditions,
+      }
     },
     delete: ({ req: { user } }) => {
       if (!user) return false
       if (user.role === 'super-admin') return true
 
-      // School-admin può eliminare solo utenti con almeno una scuola in comune (eccetto se stesso e super-admin)
       if (user.role === 'school-admin' && user.schools && user.schools.length > 0) {
         const schoolIDs = user.schools?.map((s) => (typeof s === 'object' ? s.id : s))
         if (schoolIDs?.length) {
@@ -197,9 +207,36 @@ export const Users: CollectionConfig = {
       },
       access: {
         update: ({ req: { user } }) => {
-          // Solo super-admin può cambiare le scuole di un utente
-          return user?.role === 'super-admin'
+          if (!user) return false
+          if (user.role === 'super-admin') return true
+          if (user.role === 'school-admin') return true
+          return false
         },
+      },
+      filterOptions: ({ req }) => {
+        const currentUser = req.user
+
+        if (currentUser?.role === 'super-admin') {
+          return true
+        }
+
+        if (currentUser?.role === 'school-admin' && Array.isArray(currentUser.schools)) {
+          const allowedSchoolIDs = currentUser.schools
+            .map(normalizeSchoolId)
+            .filter((id): id is string => Boolean(id))
+
+          if (allowedSchoolIDs.length === 0) {
+            return false
+          }
+
+          return {
+            id: {
+              in: allowedSchoolIDs,
+            },
+          }
+        }
+
+        return false
       },
       validate: (value, { operation, data }) => {
         // Durante l'update dell'account, permetti valori vuoti (migrazione in corso)
@@ -289,6 +326,32 @@ export const Users: CollectionConfig = {
   hooks: {
     beforeChange: [
       async ({ req, data, operation, context }) => {
+        const actor = req.user
+
+        if (actor?.role === 'school-admin') {
+          const allowedSchoolIds = (actor.schools || [])
+            .map(normalizeSchoolId)
+            .filter((id): id is string => Boolean(id))
+
+          if (!allowedSchoolIds.length) {
+            throw new Error('Non hai scuole assegnate. Contatta un super-admin.')
+          }
+
+          if (Array.isArray(data.schools)) {
+            const requestedSchoolIds = data.schools
+              .map(normalizeSchoolId)
+              .filter((id): id is string => Boolean(id))
+
+            const invalidSchoolIds = requestedSchoolIds.filter(
+              (id) => !allowedSchoolIds.includes(id),
+            )
+
+            if (invalidSchoolIds.length > 0) {
+              throw new Error('Puoi assegnare solo scuole che gestisci personalmente.')
+            }
+          }
+        }
+
         // Migrazione automatica: converte school → schools
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const oldData = data as any

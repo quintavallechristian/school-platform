@@ -135,7 +135,6 @@ export default buildConfig({
         arrayTenantFieldName: 'school',
         includeDefaultField: false,
       },
-      debug: true,
       // Super-admin ha accesso a tutti i tenant
       userHasAccessToAllTenants: (user) => user?.role === 'super-admin',
       // Collections multi-tenant

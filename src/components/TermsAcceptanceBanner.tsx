@@ -13,7 +13,6 @@ export const TermsAcceptanceBanner: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
-    console.log('TermsAcceptanceBanner mounted, user:', user)
     if (user) {
       // TEMPORANEO: Forza la visualizzazione del banner per test
       const hasAccepted = false // Cambia in: userData.acceptedPrivacyPolicy === true && userData.acceptedTermsOfService === true
@@ -50,11 +49,9 @@ export const TermsAcceptanceBanner: React.FC = () => {
   }
 
   if (!needsAcceptance) {
-    console.log('Not rendering banner - acceptance not needed')
     return null
   }
 
-  console.log('Rendering terms acceptance banner')
   return (
     <div className="terms-acceptance-overlay">
       <div className="terms-acceptance-modal">
