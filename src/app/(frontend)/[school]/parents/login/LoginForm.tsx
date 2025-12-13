@@ -1,11 +1,12 @@
 'use client'
 
-import { useFormState, useFormStatus } from 'react-dom'
+import { useFormStatus } from 'react-dom'
 import { loginParent } from './action'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/ui/password-input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
+import { useActionState } from 'react'
 
 function SubmitButton() {
   const { pending } = useFormStatus()
@@ -18,7 +19,7 @@ function SubmitButton() {
 }
 
 export default function LoginForm({ school }: { school: string }) {
-  const [state, formAction] = useFormState(loginParent, null)
+  const [state, formAction] = useActionState(loginParent, null)
 
   return (
     <form action={formAction} className="space-y-4">

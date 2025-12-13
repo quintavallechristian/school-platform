@@ -95,7 +95,7 @@ export default async function ParentsDashboardPage({
         }}
       >
         <div className="flex flex-wrap gap-3">
-          <Link href={`/${school}/parents/settings`}>
+          <Link href={`${baseHref}/parents/settings`}>
             <Button variant="outline" className="gap-2">
               <Settings className="h-4 w-4" />
               Impostazioni

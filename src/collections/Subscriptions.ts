@@ -1,5 +1,6 @@
 import { Subscription } from '@/payload-types'
 import type { CollectionConfig } from 'payload'
+import type { Access, AccessResult } from 'payload'
 
 /**
  * Subscriptions Collection
@@ -40,14 +41,18 @@ export const Subscriptions: CollectionConfig = {
       }
 
       if (user.role === 'editor') {
-        const subscriptionsIds = user.schools?.map((s) =>
-          typeof s === 'string' ? s : (s.subscription as Subscription)?.id,
-        )
-        return {
-          id: {
-            in: subscriptionsIds || [],
-          },
-        }
+        const subscriptionsIds =
+          user.schools
+            ?.map((s) => {
+              if (typeof s === 'string') return null
+              return typeof s.subscription === 'string'
+                ? s.subscription
+                : (s.subscription as Subscription)?.id
+            })
+            .filter((id): id is string => !!id) || []
+        return (
+          subscriptionsIds.length > 0 ? { id: { in: subscriptionsIds } } : false
+        ) as AccessResult
       }
 
       return false

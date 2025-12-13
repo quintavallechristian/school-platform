@@ -1,8 +1,24 @@
 import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 
-export async function GET() {
+const CRON_SECRET = process.env.SCHEDULED_TASK_SECRET
+
+export async function GET(req: NextRequest) {
+  if (!CRON_SECRET) {
+    console.error('SCHEDULED_TASK_SECRET non configurato')
+    return NextResponse.json({ error: 'Scheduled task secret non configurato' }, { status: 500 })
+  }
+
+  const providedSecret =
+    req.headers.get('x-cron-secret') ||
+    req.headers.get('authorization')?.replace('Bearer ', '').trim()
+
+  if (!providedSecret || providedSecret !== CRON_SECRET) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   const payload = await getPayload({ config })
   const now = new Date().toISOString()
 
